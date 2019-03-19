@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests {
+mod build_and_access_success_tests {
     #[test]
     fn build_works() {
         let bv = succinct::BitVector::new(2);  // takes length
@@ -13,20 +13,6 @@ mod tests {
         let bv = succinct::BitVector::new(2);  // takes length
         assert_eq!(bv.access(0), false);  // build() internally
         assert_eq!(bv.access(1), false);
-    }
-
-    #[test]
-    #[should_panic]
-    fn access_over_lower_bound_causes_panic() {
-        let bv = succinct::BitVector::new(2).build();
-        let _ = bv.access(-1);
-    }
-
-    #[test]
-    #[should_panic]
-    fn access_over_upper_bound_causes_panic() {
-        let bv = succinct::BitVector::new(2).build();
-        let _ = bv.access(2);
     }
 
     #[test]
@@ -55,5 +41,22 @@ mod tests {
         assert_eq!(bv.access(0), true);
         assert_eq!(bv.access(1), true);
         assert_eq!(bv.access(2), true);
+    }
+}
+
+#[cfg(test)]
+mod build_and_access_failure_tests {
+    #[test]
+    #[should_panic]
+    fn access_over_lower_bound_causes_panic() {
+        let bv = succinct::BitVector::new(2).build();
+        let _ = bv.access(-1);
+    }
+
+    #[test]
+    #[should_panic]
+    fn access_over_upper_bound_causes_panic() {
+        let bv = succinct::BitVector::new(2).build();
+        let _ = bv.access(2);
     }
 }
