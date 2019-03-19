@@ -60,3 +60,39 @@ mod build_and_access_failure_tests {
         let _ = bv.access(2);
     }
 }
+
+#[cfg(test)]
+mod rank_success_tests {
+    macro_rules! parameterized_rank_tests {
+        ($($name:ident: $value:expr,)*) => {
+        $(
+            #[test]
+            fn $name() {
+                let (in_bv, in_i, expected_rank) = $value;
+                assert_eq!(in_bv.rank(in_i), expected_rank);
+            }
+        )*
+        }
+    }
+
+    parameterized_rank_tests! {
+        rank1: (succinct::BitVector::new("0"), 0, 0),
+    }
+}
+
+#[cfg(test)]
+mod rank_failure_tests {
+    #[test]
+    #[should_panic]
+    fn rank_over_lower_bound_causes_panic() {
+        let bv = succinct::BitVector::new(2).build();
+        let _ = bv.rank(-1);
+    }
+
+    #[test]
+    #[should_panic]
+    fn rank_over_upper_bound_causes_panic() {
+        let bv = succinct::BitVector::new(2).build();
+        let _ = bv.rank(2);
+    }
+}
