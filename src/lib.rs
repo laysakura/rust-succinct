@@ -68,15 +68,33 @@ mod rank_success_tests {
         $(
             #[test]
             fn $name() {
-                let (in_bv, in_i, expected_rank) = $value;
-                assert_eq!(in_bv.rank(in_i), expected_rank);
+                let (in_bv_str, in_i, expected_rank) = $value;
+                assert_eq!(succinct::BitVector::new(in_bv_str).rank(in_i), expected_rank);
             }
         )*
         }
     }
 
     parameterized_rank_tests! {
-        rank1: (succinct::BitVector::new("0"), 0, 0),
+        rank1_1: ("0", 0, 0),
+
+        rank2_1: ("00", 0, 0),
+        rank2_2: ("00", 1, 0),
+
+        rank3_1: ("01", 0, 0),
+        rank3_2: ("01", 1, 1),
+
+        rank4_1: ("10", 0, 1),
+        rank4_2: ("10", 1, 1),
+
+        rank5_1: ("11", 0, 1),
+        rank5_2: ("11", 1, 2),
+
+        rank6_1: ("10010", 0, 1),
+        rank6_2: ("10010", 1, 1),
+        rank6_3: ("10010", 0, 1),
+        rank6_4: ("10010", 1, 2),
+        rank6_5: ("10010", 0, 2),
     }
 }
 
