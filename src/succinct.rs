@@ -1,10 +1,10 @@
 mod internal_data_structure;
 
 use std::collections::HashSet;
-use internal_data_structure::bit_vector_string::BitVectorString;
+use internal_data_structure::raw_bit_vector::RawBitVector;
 
 pub struct BitVector {
-    // internal representation
+    rbv: RawBitVector,
 }
 
 impl BitVector {
@@ -13,25 +13,23 @@ impl BitVector {
     pub fn rank(&self, i: usize) -> usize { 0 }
 }
 
+enum BitVectorSeed {
+    Length(usize),
+    Str(String),
+}
+
 pub struct BitVectorBuilder {
-    n: usize,
+    seed: BitVectorSeed,
     bits_set: HashSet<usize>,
 }
 
 impl BitVectorBuilder {
     pub fn from_length(length: usize) -> BitVectorBuilder {
-        BitVectorBuilder { n: length, bits_set: HashSet::new() }
+        BitVectorBuilder { seed: BitVectorSeed::Length(length), bits_set: HashSet::new() }
     }
 
     pub fn from_str(bit_vector_str: &str) -> BitVectorBuilder {
-        let bit_vector_str = BitVectorString::new(bit_vector_str);
-
-        let mut set_bits = HashSet::new();
-        for (i, c) in bit_vector_str.s.chars().enumerate() {
-            if c == '1' { set_bits.insert(i); };
-        }
-
-        BitVectorBuilder { n: bit_vector_str.s.len(), bits_set: set_bits }
+        BitVectorBuilder { seed: BitVectorSeed::Str(String::from(bit_vector_str)), bits_set: HashSet::new() }
     }
 
     // TODO copy every time when set_bit() called?
@@ -41,7 +39,12 @@ impl BitVectorBuilder {
     }
 
     pub fn build(&self) -> BitVector {
-        BitVector{}
+        let mut rbv = match &self.seed {
+            BitVectorSeed::Length(n) => RawBitVector::from_length(*n),
+            BitVectorSeed::Str(s) => RawBitVector::from_str(s),
+        };
+        for bit in &self.bits_set { rbv.set_bit(*bit) }
+        BitVector { rbv }
     }
 }
 
