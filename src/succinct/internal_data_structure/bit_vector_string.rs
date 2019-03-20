@@ -20,6 +20,33 @@ impl BitVectorString {
 }
 
 #[cfg(test)]
+mod new_success_tests {
+    use super::BitVectorString;
+
+    macro_rules! parameterized_from_valid_str_tests {
+        ($($name:ident: $value:expr,)*) => {
+        $(
+            #[test]
+            fn $name() {
+                let in_s = $value;
+                let _ = BitVectorString::new(in_s);
+            }
+        )*
+        }
+    }
+
+    parameterized_from_valid_str_tests! {
+        s1: "0",
+        s2: "1",
+        s3: "00",
+        s4: "01",
+        s5: "10",
+        s6: "11",
+        s7: "01010101010111001000001",
+    }
+}
+
+#[cfg(test)]
 mod new_failure_tests {
     use super::BitVectorString;
 
