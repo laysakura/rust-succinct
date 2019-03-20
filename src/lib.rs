@@ -32,18 +32,28 @@ pub mod succinct {
     }
 
     struct BitVectorString {
-        str: String,
+        s: String,
     }
 
     impl BitVectorString {
-        fn new(str: &str) {
-            for c in str.chars() {
+        fn assert_valid_str(s: &str) {
+        }
+
+        fn new(s: &str) -> BitVectorString {
+            // TODO split into procedure like `assert_valid_str`
+            // should not be empty
+            if s.is_empty() { panic!("`str` must not be empty.") }
+
+            // should contain only '0' or '1'
+            for c in s.chars() {
                 match c {
                     '0' => (),
                     '1' => (),
                     _ => panic!("`str` must consist of '0' or '1'. '{}' included.", c),
                 }
             }
+
+            BitVectorString { s: String::from(s) }
         }
     }
 }
@@ -110,22 +120,22 @@ mod build_and_access_failure_tests {
             #[test]
             #[should_panic]
             fn $name() {
-                let in_str = $value;
-                let _ = BitVectorBuilder::from_str(in_str).build();
+                let in_s = $value;
+                let _ = BitVectorBuilder::from_str(in_s).build();
             }
         )*
         }
     }
 
     parameterized_build_from_invalid_str_tests! {
-        str1: " ",
-        str2: " 0",
-        str3: "0 ",
-        str4: "1 0",
-        str5: "０",
-        str6: "１",
-        str7: "012",
-        str8: "01二",
+        s1: " ",
+        s2: " 0",
+        s3: "0 ",
+        s4: "1 0",
+        s5: "０",
+        s6: "１",
+        s7: "012",
+        s8: "01二",
     }
 
     #[test]
