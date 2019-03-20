@@ -4,7 +4,13 @@ pub mod succinct {
     }
 
     impl BitVector {
-        pub fn new(n: u64) {}
+        pub fn new(n: u64) -> BitVector {}
+
+        pub fn build(&self) -> BitVector {}
+
+        pub fn access(&self, i: u64) -> bool {}
+
+        pub fn rank(&self, i: u64) -> u64 {}
     }
 }
 
@@ -62,13 +68,6 @@ mod build_and_access_failure_tests {
 
     #[test]
     #[should_panic]
-    fn access_over_lower_bound_causes_panic() {
-        let bv = BitVector::new(2).build();
-        let _ = bv.access(-1);
-    }
-
-    #[test]
-    #[should_panic]
     fn access_over_upper_bound_causes_panic() {
         let bv = BitVector::new(2).build();
         let _ = bv.access(2);
@@ -117,13 +116,6 @@ mod rank_success_tests {
 #[cfg(test)]
 mod rank_failure_tests {
     use super::succinct::BitVector;
-
-    #[test]
-    #[should_panic]
-    fn rank_over_lower_bound_causes_panic() {
-        let bv = BitVector::new(2).build();
-        let _ = bv.rank(-1);
-    }
 
     #[test]
     #[should_panic]
