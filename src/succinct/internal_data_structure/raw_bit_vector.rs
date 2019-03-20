@@ -68,14 +68,224 @@ impl RawBitVector {
 }
 
 #[cfg(test)]
-mod access_success_tests {
+mod from_length_success_tests {
+    use super::RawBitVector;
+
+    struct IndexBitPair(usize, bool);
+
+    macro_rules! parameterized_tests {
+        ($($name:ident: $value:expr,)*) => {
+        $(
+            #[test]
+            fn $name() {
+                let (in_length, index_bit_pairs) = $value;
+                let rbv = RawBitVector::from_length(in_length);
+                for IndexBitPair(i, bit) in index_bit_pairs {
+                    assert_eq!(rbv.access(i), bit);
+                }
+            }
+        )*
+        }
+    }
+
+    parameterized_tests! {
+        t1: (1, vec!(
+                     IndexBitPair(0, false),
+                )),
+        t2: (2, vec!(
+                     IndexBitPair(0, false),
+                     IndexBitPair(1, false),
+                )),
+        t8: (8, vec!(
+                     IndexBitPair(0, false),
+                     IndexBitPair(1, false),
+                     IndexBitPair(2, false),
+                     IndexBitPair(3, false),
+                     IndexBitPair(4, false),
+                     IndexBitPair(5, false),
+                     IndexBitPair(6, false),
+                     IndexBitPair(7, false),
+                )),
+        t9: (9, vec!(
+                     IndexBitPair(0, false),
+                     IndexBitPair(1, false),
+                     IndexBitPair(2, false),
+                     IndexBitPair(3, false),
+                     IndexBitPair(4, false),
+                     IndexBitPair(5, false),
+                     IndexBitPair(6, false),
+                     IndexBitPair(7, false),
+                     IndexBitPair(8, false),
+                )),
+    }
+}
+
+#[cfg(test)]
+mod from_length_failure_tests {
     use super::RawBitVector;
 
     #[test]
-    fn build() {
+    #[should_panic]
+    fn build_empty_from_length() {
+        let _ = RawBitVector::from_length(0);
+    }
+}
+
+#[cfg(test)]
+mod from_str_success_tests {
+    use super::RawBitVector;
+
+    struct IndexBitPair(usize, bool);
+
+    macro_rules! parameterized_tests {
+        ($($name:ident: $value:expr,)*) => {
+        $(
+            #[test]
+            fn $name() {
+                let (in_s, index_bit_pairs) = $value;
+                let rbv = RawBitVector::from_str(in_s);
+                for IndexBitPair(i, bit) in index_bit_pairs {
+                    assert_eq!(rbv.access(i), bit);
+                }
+            }
+        )*
+        }
+    }
+
+    parameterized_tests! {
+        t1_1: ("0", vec!(
+                         IndexBitPair(0, false),
+                    )),
+        t1_2: ("1", vec!(
+                         IndexBitPair(0, true),
+                    )),
+
+        t2_1: ("00", vec!(
+                          IndexBitPair(0, false),
+                          IndexBitPair(1, false),
+                     )),
+        t2_2: ("01", vec!(
+                          IndexBitPair(0, false),
+                          IndexBitPair(1, true),
+                     )),
+        t2_3: ("10", vec!(
+                          IndexBitPair(0, true),
+                          IndexBitPair(1, false),
+                     )),
+        t2_4: ("11", vec!(
+                          IndexBitPair(0, true),
+                          IndexBitPair(1, true),
+                     )),
+
+        t8_1: ("00000000", vec!(
+                                IndexBitPair(0, false),
+                                IndexBitPair(1, false),
+                                IndexBitPair(2, false),
+                                IndexBitPair(3, false),
+                                IndexBitPair(4, false),
+                                IndexBitPair(5, false),
+                                IndexBitPair(6, false),
+                                IndexBitPair(7, false),
+                           )),
+        t8_2: ("11111111", vec!(
+                                IndexBitPair(0, true),
+                                IndexBitPair(1, true),
+                                IndexBitPair(2, true),
+                                IndexBitPair(3, true),
+                                IndexBitPair(4, true),
+                                IndexBitPair(5, true),
+                                IndexBitPair(6, true),
+                                IndexBitPair(7, true),
+                           )),
+        t8_3: ("01010101", vec!(
+                                IndexBitPair(0, false),
+                                IndexBitPair(1, true),
+                                IndexBitPair(2, false),
+                                IndexBitPair(3, true),
+                                IndexBitPair(4, false),
+                                IndexBitPair(5, true),
+                                IndexBitPair(6, false),
+                                IndexBitPair(7, true),
+                           )),
+
+        t9_1: ("000000000", vec!(
+                                 IndexBitPair(0, false),
+                                 IndexBitPair(1, false),
+                                 IndexBitPair(2, false),
+                                 IndexBitPair(3, false),
+                                 IndexBitPair(4, false),
+                                 IndexBitPair(5, false),
+                                 IndexBitPair(6, false),
+                                 IndexBitPair(7, false),
+                                 IndexBitPair(8, false),
+                            )),
+        t9_2: ("111111111", vec!(
+                                 IndexBitPair(0, true),
+                                 IndexBitPair(1, true),
+                                 IndexBitPair(2, true),
+                                 IndexBitPair(3, true),
+                                 IndexBitPair(4, true),
+                                 IndexBitPair(5, true),
+                                 IndexBitPair(6, true),
+                                 IndexBitPair(7, true),
+                                 IndexBitPair(8, true),
+                            )),
+        t9_3: ("101010101", vec!(
+                                 IndexBitPair(0, true),
+                                 IndexBitPair(1, false),
+                                 IndexBitPair(2, true),
+                                 IndexBitPair(3, false),
+                                 IndexBitPair(4, true),
+                                 IndexBitPair(5, false),
+                                 IndexBitPair(6, true),
+                                 IndexBitPair(7, false),
+                                 IndexBitPair(8, true),
+                            )),
+    }
+}
+
+#[cfg(test)]
+mod from_str_failure_tests {
+    use super::RawBitVector;
+
+    #[test]
+    #[should_panic]
+    fn build_empty_from_str() {
+        let _ = RawBitVector::from_str("");
+    }
+
+    // well-tested in BitVectorString
+}
+
+#[cfg(test)]
+mod access_success_tests {
+    use super::RawBitVector;
+}
+
+#[cfg(test)]
+mod access_failure_tests {
+    use super::RawBitVector;
+
+    #[test]
+    #[should_panic]
+    fn access_over_upper_bound() {
         let rbv = RawBitVector::from_length(2);
-        assert_eq!(rbv.access(0), false);
+        let _ = rbv.access(2);
+    }
+}
+
+#[cfg(test)]
+mod set_bit_success_tests {
+    use super::RawBitVector;
+
+
+
+    #[test]
+    fn build_from_str() {
+        let rbv = RawBitVector::from_str("101");
+        assert_eq!(rbv.access(0), true);
         assert_eq!(rbv.access(1), false);
+        assert_eq!(rbv.access(2), true);
     }
 
     #[test]
@@ -84,14 +294,6 @@ mod access_success_tests {
         rbv.set_bit(1);
         assert_eq!(rbv.access(0), false);
         assert_eq!(rbv.access(1), true);
-    }
-
-    #[test]
-    fn build_from_str() {
-        let rbv = RawBitVector::from_str("101");
-        assert_eq!(rbv.access(0), true);
-        assert_eq!(rbv.access(1), false);
-        assert_eq!(rbv.access(2), true);
     }
 
     #[test]
@@ -115,32 +317,13 @@ mod access_success_tests {
 }
 
 #[cfg(test)]
-mod access_failure_tests {
+mod set_bit_failure_tests {
     use super::RawBitVector;
-
-    #[test]
-    #[should_panic]
-    fn build_empty_from_length() {
-        let _ = RawBitVector::from_length(0);
-    }
-
-    #[test]
-    #[should_panic]
-    fn build_empty_from_str() {
-        let _ = RawBitVector::from_str("");
-    }
 
     #[test]
     #[should_panic]
     fn set_bit_over_upper_bound() {
         let mut rbv = RawBitVector::from_length(2);
         rbv.set_bit(2);
-    }
-
-    #[test]
-    #[should_panic]
-    fn access_over_upper_bound() {
-        let rbv = RawBitVector::from_length(2);
-        let _ = rbv.access(2);
     }
 }
