@@ -18,3 +18,38 @@ impl BitVectorString {
         BitVectorString { s: String::from(s) }
     }
 }
+
+#[cfg(test)]
+mod new_failure_tests {
+    use super::BitVectorString;
+
+    #[test]
+    #[should_panic]
+    fn from_empty_str() {
+        let _ = BitVectorString::new("");
+    }
+
+    macro_rules! parameterized_from_invalid_str_tests {
+        ($($name:ident: $value:expr,)*) => {
+        $(
+            #[test]
+            #[should_panic]
+            fn $name() {
+                let in_s = $value;
+                let _ = BitVectorString::new(in_s);
+            }
+        )*
+        }
+    }
+
+    parameterized_from_invalid_str_tests! {
+        s1: " ",
+        s2: " 0",
+        s3: "0 ",
+        s4: "1 0",
+        s5: "０",
+        s6: "１",
+        s7: "012",
+        s8: "01二",
+    }
+}

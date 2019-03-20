@@ -112,36 +112,6 @@ mod build_and_access_failure_tests {
         let _ = BitVectorBuilder::from_str("").build();
     }
 
-    macro_rules! parameterized_build_from_invalid_str_tests {
-        ($($name:ident: $value:expr,)*) => {
-        $(
-            #[test]
-            #[should_panic]
-            fn $name() {
-                let in_s = $value;
-                let _ = BitVectorBuilder::from_str(in_s).build();
-            }
-        )*
-        }
-    }
-
-    parameterized_build_from_invalid_str_tests! {
-        s1: " ",
-        s2: " 0",
-        s3: "0 ",
-        s4: "1 0",
-        s5: "０",
-        s6: "１",
-        s7: "012",
-        s8: "01二",
-    }
-
-    #[test]
-    #[should_panic]
-    fn build_from_invalid_str() {
-        let _ = BitVectorBuilder::from_str("").build();
-    }
-
     #[test]
     #[should_panic]
     fn set_bit_over_upper_bound() {
