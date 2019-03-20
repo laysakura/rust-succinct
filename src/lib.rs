@@ -1,29 +1,32 @@
 pub mod succinct {
+    use std::collections::HashSet;
+
     pub struct BitVector {
         // internal representation
     }
 
     impl BitVector {
-        pub fn access(&self, i: u64) -> bool { true }
+        pub fn access(&self, i: usize) -> bool { true }
 
-        pub fn rank(&self, i: u64) -> u64 { 0 }
+        pub fn rank(&self, i: usize) -> usize { 0 }
     }
 
     pub struct BitVectorBuilder {
-        // length w/ set bits OR str representation
+        n: usize,
+        set_bits: HashSet<usize>,
     }
 
     impl BitVectorBuilder {
-        pub fn from_length(length: u64) -> BitVectorBuilder {
-            BitVectorBuilder{}
+        pub fn from_length(length: usize) -> BitVectorBuilder {
+            BitVectorBuilder { n: length, set_bits: HashSet::new() }
         }
         pub fn from_str(bit_vector_str: &str) -> BitVectorBuilder {
             let bv_str = BitVectorString::new(bit_vector_str);
 
-            BitVectorBuilder{}
+            BitVectorBuilder { n: bv_str.s.len(), set_bits: HashSet::new() }
         }
 
-        pub fn set_bit(&self, i: u64) -> BitVectorBuilder {
+        pub fn set_bit(&self, i: usize) -> BitVectorBuilder {
             BitVectorBuilder{}
         }
 
@@ -91,6 +94,16 @@ mod build_and_access_success_tests {
         assert_eq!(bv.access(0), true);
         assert_eq!(bv.access(1), true);
         assert_eq!(bv.access(2), true);
+    }
+
+    #[test]
+    fn build_from_set_bit_on_same_bit_twice() {
+        let bv = BitVectorBuilder::from_length(2)
+            .set_bit(1)
+            .set_bit(1)
+            .build();
+        assert_eq!(bv.access(0), false);
+        assert_eq!(bv.access(1), true);
     }
 }
 
