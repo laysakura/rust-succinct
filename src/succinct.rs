@@ -24,14 +24,14 @@ impl BitVectorBuilder {
     }
 
     pub fn from_str(bit_vector_str: &str) -> BitVectorBuilder {
-        let bv_str = BitVectorString::new(bit_vector_str);
+        let bit_vector_str = BitVectorString::new(bit_vector_str);
 
         let mut set_bits = HashSet::new();
-        for (i, c) in bv_str.s.chars().enumerate() {
+        for (i, c) in bit_vector_str.s.chars().enumerate() {
             if c == '1' { set_bits.insert(i); };
         }
 
-        BitVectorBuilder { n: bv_str.s.len(), bits_set: set_bits }
+        BitVectorBuilder { n: bit_vector_str.s.len(), bits_set: set_bits }
     }
 
     // TODO copy every time when set_bit() called?
