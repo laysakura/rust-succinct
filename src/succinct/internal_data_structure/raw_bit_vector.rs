@@ -126,7 +126,7 @@ mod from_length_failure_tests {
 
     #[test]
     #[should_panic]
-    fn build_empty_from_length() {
+    fn empty() {
         let _ = RawBitVector::from_length(0);
     }
 }
@@ -250,7 +250,7 @@ mod from_str_failure_tests {
 
     #[test]
     #[should_panic]
-    fn build_empty_from_str() {
+    fn empty() {
         let _ = RawBitVector::from_str("");
     }
 
@@ -259,7 +259,7 @@ mod from_str_failure_tests {
 
 #[cfg(test)]
 mod access_success_tests {
-    use super::RawBitVector;
+    // well-tested in from_length_success_tests & from_str_success_tests
 }
 
 #[cfg(test)]
@@ -268,7 +268,7 @@ mod access_failure_tests {
 
     #[test]
     #[should_panic]
-    fn access_over_upper_bound() {
+    fn over_upper_bound() {
         let rbv = RawBitVector::from_length(2);
         let _ = rbv.access(2);
     }
@@ -278,41 +278,91 @@ mod access_failure_tests {
 mod set_bit_success_tests {
     use super::RawBitVector;
 
+    struct IndexBitPair(usize, bool);
 
+    macro_rules! parameterized_tests {
+        ($($name:ident: $value:expr,)*) => {
+        $(
+            #[test]
+            fn $name() {
+                let (in_s, bits_to_set, index_bit_pairs) = $value;
+                let mut rbv = RawBitVector::from_str(in_s);
 
-    #[test]
-    fn build_from_str() {
-        let rbv = RawBitVector::from_str("101");
-        assert_eq!(rbv.access(0), true);
-        assert_eq!(rbv.access(1), false);
-        assert_eq!(rbv.access(2), true);
+                for i in bits_to_set { rbv.set_bit(i) }
+
+                for IndexBitPair(i, bit) in index_bit_pairs {
+                    assert_eq!(rbv.access(i), bit);
+                }
+            }
+        )*
+        }
     }
 
-    #[test]
-    fn build_from_set_bit() {
-        let mut rbv = RawBitVector::from_length(2);
-        rbv.set_bit(1);
-        assert_eq!(rbv.access(0), false);
-        assert_eq!(rbv.access(1), true);
-    }
+    parameterized_tests! {
+        t1_1: ("0", vec!(),
+               vec!(
+                    IndexBitPair(0, false),
+                   )),
+        t1_2: ("0", vec!(0),
+               vec!(
+                    IndexBitPair(0, true),
+                   )),
+        t1_3: ("0", vec!(0, 0),
+               vec!(
+                    IndexBitPair(0, true),
+                   )),
+        t1_4: ("1", vec!(0),
+               vec!(
+                    IndexBitPair(0, true),
+                   )),
 
-    #[test]
-    fn build_from_str_with_set_bit() {
-        let mut rbv = RawBitVector::from_str("101");
-        rbv.set_bit(0);
-        rbv.set_bit(1);
-        assert_eq!(rbv.access(0), true);
-        assert_eq!(rbv.access(1), true);
-        assert_eq!(rbv.access(2), true);
-    }
+        t8_1: ("00000000", vec!(),
+               vec!(
+                    IndexBitPair(0, false),
+                    IndexBitPair(1, false),
+                    IndexBitPair(2, false),
+                    IndexBitPair(3, false),
+                    IndexBitPair(4, false),
+                    IndexBitPair(5, false),
+                    IndexBitPair(6, false),
+                    IndexBitPair(7, false),
+                   )),
+        t8_2: ("00000000", vec!(0, 2, 4, 6),
+               vec!(
+                    IndexBitPair(0, true),
+                    IndexBitPair(1, false),
+                    IndexBitPair(2, true),
+                    IndexBitPair(3, false),
+                    IndexBitPair(4, true),
+                    IndexBitPair(5, false),
+                    IndexBitPair(6, true),
+                    IndexBitPair(7, false),
+                   )),
 
-    #[test]
-    fn build_from_set_bit_on_same_bit_twice() {
-        let mut rbv = RawBitVector::from_length(2);
-        rbv.set_bit(1);
-        rbv.set_bit(1);
-        assert_eq!(rbv.access(0), false);
-        assert_eq!(rbv.access(1), true);
+        t9_1: ("000000000", vec!(),
+               vec!(
+                    IndexBitPair(0, false),
+                    IndexBitPair(1, false),
+                    IndexBitPair(2, false),
+                    IndexBitPair(3, false),
+                    IndexBitPair(4, false),
+                    IndexBitPair(5, false),
+                    IndexBitPair(6, false),
+                    IndexBitPair(7, false),
+                    IndexBitPair(8, false),
+                   )),
+        t9_2: ("000000000", vec!(0, 2, 4, 6, 8),
+               vec!(
+                    IndexBitPair(0, true),
+                    IndexBitPair(1, false),
+                    IndexBitPair(2, true),
+                    IndexBitPair(3, false),
+                    IndexBitPair(4, true),
+                    IndexBitPair(5, false),
+                    IndexBitPair(6, true),
+                    IndexBitPair(7, false),
+                    IndexBitPair(8, true),
+                   )),
     }
 }
 
