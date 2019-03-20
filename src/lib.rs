@@ -13,21 +13,29 @@ pub mod succinct {
 
     pub struct BitVectorBuilder {
         n: usize,
-        set_bits: HashSet<usize>,
+        bits_set: HashSet<usize>,
     }
 
     impl BitVectorBuilder {
         pub fn from_length(length: usize) -> BitVectorBuilder {
-            BitVectorBuilder { n: length, set_bits: HashSet::new() }
+            BitVectorBuilder { n: length, bits_set: HashSet::new() }
         }
+
         pub fn from_str(bit_vector_str: &str) -> BitVectorBuilder {
             let bv_str = BitVectorString::new(bit_vector_str);
 
-            BitVectorBuilder { n: bv_str.s.len(), set_bits: HashSet::new() }
+            let mut set_bits = HashSet::new();
+            for (i, c) in bv_str.s.chars().enumerate() {
+                if c == '1' { set_bits.insert(i); };
+            }
+
+            BitVectorBuilder { n: bv_str.s.len(), bits_set: set_bits }
         }
 
-        pub fn set_bit(&self, i: usize) -> BitVectorBuilder {
-            BitVectorBuilder{}
+        // TODO copy every time when set_bit() called?
+        pub fn set_bit(mut self, i: usize) -> BitVectorBuilder {
+            self.bits_set.insert(i);
+            self
         }
 
         pub fn build(&self) -> BitVector {
