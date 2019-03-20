@@ -23,6 +23,10 @@ pub mod succinct {
 
         pub fn build(&self) -> BitVector {}
     }
+
+    struct BitVectorString {
+        str: String,
+    }
 }
 
 #[cfg(test)]
@@ -68,6 +72,14 @@ mod build_and_access_success_tests {
 #[cfg(test)]
 mod build_and_access_failure_tests {
     use super::succinct::BitVectorBuilder;
+
+    #[test]
+    #[should_panic]
+    fn set_bit_over_upper_bound_causes_panic() {
+        let _ = BitVectorBuilder::from_length(2)
+            .set_bit(2)
+            .build();
+    }
 
     #[test]
     #[should_panic]
