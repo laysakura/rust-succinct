@@ -15,7 +15,7 @@ pub mod succinct {
 
     impl BitVectorBuilder {
         pub fn from_length(length: u64) -> BitVectorBuilder {}
-        pub fn from_str_repr(bit_vector_str: &str) -> BitVectorBuilder {
+        pub fn from_str(bit_vector_str: &str) -> BitVectorBuilder {
             // TODO BitVectorString に変換して処理
         }
 
@@ -27,6 +27,18 @@ pub mod succinct {
     struct BitVectorString {
         str: String,
     }
+
+    impl BitVectorString {
+        fn new(str: &str) {
+            for c in str.chars() {
+                match c {
+                    '0' => (),
+                    '1' => (),
+                    _ => panic!("`str` must consist of '0' or '1'. '{}' included.", c),
+                }
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -34,14 +46,14 @@ mod build_and_access_success_tests {
     use super::succinct::BitVectorBuilder;
 
     #[test]
-    fn build_works() {
+    fn build() {
         let bv = BitVectorBuilder::from_length(2).build();
         assert_eq!(bv.access(0), false);
         assert_eq!(bv.access(1), false);
     }
 
     #[test]
-    fn build_by_set_bit() {
+    fn build_from_set_bit() {
         let bv = BitVectorBuilder::from_length(2)
             .set_bit(1)
             .build();
@@ -50,16 +62,16 @@ mod build_and_access_success_tests {
     }
 
     #[test]
-    fn build_by_str() {
-        let bv = BitVectorBuilder::from_str_repr("101").build();
+    fn build_from_str() {
+        let bv = BitVectorBuilder::from_str("101").build();
         assert_eq!(bv.access(0), true);
         assert_eq!(bv.access(1), false);
         assert_eq!(bv.access(2), true);
     }
 
     #[test]
-    fn build_by_str_with_set_bit() {
-        let bv = BitVectorBuilder::from_str_repr("101")
+    fn build_from_str_with_set_bit() {
+        let bv = BitVectorBuilder::from_str("101")
             .set_bit(0)
             .set_bit(1)
             .build();
@@ -75,7 +87,42 @@ mod build_and_access_failure_tests {
 
     #[test]
     #[should_panic]
-    fn set_bit_over_upper_bound_causes_panic() {
+    fn build_empty_from_length() {
+        let bv = BitVectorBuilder::from_length(0).build();
+    }
+
+    #[test]
+    #[should_panic]
+    fn build_empty_from_str() {
+        let bv = BitVectorBuilder::from_str("").build();
+    }
+
+    macro_rules! parameterized_build_from_invalid_str_tests {
+        ($($name:ident: $value:expr,)*) => {
+        $(
+            #[test]
+            #[should_panic]
+            fn $name() {
+                let in_str = $value;
+                let _ = BitVectorBuilder::from_str(in_str).build();
+            }
+        )*
+        }
+    }
+
+    parameterized_build_from_invalid_str_tests! {
+        str1: " ",
+    }
+
+    #[test]
+    #[should_panic]
+    fn build_from_invalid_str() {
+        let _ = BitVectorBuilder::from_str("").build();
+    }
+
+    #[test]
+    #[should_panic]
+    fn set_bit_over_upper_bound() {
         let _ = BitVectorBuilder::from_length(2)
             .set_bit(2)
             .build();
@@ -83,7 +130,7 @@ mod build_and_access_failure_tests {
 
     #[test]
     #[should_panic]
-    fn access_over_upper_bound_causes_panic() {
+    fn access_over_upper_bound() {
         let bv = BitVectorBuilder::from_length(2).build();
         let _ = bv.access(2);
     }
@@ -99,7 +146,7 @@ mod rank_success_tests {
             #[test]
             fn $name() {
                 let (in_bv_str, in_i, expected_rank) = $value;
-                assert_eq!(BitVectorBuilder::from_str_repr(in_bv_str).build().rank(in_i), expected_rank);
+                assert_eq!(BitVectorBuilder::from_str(in_bv_str).build().rank(in_i), expected_rank);
             }
         )*
         }
@@ -134,7 +181,7 @@ mod rank_failure_tests {
 
     #[test]
     #[should_panic]
-    fn rank_over_upper_bound_causes_panic() {
+    fn rank_over_upper_bound() {
         let bv = BitVectorBuilder::from_length(2).build();
         let _ = bv.rank(2);
     }
