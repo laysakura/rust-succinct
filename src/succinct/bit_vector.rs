@@ -6,9 +6,14 @@ pub struct BitVector {
 }
 
 impl BitVector {
-    pub fn access(&self, i: usize) -> bool { true }
+    pub fn access(&self, i: usize) -> bool { self.rbv.access(i) }
 
-    pub fn rank(&self, i: usize) -> usize { 0 }
+    pub fn rank(&self, i: usize) -> usize {
+        // TODO O(1) impl
+        (0.. (i + 1)).fold(0, |sum, j|
+            sum + if self.access(j) { 1 } else { 0 }
+        )
+    }
 }
 
 enum BitVectorSeed {
@@ -162,9 +167,9 @@ mod rank_success_tests {
 
         rank6_1: ("10010", 0, 1),
         rank6_2: ("10010", 1, 1),
-        rank6_3: ("10010", 0, 1),
-        rank6_4: ("10010", 1, 2),
-        rank6_5: ("10010", 0, 2),
+        rank6_3: ("10010", 2, 1),
+        rank6_4: ("10010", 3, 2),
+        rank6_5: ("10010", 4, 2),
     }
 }
 
