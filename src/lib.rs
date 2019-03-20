@@ -14,7 +14,12 @@ pub mod succinct {
     }
 
     impl BitVectorBuilder {
-        pub fn new(n: u64) -> BitVectorBuilder {}
+        pub fn from_length(length: u64) -> BitVectorBuilder {}
+        pub fn from_str_repr(bit_vector_str: &str) -> BitVectorBuilder {
+            // TODO BitVectorString に変換して処理
+        }
+
+        pub fn set_bit(&self, i: u64) -> BitVectorBuilder {}
 
         pub fn build(&self) -> BitVector {}
     }
@@ -26,14 +31,14 @@ mod build_and_access_success_tests {
 
     #[test]
     fn build_works() {
-        let bv = BitVectorBuilder::new(2).build();
+        let bv = BitVectorBuilder::from_length(2).build();
         assert_eq!(bv.access(0), false);
         assert_eq!(bv.access(1), false);
     }
 
     #[test]
     fn build_by_set_bit() {
-        let bv = BitVectorBuilder::new(2)
+        let bv = BitVectorBuilder::from_length(2)
             .set_bit(1)
             .build();
         assert_eq!(bv.access(0), false);
@@ -42,7 +47,7 @@ mod build_and_access_success_tests {
 
     #[test]
     fn build_by_str() {
-        let bv = BitVectorBuilder::new("101").build();
+        let bv = BitVectorBuilder::from_str_repr("101").build();
         assert_eq!(bv.access(0), true);
         assert_eq!(bv.access(1), false);
         assert_eq!(bv.access(2), true);
@@ -50,7 +55,7 @@ mod build_and_access_success_tests {
 
     #[test]
     fn build_by_str_with_set_bit() {
-        let bv = BitVectorBuilder::new("101")
+        let bv = BitVectorBuilder::from_str_repr("101")
             .set_bit(0)
             .set_bit(1)
             .build();
@@ -67,7 +72,7 @@ mod build_and_access_failure_tests {
     #[test]
     #[should_panic]
     fn access_over_upper_bound_causes_panic() {
-        let bv = BitVectorBuilder::new(2).build();
+        let bv = BitVectorBuilder::from_length(2).build();
         let _ = bv.access(2);
     }
 }
@@ -82,7 +87,7 @@ mod rank_success_tests {
             #[test]
             fn $name() {
                 let (in_bv_str, in_i, expected_rank) = $value;
-                assert_eq!(BitVectorBuilder::new(in_bv_str).build().rank(in_i), expected_rank);
+                assert_eq!(BitVectorBuilder::from_str_repr(in_bv_str).build().rank(in_i), expected_rank);
             }
         )*
         }
@@ -118,7 +123,7 @@ mod rank_failure_tests {
     #[test]
     #[should_panic]
     fn rank_over_upper_bound_causes_panic() {
-        let bv = BitVectorBuilder::new(2).build();
+        let bv = BitVectorBuilder::from_length(2).build();
         let _ = bv.rank(2);
     }
 }
