@@ -1,5 +1,5 @@
 [package]
-name = "succinct-bit-vector"
+name = "rust-succinct"
 version = "0.1.0"
 authors = ["Sho Nakatani <lay.sakura@gmail.com>"]
 edition = "2018"
