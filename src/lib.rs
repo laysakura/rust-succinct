@@ -32,14 +32,9 @@ pub mod succinct {
         }
     }
 
-    struct BitVectorString {
-        s: String,
-    }
+    struct BitVectorString { s: String }
 
     impl BitVectorString {
-        fn assert_valid_str(s: &str) {
-        }
-
         fn new(s: &str) -> BitVectorString {
             // TODO split into procedure like `assert_valid_str`
             // should not be empty
