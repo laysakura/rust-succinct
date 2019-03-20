@@ -1,7 +1,7 @@
 mod internal_data_structure;
 
 use std::collections::HashSet;
-use internal_data_structure::BitVectorString;
+use internal_data_structure::bit_vector_string::BitVectorString;
 
 pub struct BitVector {
     // internal representation
