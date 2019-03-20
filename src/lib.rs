@@ -18,7 +18,8 @@ pub mod succinct {
             BitVectorBuilder{}
         }
         pub fn from_str(bit_vector_str: &str) -> BitVectorBuilder {
-            // TODO BitVectorString に変換して処理
+            let bv_str = BitVectorString::new(bit_vector_str);
+
             BitVectorBuilder{}
         }
 
