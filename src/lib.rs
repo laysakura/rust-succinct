@@ -112,6 +112,13 @@ mod build_and_access_failure_tests {
 
     parameterized_build_from_invalid_str_tests! {
         str1: " ",
+        str2: " 0",
+        str3: "0 ",
+        str4: "1 0",
+        str5: "０",
+        str6: "１",
+        str7: "012",
+        str8: "01二",
     }
 
     #[test]
