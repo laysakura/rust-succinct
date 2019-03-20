@@ -4,9 +4,9 @@ pub mod succinct {
     }
 
     impl BitVector {
-        pub fn access(&self, i: u64) -> bool {}
+        pub fn access(&self, i: u64) -> bool { true }
 
-        pub fn rank(&self, i: u64) -> u64 {}
+        pub fn rank(&self, i: u64) -> u64 { 0 }
     }
 
     pub struct BitVectorBuilder {
@@ -14,14 +14,21 @@ pub mod succinct {
     }
 
     impl BitVectorBuilder {
-        pub fn from_length(length: u64) -> BitVectorBuilder {}
+        pub fn from_length(length: u64) -> BitVectorBuilder {
+            BitVectorBuilder{}
+        }
         pub fn from_str(bit_vector_str: &str) -> BitVectorBuilder {
             // TODO BitVectorString に変換して処理
+            BitVectorBuilder{}
         }
 
-        pub fn set_bit(&self, i: u64) -> BitVectorBuilder {}
+        pub fn set_bit(&self, i: u64) -> BitVectorBuilder {
+            BitVectorBuilder{}
+        }
 
-        pub fn build(&self) -> BitVector {}
+        pub fn build(&self) -> BitVector {
+            BitVector{}
+        }
     }
 
     struct BitVectorString {
@@ -88,13 +95,13 @@ mod build_and_access_failure_tests {
     #[test]
     #[should_panic]
     fn build_empty_from_length() {
-        let bv = BitVectorBuilder::from_length(0).build();
+        let _ = BitVectorBuilder::from_length(0).build();
     }
 
     #[test]
     #[should_panic]
     fn build_empty_from_str() {
-        let bv = BitVectorBuilder::from_str("").build();
+        let _ = BitVectorBuilder::from_str("").build();
     }
 
     macro_rules! parameterized_build_from_invalid_str_tests {
