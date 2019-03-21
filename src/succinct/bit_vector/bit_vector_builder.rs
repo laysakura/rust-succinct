@@ -1,5 +1,5 @@
 use std::collections::HashSet;
-use super::{BitVector, BitVectorBuilder, BitVectorSeed};
+use super::{BitVector, BitVectorBuilder, BitVectorSeed, BitVectorString};
 use crate::succinct::internal_data_structure::raw_bit_vector::RawBitVector;
 
 impl super::BitVectorBuilder {
@@ -7,8 +7,8 @@ impl super::BitVectorBuilder {
         BitVectorBuilder { seed: BitVectorSeed::Length(length), bits_set: HashSet::new() }
     }
 
-    pub fn from_str(bit_vector_str: &str) -> BitVectorBuilder {
-        BitVectorBuilder { seed: BitVectorSeed::Str(String::from(bit_vector_str)), bits_set: HashSet::new() }
+    pub fn from_str(bit_vector_str: BitVectorString) -> BitVectorBuilder {
+        BitVectorBuilder { seed: BitVectorSeed::Str(bit_vector_str), bits_set: HashSet::new() }
     }
 
     pub fn set_bit(&mut self, i: usize) -> &mut BitVectorBuilder {
@@ -19,7 +19,7 @@ impl super::BitVectorBuilder {
     pub fn build(&self) -> BitVector {
         let mut rbv = match &self.seed {
             BitVectorSeed::Length(n) => RawBitVector::from_length(*n),
-            BitVectorSeed::Str(s) => RawBitVector::from_str(s),
+            BitVectorSeed::Str(bvs) => RawBitVector::from_str(bvs),
         };
         for bit in &self.bits_set { rbv.set_bit(*bit) }
         BitVector { rbv }
@@ -92,7 +92,7 @@ mod builder_from_length_failure_tests {
 
 #[cfg(test)]
 mod builder_from_str_success_tests {
-    use super::BitVectorBuilder;
+    use super::{BitVectorBuilder, BitVectorString};
 
     struct IndexBitPair(usize, bool);
 
@@ -102,7 +102,7 @@ mod builder_from_str_success_tests {
             #[test]
             fn $name() {
                 let (in_s, index_bit_pairs) = $value;
-                let bv = BitVectorBuilder::from_str(in_s).build();
+                let bv = BitVectorBuilder::from_str(BitVectorString { s: String::from(in_s) }).build();
                 for IndexBitPair(i, bit) in index_bit_pairs {
                     assert_eq!(bv.access(i), bit);
                 }
@@ -205,20 +205,12 @@ mod builder_from_str_success_tests {
 
 #[cfg(test)]
 mod builder_from_str_failure_tests {
-    use super::BitVectorBuilder;
-
-    #[test]
-    #[should_panic]
-    fn empty() {
-        let _ = BitVectorBuilder::from_str("").build();
-    }
-
     // well-tested in BitVectorString
 }
 
 #[cfg(test)]
 mod set_bit_success_tests {
-    use super::BitVectorBuilder;
+    use super::{BitVectorBuilder, BitVectorString};
 
     struct IndexBitPair(usize, bool);
 
@@ -228,7 +220,7 @@ mod set_bit_success_tests {
             #[test]
             fn $name() {
                 let (in_s, bits_to_set, index_bit_pairs) = $value;
-                let mut builder = BitVectorBuilder::from_str(in_s);
+                let mut builder = BitVectorBuilder::from_str(BitVectorString { s: String::from(in_s) });
 
                 for i in bits_to_set { builder.set_bit(i); }
                 let bv = builder.build();

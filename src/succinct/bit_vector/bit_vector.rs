@@ -30,7 +30,7 @@ mod access_failure_tests {
 
 #[cfg(test)]
 mod rank_success_tests {
-    use super::super::BitVectorBuilder;
+    use super::super::{BitVectorBuilder, BitVectorString};
 
     macro_rules! parameterized_tests {
         ($($name:ident: $value:expr,)*) => {
@@ -38,7 +38,10 @@ mod rank_success_tests {
             #[test]
             fn $name() {
                 let (in_bv_str, in_i, expected_rank) = $value;
-                assert_eq!(BitVectorBuilder::from_str(in_bv_str).build().rank(in_i), expected_rank);
+                assert_eq!(
+                    BitVectorBuilder::from_str(BitVectorString { s: String::from(in_bv_str) })
+                        .build().rank(in_i),
+                    expected_rank);
             }
         )*
         }

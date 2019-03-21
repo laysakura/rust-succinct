@@ -16,9 +16,7 @@ impl RawBitVector {
         }
     }
 
-    pub fn from_str(bit_vector_str: &str) -> RawBitVector {
-        let bit_vector_str = BitVectorString::new(bit_vector_str);
-
+    pub fn from_str(bit_vector_str: &BitVectorString) -> RawBitVector {
         let mut rbv = RawBitVector::from_length(bit_vector_str.s.len());
         for (i, c) in bit_vector_str.s.chars().enumerate() {
             if c == '1' { rbv.set_bit(i); };
@@ -133,6 +131,7 @@ mod from_length_failure_tests {
 
 #[cfg(test)]
 mod from_str_success_tests {
+    use crate::succinct::bit_vector::BitVectorString;
     use super::RawBitVector;
 
     struct IndexBitPair(usize, bool);
@@ -143,7 +142,7 @@ mod from_str_success_tests {
             #[test]
             fn $name() {
                 let (in_s, index_bit_pairs) = $value;
-                let rbv = RawBitVector::from_str(in_s);
+                let rbv = RawBitVector::from_str(&BitVectorString { s: String::from(in_s) });
                 for IndexBitPair(i, bit) in index_bit_pairs {
                     assert_eq!(rbv.access(i), bit);
                 }
@@ -246,14 +245,6 @@ mod from_str_success_tests {
 
 #[cfg(test)]
 mod from_str_failure_tests {
-    use super::RawBitVector;
-
-    #[test]
-    #[should_panic]
-    fn empty() {
-        let _ = RawBitVector::from_str("");
-    }
-
     // well-tested in BitVectorString
 }
 
@@ -276,6 +267,7 @@ mod access_failure_tests {
 
 #[cfg(test)]
 mod set_bit_success_tests {
+    use crate::succinct::bit_vector::BitVectorString;
     use super::RawBitVector;
 
     struct IndexBitPair(usize, bool);
@@ -286,7 +278,7 @@ mod set_bit_success_tests {
             #[test]
             fn $name() {
                 let (in_s, bits_to_set, index_bit_pairs) = $value;
-                let mut rbv = RawBitVector::from_str(in_s);
+                let mut rbv = RawBitVector::from_str(&BitVectorString { s: String::from(in_s) });
 
                 for i in bits_to_set { rbv.set_bit(i) }
 

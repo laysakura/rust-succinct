@@ -18,5 +18,5 @@ pub struct BitVectorString { pub s: String }
 
 enum BitVectorSeed {
     Length(usize),
-    Str(String),
+    Str(BitVectorString),
 }
