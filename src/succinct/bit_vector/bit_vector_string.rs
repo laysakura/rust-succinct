@@ -1,6 +1,6 @@
-pub struct BitVectorString { pub s: String }
+use super::BitVectorString;
 
-impl BitVectorString {
+impl super::BitVectorString {
     pub fn new(s: &str) -> BitVectorString {
         // TODO split into procedure like `assert_valid_str`
         // should not be empty
@@ -21,7 +21,7 @@ impl BitVectorString {
 
 #[cfg(test)]
 mod new_success_tests {
-    use super::BitVectorString;
+    use super::super::BitVectorString;
 
     macro_rules! parameterized_from_valid_str_tests {
         ($($name:ident: $value:expr,)*) => {
@@ -48,7 +48,7 @@ mod new_success_tests {
 
 #[cfg(test)]
 mod new_failure_tests {
-    use super::BitVectorString;
+    use super::super::BitVectorString;
 
     #[test]
     #[should_panic]

@@ -1,4 +1,4 @@
-use super::bit_vector_string::BitVectorString;
+use crate::succinct::bit_vector::BitVectorString;
 
 pub struct RawBitVector {
     byte_vec: Vec<u8>,
