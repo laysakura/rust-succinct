@@ -29,6 +29,10 @@ impl BitVector {
             sum + if self.access(j) { 1 } else { 0 }
         )
     }
+
+    fn chunk_size(&self) -> u16 {
+        super::chunk_size(self.n)
+    }
 }
 
 #[cfg(test)]

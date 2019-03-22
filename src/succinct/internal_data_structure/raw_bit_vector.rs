@@ -7,16 +7,23 @@ pub struct RawBitVector {
 }
 
 impl RawBitVector {
+    /// Makes a bit vector of `length`, willed with 0.
+    ///
+    /// # Panics
+    /// When _`length` == 0_.
     pub fn from_length(length: u64) -> RawBitVector {
         if length == 0 { panic!("length must be > 0.") };
 
         let last_byte_len_or_0 = (length % 8) as u8;
+        let last_byte_len = if last_byte_len_or_0 == 0 { 8 } else { last_byte_len_or_0 };
+
         RawBitVector {
             byte_vec: vec![0; (length / 8 + 1) as usize],
-            last_byte_len: if last_byte_len_or_0 == 0 { 8 } else { last_byte_len_or_0 },
+            last_byte_len,
         }
     }
 
+    /// Makes a bit vector from `BitVectorString` representation.
     pub fn from_str(bit_vector_str: &BitVectorString) -> RawBitVector {
         let mut rbv = RawBitVector::from_length(bit_vector_str.s.len() as u64);
         for (i, c) in bit_vector_str.s.chars().enumerate() {
@@ -25,6 +32,10 @@ impl RawBitVector {
         rbv
     }
 
+    /// Returns i-th bit.
+    ///
+    /// # Panics
+    /// When _`i` >= `self.length()`_.
     pub fn access(&self, i: u64) -> bool {
         self.validate_index(i);
         let byte = self.byte_vec[(i / 8) as usize];
@@ -41,6 +52,10 @@ impl RawBitVector {
         }
     }
 
+    /// Set 1 to i-th bit.
+    ///
+    /// # Panics
+    /// When _`i` >= `self.length()`_.
     pub fn set_bit(&mut self, i: u64) {
         self.validate_index(i);
         let byte = self.byte_vec[(i / 8) as usize];
@@ -57,12 +72,75 @@ impl RawBitVector {
         }
     }
 
-    fn bit_length(&self) -> u64 {
+    /// Returns length.
+    pub fn length(&self) -> u64 {
         (self.byte_vec.len() as u64 - 1) * 8 + (self.last_byte_len as u64)
     }
 
+    /// Returns popcount of whole this BitVector.
+    pub fn popcount(&self) -> u64 {
+        self.byte_vec.iter().fold(0, |popcnt: u64, byte| byte.count_ones() as u64 + popcnt)
+    }
+
+    /// Makes another RawBitVector from _[`i`, `i` + `size`)_ of self.
+    ///
+    /// # Panics
+    /// When:
+    ///
+    /// - _`i` + `size` >= `self.length()`_
+    /// - _`size` == 0_
+    pub fn copy_sub(&self, i: u64, size: u64) -> RawBitVector {
+        if i + size >= self.length() { panic!("i + size must be < self.length(); i = {}, size = {}, self.length() = {}", i, size, self.length()) };
+        if size == 0 { panic!("length must be > 0") };
+
+        let mut sub_byte_vec: Vec<u8> = Vec::with_capacity(size as usize / 8 + 1);
+
+        // Memo for implementation: Assume `self.byte_vec == 00000000 11111111 0000`
+        for (i_sub_byte_vec, i_byte_vec) in ((i as usize / 8)..= (i + size) as usize / 8).enumerate() {
+            let sub_byte: u8 = if i % 8 == 0 {
+                // When `i == 0 or 8 or 16`
+                self.byte_vec[i_byte_vec]
+            } else if i_byte_vec <= self.byte_vec.len() - 2 {
+                // When  `i == [1, 7] or [9, 15]` and `i_byte_vec == 0 or 1`
+                let (part1, part2) = (self.byte_vec[i_byte_vec], self.byte_vec[i_byte_vec + 1]);
+                match i % 8 {
+                    1 => ((part1 & 0b0111_1111) << 1) | (part2 & 0b0000_0001),
+                    2 => ((part1 & 0b0011_1111) << 2) | (part2 & 0b0000_0011),
+                    3 => ((part1 & 0b0001_1111) << 3) | (part2 & 0b0000_0111),
+                    4 => ((part1 & 0b0000_1111) << 4) | (part2 & 0b0000_1111),
+                    5 => ((part1 & 0b0000_0111) << 5) | (part2 & 0b0001_1111),
+                    6 => ((part1 & 0b0000_0011) << 6) | (part2 & 0b0011_1111),
+                    7 => ((part1 & 0b0000_0001) << 7) | (part2 & 0b0111_1111),
+                    _ => panic!("never happen"),
+                }
+            } else {
+                let byte = self.byte_vec[i_byte_vec];
+                match (i + size) % 8{
+                    1 => byte & 0b1000_0000,
+                    2 => byte & 0b1100_0000,
+                    3 => byte & 0b1110_0000,
+                    4 => byte & 0b1111_0000,
+                    5 => byte & 0b1111_1000,
+                    6 => byte & 0b1111_1100,
+                    7 => byte & 0b1111_1110,
+                    0 => byte & 0b1111_1111,
+                    _ => panic!("never happen"),
+                }
+            };
+            sub_byte_vec[i_sub_byte_vec] = sub_byte;
+        }
+
+        let last_byte_len_or_0 = ((i + size) % 8) as u8;
+        let last_byte_len = if last_byte_len_or_0 == 0 { 8 } else { last_byte_len_or_0 };
+
+        RawBitVector {
+            byte_vec: sub_byte_vec,
+            last_byte_len,
+        }
+    }
+
     fn validate_index(&self, i: u64) {
-        if i >= self.bit_length() { panic!("`i` must be smaller than {} (length of RawBitVector)", self.bit_length()) };
+        if i >= self.length() { panic!("`i` must be smaller than {} (length of RawBitVector)", self.length()) };
     }
 }
 

@@ -67,6 +67,12 @@ use super::internal_data_structure::popcount_table::PopcountTable;
 /// TODO Explain about Chunk, Block, and Table.
 ///
 pub struct BitVector {
+    /// Length.
+    n: u64,
+
+    /// Raw data.
+    rbv: RawBitVector,
+
     /// Total _popcount_ of _[0, (last bit of the chunk)]_.
     ///
     /// Each chunk takes _2^64_ at max (when every 64 bit is '1' for BitVector of length of _2^64_).
@@ -91,4 +97,19 @@ pub struct BitVectorString { pub s: String }
 enum BitVectorSeed {
     Length(u64),
     Str(BitVectorString),
+}
+
+fn chunk_size(n: u64) -> u16 {
+    let lg2 = log2(n) as u16;
+    let sz = lg2 * lg2;
+    if sz == 0 { 1 } else { sz }
+}
+
+fn block_size(n: u64) -> u8 {
+    let sz = log2(n) / 2;
+    if sz == 0 { 1 } else { sz }
+}
+
+fn log2(n: u64) -> u8 {
+    (n as f64).log2() as u8
 }

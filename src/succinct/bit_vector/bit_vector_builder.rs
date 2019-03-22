@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 use super::{BitVector, BitVectorBuilder, BitVectorSeed, BitVectorString};
 use crate::succinct::internal_data_structure::raw_bit_vector::RawBitVector;
+use crate::succinct::internal_data_structure::popcount_table::PopcountTable;
 
 impl super::BitVectorBuilder {
     pub fn from_length(length: u64) -> BitVectorBuilder {
@@ -23,18 +24,17 @@ impl super::BitVectorBuilder {
         };
         for bit in &self.bits_set { rbv.set_bit(*bit) }
 
-        let n = &rbv.length();
+        let n = rbv.length();
 
         // chunks を作る（chunkは、その要素がpopcountの合計であるものを指す）
-        let chunk_size = n.log2() * n.log2();
-        let chunk_size = if chunk_size == 0 { 1 } else { chunk_size };
-        let chunks_cnt = n / chunk_size + if n % chunk_size == 0 { 0 } else { 1 };
+        let chunk_size: u16 = super::chunk_size(n);
+        let chunks_cnt: u64 = n / (chunk_size as u64) + if n % (chunk_size as u64) == 0 { 0 } else { 1 };  // At max: N / (log N)^2 = 2^64 / 64^2 = 2^(64-12)
         // Each chunk takes 2^64 at max (when every 64 bit is 1 for BitVector of length of 2^64)
-        let chunks: Vec<u64> = Vec::with_capacity(chunks_cnt);
-        for i in (0.. chunks_cnt) {
+        let mut chunks: Vec<u64> = Vec::with_capacity(chunks_cnt as usize);
+        for i in 0.. (chunks_cnt as usize) {
             let chunk_rbv = rbv.copy_sub(
-                i * chunk_size,
-                if i == chunks_cnt - 1 { n % chunk_size } else { chunk_size }
+                i as u64 * chunk_size as u64,
+                if i as u64 == chunks_cnt - 1 { n % chunk_size as u64 } else { chunk_size as u64 }
             );
 
             let popcount_in_chunk = chunk_rbv.popcount();
@@ -43,32 +43,30 @@ impl super::BitVectorBuilder {
 
         // blocks を作る。
         // （blockの定義からして当然だが）chunkを境として0から数える。それにより空間計算量を節約できる。
-        let block_size = n.log2() / 2;
-        let block_size = if block_size == 0 { 1 } else { block_size };
-        let blocks_cnt = n / block_size + if n % block_size == 0 { 0 } else { 1 };
+        let block_size: u8 = super::block_size(n);
+        let blocks_cnt = n / (block_size as u64) + if n % (block_size as u64) == 0 { 0 } else { 1 };
         // Each block takes (log 2^64)^2 = 64^2 = 2^16 at max (when every bit in a chunk is 1 for BitVector of length of 2^64)
-        let blocks: Vec<u16> = Vec::with_capacity(blocks_cnt);
-        for i in (0.. chunks_cnt) {
-            for j in (0.. blocks_cnt) {
+        let mut blocks: Vec<u16> = Vec::with_capacity(blocks_cnt as usize);
+        for i in 0.. (chunks_cnt as usize) {
+            for j in 0.. (blocks_cnt as usize) {
                 let block_rbv = rbv.copy_sub(
-                    i * chunk_size + j * block_size,
-                    if i == chunks_cnt - 1 && j == blocks_cnt - 1 {
-                        n % block_size
+                    i as u64 * chunk_size as u64 + j as u64 * block_size as u64,
+                    if i as u64 == chunks_cnt - 1 && j as u64 == blocks_cnt - 1 {
+                        n % block_size as u64
                     } else {
-                        block_size
+                        block_size as u64
                     }
                 );
 
-                let popcount_in_block = block_rbv.popcount();
-                blocks[i * chunk_size + j] = popcount_in_block + if i == 0 { 0 } else { blocks[i - 1] };
+                let popcount_in_block = block_rbv.popcount() as u16;
+                blocks[i * chunk_size as usize + j] = popcount_in_block + if i == 0 { 0 } else { blocks[i - 1] };
             }
         }
 
         // tableを作る
         let popcount_table = PopcountTable::new(block_size);
 
-
-        BitVector { chunks, blocks, popcount_table }
+        BitVector { n, rbv, chunks, blocks, popcount_table }
     }
 }
 
