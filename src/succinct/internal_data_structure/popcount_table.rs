@@ -1,13 +1,21 @@
+/// Cache table of `popcount` results.
 pub struct PopcountTable {
     bit_length: u8,
 
-    // table[target] == target.popcount()
+    /// `table[target_num] == target_num.popcount()`
     table: Vec<u8>,
 }
 
 impl PopcountTable {
-    // 絶対に、O(N)での構築じゃないとだめ
-    // とるのは [1, 64]
+    /// Constructor.
+    ///
+    /// Time-complexity:  `O(bit_length)` (Assuming `u64::count_ones()` takes `O(1)`)
+    /// Space-complexity: `O(bit_length)`
+    ///
+    /// `bit_length` must be in [1, 64].
+    ///
+    /// # Panics
+    /// When `bit_length` is out of [1, 64].
     pub fn new(bit_length: u8) -> PopcountTable {
         if bit_length == 0 || 64 < bit_length { panic!("bit_length (= {}) must be in [1, 64]", bit_length) };
 
@@ -18,8 +26,10 @@ impl PopcountTable {
         }
     }
 
-    // とるのは 0 ~ 2^64 - 1
-    // 返すのは0~64
+    /// Returns the same value as `target.count_ones()` in `O(1)`.
+    ///
+    /// # Panics
+    /// When `target` is out of [0, 2^ `self.bit_length` ).
     pub fn popcount(&self, target: u64) -> u8 {
         if target > (1 << self.bit_length - 1) { panic!("target must be < 2^{}, while PopcountTable::bit_length = {}", self.bit_length, self.bit_length) };
 
