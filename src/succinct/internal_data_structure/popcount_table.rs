@@ -77,7 +77,7 @@ mod popcount_success_tests {
         bit_length4: 4,
         bit_length8: 8,
         bit_length16: 16,
-        // wants to test 32, 64, 128 but takes too long time
+        // wants to test 32, 64 but takes too long time
 
         bit_length15: 15,
         bit_length17: 17,

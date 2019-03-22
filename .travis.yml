@@ -11,8 +11,8 @@ os:
 cache: cargo
 
 script:
-  - cargo build --verbose --all
-  - cargo test --verbose --all
+  - cargo build --release --verbose --all
+  - cargo test --release --verbose --all
 
 branches:
   only:
