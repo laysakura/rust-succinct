@@ -1,0 +1,117 @@
+pub struct PopcountTable {
+    bit_length: u8,
+
+    // table[target] == target.popcount()
+    table: Vec<u8>,
+}
+
+impl PopcountTable {
+    // 絶対に、O(N)での構築じゃないとだめ
+    // とるのは [1, 128]
+    pub fn new(bit_length: u8) -> PopcountTable {
+        if bit_length == 0 || 128 < bit_length { panic!("bit_length (= {}) must be in [1, 128]", bit_length) };
+
+        let table = (0..= 1 << bit_length - 1).map(|target: u128| target.count_ones() as u8).collect();
+        PopcountTable {
+            bit_length,
+            table,
+        }
+    }
+
+    // とるのは 0 ~ 2^128 - 1
+    // 返すのは0~128
+    pub fn popcount(&self, target: u128) -> u8 {
+        if target >= 1 << self.bit_length { panic!("target must be < 2^{}, while PopcountTable::bit_length = {}", self.bit_length, self.bit_length) };
+
+        self.table[target as usize]
+    }
+}
+
+#[cfg(test)]
+mod new_success_tests {
+    // well-tested in popcount_success_tests
+}
+
+#[cfg(test)]
+mod new_failure_tests {
+    use super::PopcountTable;
+
+    #[test]
+    #[should_panic]
+    fn new_0() {
+        let _ = PopcountTable::new(0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn new_129() {
+        let _ = PopcountTable::new(129);
+    }
+}
+
+#[cfg(test)]
+mod popcount_success_tests {
+    use std::ops::RangeInclusive;
+    use super::PopcountTable;
+
+    macro_rules! parameterized_tests {
+        ($($name:ident: $value:expr,)*) => {
+        $(
+            #[test]
+            fn $name() {
+                let bit_length = $value;
+                let tbl = PopcountTable::new(bit_length);
+
+                let range: RangeInclusive<u128> = 0..= (1 << bit_length - 1);
+                for target in range {
+                    // TODO 2**32 は target として取るとpanicすべき
+                    assert_eq!(tbl.popcount(target), target.count_ones() as u8);
+                }
+            }
+        )*
+        }
+    }
+
+    parameterized_tests! {
+        bit_length1: 1,
+        bit_length2: 2,
+        bit_length4: 4,
+        bit_length8: 8,
+        bit_length16: 16,
+        // wants to test 32, 64, 128 but takes too long time
+
+        bit_length15: 15,
+        bit_length17: 17,
+    }
+}
+
+#[cfg(test)]
+mod popcount_failure_tests {
+    use std::ops::RangeInclusive;
+    use super::PopcountTable;
+
+    macro_rules! parameterized_tests {
+        ($($name:ident: $value:expr,)*) => {
+        $(
+            #[test]
+            #[should_panic]
+            fn $name() {
+                let bit_length = $value;
+                let tbl = PopcountTable::new(bit_length);
+                let _ = tbl.popcount(1 << bit_length);
+            }
+        )*
+        }
+    }
+
+    parameterized_tests! {
+        bit_length1: 1,
+        bit_length2: 2,
+        bit_length4: 4,
+        bit_length8: 8,
+        bit_length16: 16,
+
+        bit_length15: 15,
+        bit_length17: 17,
+    }
+}
