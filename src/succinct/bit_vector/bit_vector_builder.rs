@@ -16,6 +16,8 @@ impl super::BitVectorBuilder {
         self
     }
 
+    /// O(N)
+    ///
     pub fn build(&self) -> BitVector {
         let mut rbv = match &self.seed {
             BitVectorSeed::Length(n) => RawBitVector::from_length(*n),
