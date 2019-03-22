@@ -1,9 +1,17 @@
 use super::BitVector;
 
 impl BitVector {
+    /// Returns `i`-th element of the `BitVector`.
+    ///
+    /// # Panics
+    /// When _`i` >= length of the `BitVector`_.
     pub fn access(&self, i: u64) -> bool { self.rbv.access(i) }
 
-    pub fn rank(&self, i: u64) -> u64 {
+    /// Returns the number of _1_ in _[0, `i`]_ elements of the `BitVector`.
+    ///
+    /// # Panics
+    /// When _`i` >= length of the `BitVector`_.
+    pub fn rank(&self, i: u64) -> usize {
         // TODO O(1) impl
         (0.. (i + 1)).fold(0, |sum, j|
             sum + if self.access(j) { 1 } else { 0 }
