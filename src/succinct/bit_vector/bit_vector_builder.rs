@@ -32,13 +32,28 @@ impl super::BitVectorBuilder {
         // Each chunk takes 2^64 at max (when every 64 bit is 1 for BitVector of length of 2^64)
         let mut chunks: Vec<u64> = Vec::with_capacity(chunks_cnt as usize);
         for i in 0.. (chunks_cnt as usize) {
+            let this_chunk_size: u16 =
+                if i as u64 == chunks_cnt - 1 {
+                        // When `chunk_size == 6`:
+                        //
+                        //  000 111 000 11   : rbv
+                        // |       |      |  : chunks
+                        //
+                        // Here, when `i == 1` (targeting on last '00011' chunk),
+                        // chunk_size == 5
+                        let chunk_size_or_0 = (n % chunk_size as u64) as u16;
+                        if chunk_size_or_0 == 0 { chunk_size } else { chunk_size_or_0 }
+                    } else {
+                        chunk_size
+                    };
+
             let chunk_rbv = rbv.copy_sub(
                 i as u64 * chunk_size as u64,
-                if i as u64 == chunks_cnt - 1 { n % chunk_size as u64 } else { chunk_size as u64 }
+                this_chunk_size as u64,
             );
 
             let popcount_in_chunk = chunk_rbv.popcount();
-            chunks[i] = popcount_in_chunk + if i == 0 { 0 } else { chunks[i - 1] };
+            chunks.push(popcount_in_chunk + if i == 0 { 0 } else { chunks[i - 1] });
         }
 
         // blocks を作る。
@@ -48,7 +63,7 @@ impl super::BitVectorBuilder {
         // Each block takes (log 2^64)^2 = 64^2 = 2^16 at max (when every bit in a chunk is 1 for BitVector of length of 2^64)
         let mut blocks: Vec<u16> = Vec::with_capacity(blocks_cnt as usize);
         for i in 0.. (chunks_cnt as usize) {
-            for j in 0.. (blocks_cnt as usize) {
+            for j in 0.. ((blocks_cnt / chunks_cnt) as usize) {
                 let i_rbv = i as u64 * chunk_size as u64 + j as u64 * block_size as u64;
                 let this_block_size: u8 =
                     if i as u64 == chunks_cnt - 1 && j as u64 == blocks_cnt - 1 {
@@ -68,7 +83,7 @@ impl super::BitVectorBuilder {
                 let block_rbv = rbv.copy_sub(i_rbv, this_block_size as u64);
 
                 let popcount_in_block = block_rbv.popcount() as u16;
-                blocks[i * chunk_size as usize + j] = popcount_in_block + if i == 0 { 0 } else { blocks[i - 1] };  // TODO chunk内 blockは総和じゃないとバグってる気がする
+                blocks.push(popcount_in_block + if i == 0 { 0 } else { blocks[i - 1] });  // TODO chunk内 blockは総和じゃないとバグってる気がする
             }
         }
 

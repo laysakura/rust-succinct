@@ -90,17 +90,17 @@ impl RawBitVector {
     /// - _`i` + `size` >= `self.length()`_
     /// - _`size` == 0_
     pub fn copy_sub(&self, i: u64, size: u64) -> RawBitVector {
-        if i + size >= self.length() { panic!("i + size must be < self.length(); i = {}, size = {}, self.length() = {}", i, size, self.length()) };
+        if i + size > self.length() { panic!("i + size must be <= self.length(); i = {}, size = {}, self.length() = {}", i, size, self.length()) };
         if size == 0 { panic!("length must be > 0") };
 
         let mut sub_byte_vec: Vec<u8> = Vec::with_capacity(size as usize / 8 + 1);
 
         // Memo for implementation: Assume `self.byte_vec == 00000000 11111111 0000`
-        for (i_sub_byte_vec, i_byte_vec) in ((i as usize / 8)..= (i + size) as usize / 8).enumerate() {
+        for i_byte_vec in (i as usize / 8)..= (i + size) as usize / 8 {
             let sub_byte: u8 = if i % 8 == 0 {
                 // When `i == 0 or 8 or 16`
                 self.byte_vec[i_byte_vec]
-            } else if i_byte_vec <= self.byte_vec.len() - 2 {
+            } else if i_byte_vec < self.byte_vec.len() - 1 {
                 // When  `i == [1, 7] or [9, 15]` and `i_byte_vec == 0 or 1`
                 let (part1, part2) = (self.byte_vec[i_byte_vec], self.byte_vec[i_byte_vec + 1]);
                 match i % 8 {
@@ -127,7 +127,7 @@ impl RawBitVector {
                     _ => panic!("never happen"),
                 }
             };
-            sub_byte_vec[i_sub_byte_vec] = sub_byte;
+            sub_byte_vec.push(sub_byte);
         }
 
         let last_byte_len_or_0 = ((i + size) % 8) as u8;
