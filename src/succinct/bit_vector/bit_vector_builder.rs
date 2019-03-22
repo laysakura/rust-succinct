@@ -49,17 +49,26 @@ impl super::BitVectorBuilder {
         let mut blocks: Vec<u16> = Vec::with_capacity(blocks_cnt as usize);
         for i in 0.. (chunks_cnt as usize) {
             for j in 0.. (blocks_cnt as usize) {
-                let block_rbv = rbv.copy_sub(
-                    i as u64 * chunk_size as u64 + j as u64 * block_size as u64,
+                let i_rbv = i as u64 * chunk_size as u64 + j as u64 * block_size as u64;
+                let this_block_size: u8 =
                     if i as u64 == chunks_cnt - 1 && j as u64 == blocks_cnt - 1 {
-                        n % block_size as u64
+                        // When `chunk_size == 6` and `block_size == 3`:
+                        //
+                        //  000 111 000 11   : rbv in blocks
+                        // |       |      |  : chunks
+                        //
+                        // Here, when `i == 1` & `j == 1` (targeting on last '11' block),
+                        // block_size == 2
+                        let block_size_or_0 = (n % block_size as u64) as u8;
+                        if block_size_or_0 == 0 { block_size } else { block_size_or_0 }
                     } else {
-                        block_size as u64
-                    }
-                );
+                        block_size
+                    };
+
+                let block_rbv = rbv.copy_sub(i_rbv, this_block_size as u64);
 
                 let popcount_in_block = block_rbv.popcount() as u16;
-                blocks[i * chunk_size as usize + j] = popcount_in_block + if i == 0 { 0 } else { blocks[i - 1] };
+                blocks[i * chunk_size as usize + j] = popcount_in_block + if i == 0 { 0 } else { blocks[i - 1] };  // TODO chunk内 blockは総和じゃないとバグってる気がする
             }
         }
 
