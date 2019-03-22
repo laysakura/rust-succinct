@@ -96,7 +96,6 @@ mod popcount_success_tests {
 
 #[cfg(test)]
 mod popcount_failure_tests {
-    use std::ops::RangeInclusive;
     use super::PopcountTable;
 
     macro_rules! parameterized_tests {
