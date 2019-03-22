@@ -4,6 +4,7 @@ mod bit_vector_string;
 
 use std::collections::HashSet;
 use super::internal_data_structure::raw_bit_vector::RawBitVector;
+use super::internal_data_structure::popcount_table::PopcountTable;
 
 /// Succinct bit vector.
 ///
@@ -66,7 +67,18 @@ use super::internal_data_structure::raw_bit_vector::RawBitVector;
 /// TODO Explain about Chunk, Block, and Table.
 ///
 pub struct BitVector {
-    rbv: RawBitVector,
+    /// Total _popcount_ of _[0, (last bit of the chunk)]_.
+    ///
+    /// Each chunk takes _2^64_ at max (when every 64 bit is '1' for BitVector of length of _2^64_).
+    chunks: Vec<u64>,
+
+    /// Total _popcount_ of _[(first bit of the chunk where the block belongs to), (last bit of the chunk where the block belongs to)]_.
+    ///
+    /// Each block takes (log 2^64)^2 = 64^2 = 2^16 at max (when every bit in a chunk is 1 for BitVector of length of 2^64)
+    blocks: Vec<u16>,
+
+    /// Table to calculate inner-block rank() in O(1).
+    popcount_table: PopcountTable,
 }
 
 pub struct BitVectorBuilder {
