@@ -25,7 +25,23 @@ impl super::BitVectorBuilder {
 
         let n = &rbv.length();
 
-        // chunk x popcount を作る
+        // chunks を作る（chunkは、その要素がpopcountの合計であるものを指す）
+        let chunk_len = n.log2() * n.log2();
+        let chunks_cnt = n / chunk_len + 1;
+        let chunks: Vec<usize> = Vec::with_capacity(chunks_cnt);
+        for i in (0.. chunks_cnt) {
+            //// working mem に、block分割したRawBitVectorを作り、その block_rbv.popcount() するしかないか？？
+            let chunk_rbv = rbv.copy_sub(
+                i * chunk_len,
+                if i == chunks_cnt - 1 { n % chunk_len } else { chunk_len }
+            );
+
+            let popcount_in_chunk = chunk_rbv.popcount();
+            chunks[i] = popcount_in_chunk + if i == 0 { 0 } else { chunks[i - 1] };
+        }
+
+        // blocks を作る。
+        // （blockの定義からして当然だが）chunkを境として0から数える。それにより空間計算量を節約できる。
         let chunk_len = n.log2() * n.log2();
         let chunks_cnt = n / chunk_len + 1;
         let total_popcount_in_chunks: Vec<usize> = Vec::with_capacity(chunks_cnt);
@@ -39,7 +55,6 @@ impl super::BitVectorBuilder {
             let popcount_in_chunk = chunk_rbv.popcount();
             total_popcount_in_chunks[i] = popcount_in_chunk + if i == 0 { 0 } else { total_popcount_in_chunks[i - 1] };
         }
-
 
 
 

@@ -7,9 +7,11 @@ use super::internal_data_structure::raw_bit_vector::RawBitVector;
 
 /// Succinct bit vector.
 ///
-/// This class can handle bit sequence of virtually **arbitrary length.**<br>
-/// Theoretically, _N_ (`BitVector`'s length) is limited to: _N <= min(2^65, 2^`(mem::size_of::<usize>())`)_.<br>
-/// See [Size limitation coming from internal implementation](#size-limitation-coming-from-internal-implementation) for detail.
+/// This class can handle bit sequence of virtually **arbitrary length.**
+///
+/// In fact, _N_ (`BitVector`'s length) is designed to be limited to: _N <= 2^64_.<br>
+/// So you can make a bit vector like `01...` (sequence of _2^64_ '0' or '1'), and then calculate `rank()` and `select()` for that vector.<br>
+/// It should be enough for almost all usecases since a binary data of length of _2^64_ consumes _2^24 = 16,777,216_ TB (terabyte), which is hard to handle by state-of-the-art computer architecture.
 ///
 /// # Examples
 /// ```
@@ -56,15 +58,6 @@ use super::internal_data_structure::raw_bit_vector::RawBitVector;
 /// # Implementation detail
 /// TODO Explain about Chunk, Block, and Table.
 ///
-/// # Size limitation coming from internal implementation
-/// Finally, _N_ (`BitVector`'s length) is limited to: _N <= min(2^65, 2^`(mem::size_of::<usize>())`)_
-///
-/// | `struct` used for implementation | Max size to handle | Limitation to _N_ (`BitVector`'s length) | Reasons for limitation |
-/// |----------------------------------|--------------------|------------------------------------------|------------------------|
-/// | `BitVectorBuilder` <br>for building `BitVector` instance | - (arbitrary) | - | - |
-/// | `BitVectorString` <br>for building `BitVector` instance from string representation | - (arbitrary) | - | - |
-/// | `RawBitVector` <br>for internal raw, chunk, and block representation of `BitVector` instance | _2^`(mem::size_of::<usize>())`_ | _N <= 2^`(mem::size_of::<usize>())`_ | Public methods' parameters are typed as `usize`. |
-/// | `PopcountTable` <br>for calculating inner-block rank in _O(1)_ | _2^64_ rows of table <br>(containing each _popcount_ of _[0, 2^64 - 1]_) | _Block size <= 64_. <br>Thus, _log N / 2 <= 64_ <br>Thus, _N <= 2^65_ | Each row has _popcount_ for each key. <br>_popcount_ is calculated with `u64::count_ones()` Rust function, which is expected to be compiled to fast hardware popcount instruction. |
 pub struct BitVector {
     rbv: RawBitVector,
 }
