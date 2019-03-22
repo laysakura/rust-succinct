@@ -7,21 +7,21 @@ pub struct PopcountTable {
 
 impl PopcountTable {
     // 絶対に、O(N)での構築じゃないとだめ
-    // とるのは [1, 128]
+    // とるのは [1, 64]
     pub fn new(bit_length: u8) -> PopcountTable {
-        if bit_length == 0 || 128 < bit_length { panic!("bit_length (= {}) must be in [1, 128]", bit_length) };
+        if bit_length == 0 || 64 < bit_length { panic!("bit_length (= {}) must be in [1, 64]", bit_length) };
 
-        let table = (0..= 1 << bit_length - 1).map(|target: u128| target.count_ones() as u8).collect();
+        let table = (0..= 1 << bit_length - 1).map(|target: u64| target.count_ones() as u8).collect();
         PopcountTable {
             bit_length,
             table,
         }
     }
 
-    // とるのは 0 ~ 2^128 - 1
-    // 返すのは0~128
-    pub fn popcount(&self, target: u128) -> u8 {
-        if target >= 1 << self.bit_length { panic!("target must be < 2^{}, while PopcountTable::bit_length = {}", self.bit_length, self.bit_length) };
+    // とるのは 0 ~ 2^64 - 1
+    // 返すのは0~64
+    pub fn popcount(&self, target: u64) -> u8 {
+        if target > (1 << self.bit_length - 1) { panic!("target must be < 2^{}, while PopcountTable::bit_length = {}", self.bit_length, self.bit_length) };
 
         self.table[target as usize]
     }
@@ -44,8 +44,8 @@ mod new_failure_tests {
 
     #[test]
     #[should_panic]
-    fn new_129() {
-        let _ = PopcountTable::new(129);
+    fn new_65() {
+        let _ = PopcountTable::new(65);
     }
 }
 
@@ -62,9 +62,8 @@ mod popcount_success_tests {
                 let bit_length = $value;
                 let tbl = PopcountTable::new(bit_length);
 
-                let range: RangeInclusive<u128> = 0..= (1 << bit_length - 1);
+                let range: RangeInclusive<u64> = 0..= (1 << bit_length - 1);
                 for target in range {
-                    // TODO 2**32 は target として取るとpanicすべき
                     assert_eq!(tbl.popcount(target), target.count_ones() as u8);
                 }
             }
