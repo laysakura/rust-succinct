@@ -16,14 +16,33 @@ impl super::BitVectorBuilder {
         self
     }
 
-    /// O(N)
-    ///
     pub fn build(&self) -> BitVector {
         let mut rbv = match &self.seed {
             BitVectorSeed::Length(n) => RawBitVector::from_length(*n),
             BitVectorSeed::Str(bvs) => RawBitVector::from_str(bvs),
         };
         for bit in &self.bits_set { rbv.set_bit(*bit) }
+
+        let n = &rbv.length();
+
+        // chunk x popcount を作る
+        let chunk_len = n.log2() * n.log2();
+        let chunks_cnt = n / chunk_len + 1;
+        let total_popcount_in_chunks: Vec<usize> = Vec::with_capacity(chunks_cnt);
+        for i in (0.. chunks_cnt) {
+            //// working mem に、block分割したRawBitVectorを作り、その block_rbv.popcount() するしかないか？？
+            let chunk_rbv = rbv.copy_sub(
+                i * chunk_len,
+                if i == chunks_cnt - 1 { n % chunk_len } else { chunk_len }
+            );
+
+            let popcount_in_chunk = chunk_rbv.popcount();
+            total_popcount_in_chunks[i] = popcount_in_chunk + if i == 0 { 0 } else { total_popcount_in_chunks[i - 1] };
+        }
+
+
+
+
         BitVector { rbv }
     }
 }

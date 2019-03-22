@@ -11,8 +11,20 @@ impl BitVector {
     ///
     /// # Panics
     /// When _`i` >= length of the `BitVector`_.
-    pub fn rank(&self, i: u64) -> usize {
-        // TODO O(1) impl
+    pub fn rank(&self, i: usize) -> usize {
+        // i が何番目のchunk要素かを割り出す -> i_chunks
+        // rank_from_chunks = sum of rank [chunk 0, chunk i_chunks - 1]
+
+        // i が、i_chunks の中でも、何番目のblock要素かを割り出す -> i_blocks
+        // rank_from_blocks = sum of rank [block 0, block i_blocks - 1]
+
+        // i が、i_blocks の中でも、何番目の要素化を割り出す -> i_in_block
+        // 1...(i_in_blockだけ続く) 0...(block_len - i_in_block だけ続く) と、i_blocksの要素で、 & ビットマスクをかけてあげる -> target
+        // rank_from_in_block = popcount_table.popcount(target)
+
+        // rank_from_chunks + rank_from_blocks + rank_from_in_block
+
+
         (0.. (i + 1)).fold(0, |sum, j|
             sum + if self.access(j) { 1 } else { 0 }
         )
