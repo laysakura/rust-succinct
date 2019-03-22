@@ -56,6 +56,11 @@ use super::internal_data_structure::raw_bit_vector::RawBitVector;
 /// | Space-complexity | _N + o(N)_                                             | _0_        | _o(N)_   | _o(N)_     |
 ///
 /// # Implementation detail
+///
+/// ```text
+/// aafdsa
+/// ```
+///
 /// TODO Explain about Chunk, Block, and Table.
 ///
 pub struct BitVector {

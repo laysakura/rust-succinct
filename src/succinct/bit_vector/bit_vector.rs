@@ -11,7 +11,7 @@ impl BitVector {
     ///
     /// # Panics
     /// When _`i` >= length of the `BitVector`_.
-    pub fn rank(&self, i: usize) -> usize {
+    pub fn rank(&self, i: u64) -> usize {
         // i が何番目のchunk要素かを割り出す -> i_chunks
         // rank_from_chunks = sum of rank [chunk 0, chunk i_chunks - 1]
 
