@@ -11,12 +11,12 @@ pub struct BitVector {
 
 pub struct BitVectorBuilder {
     seed: BitVectorSeed,
-    bits_set: HashSet<usize>,
+    bits_set: HashSet<u64>,
 }
 
 pub struct BitVectorString { pub s: String }
 
 enum BitVectorSeed {
-    Length(usize),
+    Length(u64),
     Str(BitVectorString),
 }

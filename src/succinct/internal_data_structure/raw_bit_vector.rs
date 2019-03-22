@@ -1,32 +1,33 @@
 use crate::succinct::bit_vector::BitVectorString;
 
+/// Bit vector of arbitrary length (actually the length is limited to _[1, 2^64)_).
 pub struct RawBitVector {
     byte_vec: Vec<u8>,
-    last_byte_len: usize,  // TODO better to be u8
+    last_byte_len: u8,
 }
 
 impl RawBitVector {
-    pub fn from_length(length: usize) -> RawBitVector {
+    pub fn from_length(length: u64) -> RawBitVector {
         if length == 0 { panic!("length must be > 0.") };
 
-        let last_byte_len_or_0 = length % 8;
+        let last_byte_len_or_0 = (length % 8) as u8;
         RawBitVector {
-            byte_vec: vec![0; length / 8 + 1],
+            byte_vec: vec![0; (length / 8 + 1) as usize],
             last_byte_len: if last_byte_len_or_0 == 0 { 8 } else { last_byte_len_or_0 },
         }
     }
 
     pub fn from_str(bit_vector_str: &BitVectorString) -> RawBitVector {
-        let mut rbv = RawBitVector::from_length(bit_vector_str.s.len());
+        let mut rbv = RawBitVector::from_length(bit_vector_str.s.len() as u64);
         for (i, c) in bit_vector_str.s.chars().enumerate() {
-            if c == '1' { rbv.set_bit(i); };
+            if c == '1' { rbv.set_bit(i as u64); };
         }
         rbv
     }
 
-    pub fn access(&self, i: usize) -> bool {
+    pub fn access(&self, i: u64) -> bool {
         self.validate_index(i);
-        let byte = self.byte_vec[i / 8];
+        let byte = self.byte_vec[(i / 8) as usize];
         match i % 8 {
             0 => byte & 0b1000_0000 != 0,
             1 => byte & 0b0100_0000 != 0,
@@ -40,10 +41,10 @@ impl RawBitVector {
         }
     }
 
-    pub fn set_bit(&mut self, i: usize) {
+    pub fn set_bit(&mut self, i: u64) {
         self.validate_index(i);
-        let byte = self.byte_vec[i / 8];
-        self.byte_vec[i / 8] = match i % 8 {
+        let byte = self.byte_vec[(i / 8) as usize];
+        self.byte_vec[(i / 8) as usize] = match i % 8 {
             0 => byte | 0b1000_0000,
             1 => byte | 0b0100_0000,
             2 => byte | 0b0010_0000,
@@ -56,11 +57,11 @@ impl RawBitVector {
         }
     }
 
-    fn bit_length(&self) -> usize {
-        (self.byte_vec.len() - 1) * 8 + (self.last_byte_len as usize)
+    fn bit_length(&self) -> u64 {
+        (self.byte_vec.len() as u64 - 1) * 8 + (self.last_byte_len as u64)
     }
 
-    fn validate_index(&self, i: usize) {
+    fn validate_index(&self, i: u64) {
         if i >= self.bit_length() { panic!("`i` must be smaller than {} (length of RawBitVector)", self.bit_length()) };
     }
 }
@@ -69,7 +70,7 @@ impl RawBitVector {
 mod from_length_success_tests {
     use super::RawBitVector;
 
-    struct IndexBitPair(usize, bool);
+    struct IndexBitPair(u64, bool);
 
     macro_rules! parameterized_tests {
         ($($name:ident: $value:expr,)*) => {
@@ -134,7 +135,7 @@ mod from_str_success_tests {
     use crate::succinct::bit_vector::BitVectorString;
     use super::RawBitVector;
 
-    struct IndexBitPair(usize, bool);
+    struct IndexBitPair(u64, bool);
 
     macro_rules! parameterized_tests {
         ($($name:ident: $value:expr,)*) => {
@@ -270,7 +271,7 @@ mod set_bit_success_tests {
     use crate::succinct::bit_vector::BitVectorString;
     use super::RawBitVector;
 
-    struct IndexBitPair(usize, bool);
+    struct IndexBitPair(u64, bool);
 
     macro_rules! parameterized_tests {
         ($($name:ident: $value:expr,)*) => {

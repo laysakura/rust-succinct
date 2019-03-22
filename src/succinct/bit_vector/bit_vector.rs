@@ -1,9 +1,9 @@
 use super::BitVector;
 
 impl BitVector {
-    pub fn access(&self, i: usize) -> bool { self.rbv.access(i) }
+    pub fn access(&self, i: u64) -> bool { self.rbv.access(i) }
 
-    pub fn rank(&self, i: usize) -> usize {
+    pub fn rank(&self, i: u64) -> u64 {
         // TODO O(1) impl
         (0.. (i + 1)).fold(0, |sum, j|
             sum + if self.access(j) { 1 } else { 0 }

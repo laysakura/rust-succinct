@@ -3,7 +3,7 @@ use super::{BitVector, BitVectorBuilder, BitVectorSeed, BitVectorString};
 use crate::succinct::internal_data_structure::raw_bit_vector::RawBitVector;
 
 impl super::BitVectorBuilder {
-    pub fn from_length(length: usize) -> BitVectorBuilder {
+    pub fn from_length(length: u64) -> BitVectorBuilder {
         BitVectorBuilder { seed: BitVectorSeed::Length(length), bits_set: HashSet::new() }
     }
 
@@ -11,7 +11,7 @@ impl super::BitVectorBuilder {
         BitVectorBuilder { seed: BitVectorSeed::Str(bit_vector_str), bits_set: HashSet::new() }
     }
 
-    pub fn set_bit(&mut self, i: usize) -> &mut BitVectorBuilder {
+    pub fn set_bit(&mut self, i: u64) -> &mut BitVectorBuilder {
         self.bits_set.insert(i);
         self
     }
@@ -30,7 +30,7 @@ impl super::BitVectorBuilder {
 mod builder_from_length_success_tests {
     use super::BitVectorBuilder;
 
-    struct IndexBitPair(usize, bool);
+    struct IndexBitPair(u64, bool);
 
     macro_rules! parameterized_tests {
         ($($name:ident: $value:expr,)*) => {
@@ -94,7 +94,7 @@ mod builder_from_length_failure_tests {
 mod builder_from_str_success_tests {
     use super::{BitVectorBuilder, BitVectorString};
 
-    struct IndexBitPair(usize, bool);
+    struct IndexBitPair(u64, bool);
 
     macro_rules! parameterized_tests {
         ($($name:ident: $value:expr,)*) => {
@@ -212,7 +212,7 @@ mod builder_from_str_failure_tests {
 mod set_bit_success_tests {
     use super::{BitVectorBuilder, BitVectorString};
 
-    struct IndexBitPair(usize, bool);
+    struct IndexBitPair(u64, bool);
 
     macro_rules! parameterized_tests {
         ($($name:ident: $value:expr,)*) => {
