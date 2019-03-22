@@ -104,7 +104,7 @@ mod builder_from_str_success_tests {
             #[test]
             fn $name() {
                 let (in_s, index_bit_pairs) = $value;
-                let bv = BitVectorBuilder::from_str(BitVectorString { s: String::from(in_s) }).build();
+                let bv = BitVectorBuilder::from_str(BitVectorString::new(in_s)).build();
                 for IndexBitPair(i, bit) in index_bit_pairs {
                     assert_eq!(bv.access(i), bit);
                 }
@@ -222,7 +222,7 @@ mod set_bit_success_tests {
             #[test]
             fn $name() {
                 let (in_s, bits_to_set, index_bit_pairs) = $value;
-                let mut builder = BitVectorBuilder::from_str(BitVectorString { s: String::from(in_s) });
+                let mut builder = BitVectorBuilder::from_str(BitVectorString::new(in_s));
 
                 for i in bits_to_set { builder.set_bit(i); }
                 let bv = builder.build();

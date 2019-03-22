@@ -39,7 +39,7 @@ mod rank_success_tests {
             fn $name() {
                 let (in_bv_str, in_i, expected_rank) = $value;
                 assert_eq!(
-                    BitVectorBuilder::from_str(BitVectorString { s: String::from(in_bv_str) })
+                    BitVectorBuilder::from_str(BitVectorString::new(in_bv_str))
                         .build().rank(in_i),
                     expected_rank);
             }

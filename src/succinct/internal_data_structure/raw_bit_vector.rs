@@ -143,7 +143,7 @@ mod from_str_success_tests {
             #[test]
             fn $name() {
                 let (in_s, index_bit_pairs) = $value;
-                let rbv = RawBitVector::from_str(&BitVectorString { s: String::from(in_s) });
+                let rbv = RawBitVector::from_str(&BitVectorString::new(in_s));
                 for IndexBitPair(i, bit) in index_bit_pairs {
                     assert_eq!(rbv.access(i), bit);
                 }
@@ -279,7 +279,7 @@ mod set_bit_success_tests {
             #[test]
             fn $name() {
                 let (in_s, bits_to_set, index_bit_pairs) = $value;
-                let mut rbv = RawBitVector::from_str(&BitVectorString { s: String::from(in_s) });
+                let mut rbv = RawBitVector::from_str(&BitVectorString::new(in_s));
 
                 for i in bits_to_set { rbv.set_bit(i) }
 
