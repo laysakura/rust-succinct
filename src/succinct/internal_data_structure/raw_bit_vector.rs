@@ -95,95 +95,89 @@ impl RawBitVector {
 
         let mut sub_byte_vec: Vec<u8> = Vec::with_capacity(size as usize / 8 + 1);
 
-        // Memo for implementation: Assume `self.byte_vec == 00000000 11111111 0000`
-        for i_byte_vec in (i as usize / 8)..= (i + size - 1) as usize / 8 {
-            let sub_byte: u8 = if i % 8 == 0 {
-                // When `i == 0 or 8 or 16`
-                self.byte_vec[i_byte_vec]
-            } else if i_byte_vec < self.byte_vec.len() - 1 {
-                // When  `i == [1, 7] or [9, 15]` and `i_byte_vec == 0 or 1`
-                let (part1, part2) = (self.byte_vec[i_byte_vec], self.byte_vec[i_byte_vec + 1]);
-                match i % 8 {
-                    1 => ((part1 & 0b0111_1111) << 1) | (part2 & 0b1000_0000),
-                    2 => ((part1 & 0b0011_1111) << 2) | (part2 & 0b1100_0000),
-                    3 => ((part1 & 0b0001_1111) << 3) | (part2 & 0b1110_0000),
-                    4 => ((part1 & 0b0000_1111) << 4) | (part2 & 0b1111_0000),
-                    5 => ((part1 & 0b0000_0111) << 5) | (part2 & 0b1111_1000),
-                    6 => ((part1 & 0b0000_0011) << 6) | (part2 & 0b1111_1100),
-                    7 => ((part1 & 0b0000_0001) << 7) | (part2 & 0b1111_1110),
-                    _ => panic!("never happen"),
+        // Memo for implementation: 
+        // Assume self.byte_vec == 00000000 11111111 00000000 11111
+        
+        let last_byte_len = if i % 8 == 0 && size % 8 == 0 {
+            // When i % 8 == 0 && size % 8 == 0
+            // 00000000 11111111 00000000 11111
+            //          ^                ^
+            //          i=8              i+size = 8+16
+            //          |        |       |
+            //             j=1      j=2
+            //           <-- iterate ---->
+            //
+            // ; last_byte_len = 8
+            for j in (i / 8).. (i + size) / 8 {
+                sub_byte_vec.push(self.byte_vec[j as usize]);
+            }
+            8
+        } else if i % 8 == 0 && size % 8 != 0 {
+            // When i % 8 == 0 && size % 8 == 0
+            // 00000000 11111111 00000000 11111
+            //          ^                  ^
+            //          i=8                i+size = 8+18
+            //          |        |       |  |
+            //             j=1      j=2   j=3
+            //           <-- iterate ----><->
+            //
+            // ; last_byte_len = size % 8
+            for j in (i / 8).. (i + size) / 8 {
+                sub_byte_vec.push(self.byte_vec[j as usize]);
+            }
+            let last_byte = self.byte_vec[((i + size) % 8) as usize];
+            sub_byte_vec.push((last_byte >> (8 - size)) << (8 - size));
+            size % 8
+        } else if i % 8 != 0 && (i + size) % 8 == 0 {
+            // When i % 8 != 0 && (i + size) % 8 == 0
+            // 00000000 11111111 00000000 11111
+            //                 ^        ^
+            //                 i=15     i+size = 15+9
+            //                 ||        |
+            //                j=1   j=2
+            //                 <- iter ->
+            //
+            // ; last_byte_len = size % 8
+            for j in (i / 8).. (i + size) / 8 {
+                if (j + 1) * 8 < i + size {
+                    let (byte1, byte2) = (self.byte_vec[j as usize], self.byte_vec[(j + 1) as usize]);
+                    let bits_to_use_from_byte1 = 8 - i % 8;
+                    let copied_byte = (byte1 << (8 - bits_to_use_from_byte1)) | (byte2 >> bits_to_use_from_byte1);
+                    sub_byte_vec.push(copied_byte);
+                } else {
+                    let last_byte = self.byte_vec[j as usize];
+                    let bits_to_use_from_last_byte = 8 - i % 8;
+                    let copied_byte = last_byte << (8 - bits_to_use_from_last_byte);
+                    sub_byte_vec.push(copied_byte);
                 }
-            } else {
-                let byte = self.byte_vec[i_byte_vec];
-
-                // Say i = 14, size = 3 (i not in last byte).
-                // Remaining size = (i + size) % 8 = (14 + 3) % 8 = 1
-                //
-                // Say i = 19, size = 1 (i in last byte).
-                // Remaining size = size = 1
-                let remaining_size = 
-                    if (self.byte_vec.len() as u64) * 8 - i > self.last_byte_len as u64 {
-                        // i not in last byte
-                        (i + size) % 8
-                    } else {
-                        // i in last byte
-                        size
-                    };
-                match (i % 8, remaining_size) {
-                    (_, 0) => 0,
-
-                    (0, 1) => byte & 0b1000_0000,
-                    (0, 2) => byte & 0b1100_0000,
-                    (0, 3) => byte & 0b1110_0000,
-                    (0, 4) => byte & 0b1111_0000,
-                    (0, 5) => byte & 0b1111_1000,
-                    (0, 6) => byte & 0b1111_1100,
-                    (0, 7) => byte & 0b1111_1110,
-                    (0, 8) => byte & 0b1111_1111,
-
-                    (1, 1) => (byte & 0b0100_0000) << 1,
-                    (1, 2) => (byte & 0b0110_0000) << 1,
-                    (1, 3) => (byte & 0b0111_0000) << 1,
-                    (1, 4) => (byte & 0b0111_1000) << 1,
-                    (1, 5) => (byte & 0b0111_1100) << 1,
-                    (1, 6) => (byte & 0b0111_1110) << 1,
-                    (1, 7) => (byte & 0b0111_1111) << 1,
-
-                    (2, 1) => (byte & 0b0010_0000) << 2,
-                    (2, 2) => (byte & 0b0011_0000) << 2,
-                    (2, 3) => (byte & 0b0011_1000) << 2,
-                    (2, 4) => (byte & 0b0011_1100) << 2,
-                    (2, 5) => (byte & 0b0011_1110) << 2,
-                    (2, 6) => (byte & 0b0011_1111) << 2,
-
-                    (3, 1) => (byte & 0b0001_0000) << 3,
-                    (3, 2) => (byte & 0b0001_1000) << 3,
-                    (3, 3) => (byte & 0b0001_1100) << 3,
-                    (3, 4) => (byte & 0b0001_1110) << 3,
-                    (3, 5) => (byte & 0b0001_1111) << 3,
-
-                    (4, 1) => (byte & 0b0000_1000) << 4,
-                    (4, 2) => (byte & 0b0000_1100) << 4,
-                    (4, 3) => (byte & 0b0000_1110) << 4,
-                    (4, 4) => (byte & 0b0000_1111) << 4,
-
-                    (5, 1) => (byte & 0b0000_0100) << 5,
-                    (5, 2) => (byte & 0b0000_0110) << 5,
-                    (5, 3) => (byte & 0b0000_0111) << 5,
-
-                    (6, 1) => (byte & 0b0000_0010) << 6,
-                    (6, 2) => (byte & 0b0000_0011) << 6,
-
-                    (7, 1) => (byte & 0b0000_0001) << 7,
-
-                    _ => panic!("never happen"),
+            }
+            size % 8
+        } else {
+            // When i % 8 != 0 && (i + size) % 8 != 0
+            // 00000000 11111111 00000000 11111
+            //                 ^           ^
+            //                 i=15        i+size = 15+11
+            //                 ||        | |
+            //                j=1   j=2   j=3
+            //                 <- iterate -->
+            //
+            // ; last_byte_len = size % 8
+            // TODO 上のケースと最後以外同じなので、共通化
+            for j in (i / 8).. (i + size) / 8 {
+                if (j + 1) * 8 < i + size {
+                    let (byte1, byte2) = (self.byte_vec[j as usize], self.byte_vec[(j + 1) as usize]);
+                    let bits_to_use_from_byte1 = 8 - i % 8;
+                    let copied_byte = (byte1 << (8 - bits_to_use_from_byte1)) | (byte2 >> bits_to_use_from_byte1);
+                    sub_byte_vec.push(copied_byte);
+                } else {
+                    let last_byte = self.byte_vec[j as usize];
+                    let bits_to_use_from_last_byte = 8 - i % 8;
+                    let copied_byte = last_byte << (8 - bits_to_use_from_last_byte);
+                    sub_byte_vec.push(copied_byte);
                 }
-            };
-            sub_byte_vec.push(sub_byte);
-        }
-
-        let last_byte_len_or_0 = size as u8 % 8;
-        let last_byte_len = if last_byte_len_or_0 == 0 { 8 } else { last_byte_len_or_0 };
+            }
+            size % 8
+        } as u8;
 
         RawBitVector {
             byte_vec: sub_byte_vec,
