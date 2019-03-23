@@ -18,7 +18,7 @@ impl RawBitVector {
         let last_byte_len = if last_byte_len_or_0 == 0 { 8 } else { last_byte_len_or_0 };
 
         RawBitVector {
-            byte_vec: vec![0; (length / 8 + 1) as usize],
+            byte_vec: vec![0; ((length - 1) / 8 + 1) as usize],
             last_byte_len,
         }
     }
@@ -74,7 +74,7 @@ impl RawBitVector {
 
     /// Returns length.
     pub fn length(&self) -> u64 {
-        (self.byte_vec.len() as u64 - 1) * 8 + (self.last_byte_len as u64 % 8)
+        (self.byte_vec.len() as u64 - 1) * 8 + (self.last_byte_len as u64)
     }
 
     /// Returns popcount of whole this BitVector.
@@ -96,7 +96,7 @@ impl RawBitVector {
         let mut sub_byte_vec: Vec<u8> = Vec::with_capacity(size as usize / 8 + 1);
 
         // Memo for implementation: Assume `self.byte_vec == 00000000 11111111 0000`
-        for i_byte_vec in (i as usize / 8)..= (i + size) as usize / 8 {
+        for i_byte_vec in (i as usize / 8)..= (i + size - 1) as usize / 8 {
             let sub_byte: u8 = if i % 8 == 0 {
                 // When `i == 0 or 8 or 16`
                 self.byte_vec[i_byte_vec]
@@ -115,22 +115,74 @@ impl RawBitVector {
                 }
             } else {
                 let byte = self.byte_vec[i_byte_vec];
-                match (i + size) % 8{
-                    1 => byte & 0b1000_0000,
-                    2 => byte & 0b1100_0000,
-                    3 => byte & 0b1110_0000,
-                    4 => byte & 0b1111_0000,
-                    5 => byte & 0b1111_1000,
-                    6 => byte & 0b1111_1100,
-                    7 => byte & 0b1111_1110,
-                    0 => byte & 0b1111_1111,
+
+                // Say i = 14, size = 3 (i not in last byte).
+                // Remaining size = (i + size) % 8 = (14 + 3) % 8 = 1
+                //
+                // Say i = 19, size = 1 (i in last byte).
+                // Remaining size = size = 1
+                let remaining_size = 
+                    if (self.byte_vec.len() as u64) * 8 - i > self.last_byte_len as u64 {
+                        // i not in last byte
+                        (i + size) % 8
+                    } else {
+                        // i in last byte
+                        size
+                    };
+                match (i % 8, remaining_size) {
+                    (_, 0) => 0,
+
+                    (0, 1) => byte & 0b1000_0000,
+                    (0, 2) => byte & 0b1100_0000,
+                    (0, 3) => byte & 0b1110_0000,
+                    (0, 4) => byte & 0b1111_0000,
+                    (0, 5) => byte & 0b1111_1000,
+                    (0, 6) => byte & 0b1111_1100,
+                    (0, 7) => byte & 0b1111_1110,
+                    (0, 8) => byte & 0b1111_1111,
+
+                    (1, 1) => (byte & 0b0100_0000) << 1,
+                    (1, 2) => (byte & 0b0110_0000) << 1,
+                    (1, 3) => (byte & 0b0111_0000) << 1,
+                    (1, 4) => (byte & 0b0111_1000) << 1,
+                    (1, 5) => (byte & 0b0111_1100) << 1,
+                    (1, 6) => (byte & 0b0111_1110) << 1,
+                    (1, 7) => (byte & 0b0111_1111) << 1,
+
+                    (2, 1) => (byte & 0b0010_0000) << 2,
+                    (2, 2) => (byte & 0b0011_0000) << 2,
+                    (2, 3) => (byte & 0b0011_1000) << 2,
+                    (2, 4) => (byte & 0b0011_1100) << 2,
+                    (2, 5) => (byte & 0b0011_1110) << 2,
+                    (2, 6) => (byte & 0b0011_1111) << 2,
+
+                    (3, 1) => (byte & 0b0001_0000) << 3,
+                    (3, 2) => (byte & 0b0001_1000) << 3,
+                    (3, 3) => (byte & 0b0001_1100) << 3,
+                    (3, 4) => (byte & 0b0001_1110) << 3,
+                    (3, 5) => (byte & 0b0001_1111) << 3,
+
+                    (4, 1) => (byte & 0b0000_1000) << 4,
+                    (4, 2) => (byte & 0b0000_1100) << 4,
+                    (4, 3) => (byte & 0b0000_1110) << 4,
+                    (4, 4) => (byte & 0b0000_1111) << 4,
+
+                    (5, 1) => (byte & 0b0000_0100) << 5,
+                    (5, 2) => (byte & 0b0000_0110) << 5,
+                    (5, 3) => (byte & 0b0000_0111) << 5,
+
+                    (6, 1) => (byte & 0b0000_0010) << 6,
+                    (6, 2) => (byte & 0b0000_0011) << 6,
+
+                    (7, 1) => (byte & 0b0000_0001) << 7,
+
                     _ => panic!("never happen"),
                 }
             };
             sub_byte_vec.push(sub_byte);
         }
 
-        let last_byte_len_or_0 = ((i + size) % 8) as u8;
+        let last_byte_len_or_0 = size as u8 % 8;
         let last_byte_len = if last_byte_len_or_0 == 0 { 8 } else { last_byte_len_or_0 };
 
         RawBitVector {
@@ -345,7 +397,6 @@ mod length_failure_tests {
     // Nothing to do
 }
 
-// popcount, copy_subはunit test書く
 #[cfg(test)]
 mod access_success_tests {
     // well-tested in from_length_success_tests & from_str_success_tests
@@ -502,5 +553,93 @@ mod set_bit_failure_tests {
     fn set_bit_over_upper_bound() {
         let mut rbv = RawBitVector::from_length(2);
         rbv.set_bit(2);
+    }
+}
+
+#[cfg(test)]
+mod copy_sub_success_tests {
+    use super::{RawBitVector, BitVectorString};
+    
+    macro_rules! parameterized_tests {
+        ($($name:ident: $value:expr,)*) => {
+        $(
+            #[test]
+            fn $name() {
+                let (s, i, size, expected_bit_vec) = $value;
+                let rbv = RawBitVector::from_str(&BitVectorString::new(s));
+                let copied_rbv = rbv.copy_sub(i, size);
+
+                assert_eq!(copied_rbv.length(), expected_bit_vec.len() as u64);
+                for (i, expected_bit) in expected_bit_vec.iter().enumerate() {
+                    assert_eq!(copied_rbv.access(i as u64), *expected_bit);
+                }
+            }
+        )*
+        }
+    }
+
+    parameterized_tests! {
+        t1_1: ("0", 0, 1, vec![false]),
+
+        t8_1_1: ("01010101", 0, 1, vec![false]),
+        t8_1_2: ("01010101", 0, 2, vec![false, true]),
+        t8_1_3: ("01010101", 0, 3, vec![false, true, false]),
+        t8_1_4: ("01010101", 0, 4, vec![false, true, false, true]),
+        t8_1_5: ("01010101", 0, 5, vec![false, true, false, true, false]),
+        t8_1_6: ("01010101", 0, 6, vec![false, true, false, true, false, true]),
+        t8_1_7: ("01010101", 0, 7, vec![false, true, false, true, false, true, false]),
+        t8_1_8: ("01010101", 0, 8, vec![false, true, false, true, false, true, false, true]),
+
+        t8_2_1: ("01010101", 7, 1, vec![true]),
+
+        t9_1_1: ("010101010", 0, 1, vec![false]),
+        t9_1_2: ("010101010", 0, 2, vec![false, true]),
+        t9_1_3: ("010101010", 0, 3, vec![false, true, false]),
+        t9_1_4: ("010101010", 0, 4, vec![false, true, false, true]),
+        t9_1_5: ("010101010", 0, 5, vec![false, true, false, true, false]),
+        t9_1_6: ("010101010", 0, 6, vec![false, true, false, true, false, true]),
+        t9_1_7: ("010101010", 0, 7, vec![false, true, false, true, false, true, false]),
+        t9_1_8: ("010101010", 0, 8, vec![false, true, false, true, false, true, false, true]),
+        t9_1_9: ("010101010", 0, 9, vec![false, true, false, true, false, true, false, true, false]),
+
+        t9_2_1: ("010101010", 8, 1, vec![false]),
+    }
+}
+
+#[cfg(test)]
+mod copy_sub_failure_tests {
+    use super::{RawBitVector, BitVectorString};
+    
+    macro_rules! parameterized_tests {
+        ($($name:ident: $value:expr,)*) => {
+        $(
+            #[test]
+            #[should_panic]
+            fn $name() {
+                let (s, i, size) = $value;
+                let rbv = RawBitVector::from_str(&BitVectorString::new(s));
+                let _ = rbv.copy_sub(i, size);
+            }
+        )*
+        }
+    }
+
+    parameterized_tests! {
+        t1_1: ("0", 0, 0),
+        t1_2: ("0", 0, 2),
+        t1_3: ("0", 1, 0),
+        t1_4: ("0", 1, 1),
+
+        t8_1: ("00000000", 0, 9),
+        t8_2: ("00000000", 1, 8),
+        t8_3: ("00000000", 7, 2),
+        t8_4: ("00000000", 8, 0),
+        t8_5: ("00000000", 8, 1),
+
+        t9_1: ("00000000", 0, 10),
+        t9_2: ("00000000", 1, 9),
+        t9_3: ("00000000", 8, 2),
+        t9_4: ("00000000", 9, 0),
+        t9_5: ("00000000", 9, 1),
     }
 }
