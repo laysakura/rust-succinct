@@ -125,7 +125,7 @@ impl RawBitVector {
             for j in (i / 8).. (i + size) / 8 {
                 sub_byte_vec.push(self.byte_vec[j as usize]);
             }
-            let last_byte = self.byte_vec[((i + size) % 8) as usize];
+            let last_byte = self.byte_vec[((i + size) / 8) as usize];
             sub_byte_vec.push((last_byte >> (8 - size)) << (8 - size));
             size % 8
         } else if i % 8 != 0 && (i + size) % 8 == 0 {
