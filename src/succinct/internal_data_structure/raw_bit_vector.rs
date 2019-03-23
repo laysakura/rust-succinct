@@ -104,13 +104,13 @@ impl RawBitVector {
                 // When  `i == [1, 7] or [9, 15]` and `i_byte_vec == 0 or 1`
                 let (part1, part2) = (self.byte_vec[i_byte_vec], self.byte_vec[i_byte_vec + 1]);
                 match i % 8 {
-                    1 => ((part1 & 0b0111_1111) << 1) | (part2 & 0b0000_0001),
-                    2 => ((part1 & 0b0011_1111) << 2) | (part2 & 0b0000_0011),
-                    3 => ((part1 & 0b0001_1111) << 3) | (part2 & 0b0000_0111),
-                    4 => ((part1 & 0b0000_1111) << 4) | (part2 & 0b0000_1111),
-                    5 => ((part1 & 0b0000_0111) << 5) | (part2 & 0b0001_1111),
-                    6 => ((part1 & 0b0000_0011) << 6) | (part2 & 0b0011_1111),
-                    7 => ((part1 & 0b0000_0001) << 7) | (part2 & 0b0111_1111),
+                    1 => ((part1 & 0b0111_1111) << 1) | (part2 & 0b1000_0000),
+                    2 => ((part1 & 0b0011_1111) << 2) | (part2 & 0b1100_0000),
+                    3 => ((part1 & 0b0001_1111) << 3) | (part2 & 0b1110_0000),
+                    4 => ((part1 & 0b0000_1111) << 4) | (part2 & 0b1111_0000),
+                    5 => ((part1 & 0b0000_0111) << 5) | (part2 & 0b1111_1000),
+                    6 => ((part1 & 0b0000_0011) << 6) | (part2 & 0b1111_1100),
+                    7 => ((part1 & 0b0000_0001) << 7) | (part2 & 0b1111_1110),
                     _ => panic!("never happen"),
                 }
             } else {
@@ -602,7 +602,10 @@ mod copy_sub_success_tests {
         t9_1_8: ("010101010", 0, 8, vec![false, true, false, true, false, true, false, true]),
         t9_1_9: ("010101010", 0, 9, vec![false, true, false, true, false, true, false, true, false]),
 
-        t9_2_1: ("010101010", 8, 1, vec![false]),
+        t9_2_1: ("010101010", 7, 1, vec![true]),
+        t9_2_2: ("010101010", 7, 2, vec![true, false]),
+
+        t9_3_1: ("010101010", 8, 1, vec![false]),
     }
 }
 
