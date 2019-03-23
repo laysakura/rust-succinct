@@ -550,31 +550,31 @@ mod copy_sub_success_tests {
     parameterized_tests! {
         t1_1: ("0", 0, 1, vec![false]),
 
-        t8_1_1: ("01010101", 0, 1, vec![false]),
-        t8_1_2: ("01010101", 0, 2, vec![false, true]),
-        t8_1_3: ("01010101", 0, 3, vec![false, true, false]),
-        t8_1_4: ("01010101", 0, 4, vec![false, true, false, true]),
-        t8_1_5: ("01010101", 0, 5, vec![false, true, false, true, false]),
-        t8_1_6: ("01010101", 0, 6, vec![false, true, false, true, false, true]),
-        t8_1_7: ("01010101", 0, 7, vec![false, true, false, true, false, true, false]),
-        t8_1_8: ("01010101", 0, 8, vec![false, true, false, true, false, true, false, true]),
+        t8_1_1: ("01000101", 0, 1, vec![false]),
+        t8_1_2: ("01000101", 0, 2, vec![false, true]),
+        t8_1_3: ("01000101", 0, 3, vec![false, true, false]),
+        t8_1_4: ("01000101", 0, 4, vec![false, true, false, false]),
+        t8_1_5: ("01000101", 0, 5, vec![false, true, false, false, false]),
+        t8_1_6: ("01000101", 0, 6, vec![false, true, false, false, false, true]),
+        t8_1_7: ("01000101", 0, 7, vec![false, true, false, false, false, true, false]),
+        t8_1_8: ("01000101", 0, 8, vec![false, true, false, false, false, true, false, true]),
 
-        t8_2_1: ("01010101", 7, 1, vec![true]),
+        t8_2_1: ("01000101", 7, 1, vec![true]),
 
-        t9_1_1: ("010101010", 0, 1, vec![false]),
-        t9_1_2: ("010101010", 0, 2, vec![false, true]),
-        t9_1_3: ("010101010", 0, 3, vec![false, true, false]),
-        t9_1_4: ("010101010", 0, 4, vec![false, true, false, true]),
-        t9_1_5: ("010101010", 0, 5, vec![false, true, false, true, false]),
-        t9_1_6: ("010101010", 0, 6, vec![false, true, false, true, false, true]),
-        t9_1_7: ("010101010", 0, 7, vec![false, true, false, true, false, true, false]),
-        t9_1_8: ("010101010", 0, 8, vec![false, true, false, true, false, true, false, true]),
-        t9_1_9: ("010101010", 0, 9, vec![false, true, false, true, false, true, false, true, false]),
+        t9_1_1: ("010001010", 0, 1, vec![false]),
+        t9_1_2: ("010001010", 0, 2, vec![false, true]),
+        t9_1_3: ("010001010", 0, 3, vec![false, true, false]),
+        t9_1_4: ("010001010", 0, 4, vec![false, true, false, false]),
+        t9_1_5: ("010001010", 0, 5, vec![false, true, false, false, false]),
+        t9_1_6: ("010001010", 0, 6, vec![false, true, false, false, false, true]),
+        t9_1_7: ("010001010", 0, 7, vec![false, true, false, false, false, true, false]),
+        t9_1_8: ("010001010", 0, 8, vec![false, true, false, false, false, true, false, true]),
+        t9_1_9: ("010001010", 0, 9, vec![false, true, false, false, false, true, false, true, false]),
 
-        t9_2_1: ("010101010", 7, 1, vec![true]),
-        t9_2_2: ("010101010", 7, 2, vec![true, false]),
+        t9_2_1: ("010001010", 7, 1, vec![true]),
+        t9_2_2: ("010001010", 7, 2, vec![true, false]),
 
-        t9_3_1: ("010101010", 8, 1, vec![false]),
+        t9_3_1: ("010001010", 8, 1, vec![false]),
     }
 }
 
