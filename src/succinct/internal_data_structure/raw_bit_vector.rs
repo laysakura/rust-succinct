@@ -126,7 +126,9 @@ impl RawBitVector {
                 sub_byte_vec.push(self.byte_vec[j as usize]);
             }
             let last_byte = self.byte_vec[((i + size) / 8) as usize];
-            sub_byte_vec.push((last_byte >> (8 - size)) << (8 - size));
+            let bits_to_use_from_last_byte = size % 8;
+            let copied_byte = last_byte >> (8 - bits_to_use_from_last_byte) << (8 - bits_to_use_from_last_byte);
+            sub_byte_vec.push(copied_byte);
             size % 8
         } else {
             // When i % 8 != 0 && (i + size) % 8 != 0
@@ -599,19 +601,21 @@ mod copy_sub_failure_tests {
     parameterized_tests! {
         t1_1: ("0", 0, 0),
         t1_2: ("0", 0, 2),
-        t1_3: ("0", 1, 0),
-        t1_4: ("0", 1, 1),
+        t1_3: ("0", 1, 1),
 
-        t8_1: ("00000000", 0, 9),
-        t8_2: ("00000000", 1, 8),
-        t8_3: ("00000000", 7, 2),
-        t8_4: ("00000000", 8, 0),
-        t8_5: ("00000000", 8, 1),
+        t8_1_1: ("01000101", 0, 0),
+        t8_1_2: ("01000101", 0, 9),
 
-        t9_1: ("00000000", 0, 10),
-        t9_2: ("00000000", 1, 9),
-        t9_3: ("00000000", 8, 2),
-        t9_4: ("00000000", 9, 0),
-        t9_5: ("00000000", 9, 1),
+        t8_2_1: ("01000101", 7, 0),
+        t8_2_2: ("01000101", 7, 2),
+
+        t9_1_1: ("010001010", 0, 0),
+        t9_1_2: ("010001010", 0, 10),
+
+        t9_2_1: ("010001010", 7, 0),
+        t9_2_2: ("010001010", 7, 3),
+
+        t9_3_1: ("010001010", 8, 0),
+        t9_3_2: ("010001010", 8, 2),
     }
 }
