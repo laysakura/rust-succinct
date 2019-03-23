@@ -328,6 +328,25 @@ mod from_str_failure_tests {
 }
 
 #[cfg(test)]
+mod length_success_tests {
+    use super::RawBitVector;
+
+    #[test]
+    fn test() {
+        for length in 1..= 1 << 16 {
+            let rbv = RawBitVector::from_length(length);
+            assert_eq!(rbv.length(), length);
+        }
+     }
+}
+
+#[cfg(test)]
+mod length_failure_tests {
+    // Nothing to do
+}
+
+//length, popcount, copy_subはunit test書く（特に、さっきlengthでバグってた）
+#[cfg(test)]
 mod access_success_tests {
     // well-tested in from_length_success_tests & from_str_success_tests
 }
