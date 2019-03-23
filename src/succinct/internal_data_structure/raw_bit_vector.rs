@@ -74,7 +74,7 @@ impl RawBitVector {
 
     /// Returns length.
     pub fn length(&self) -> u64 {
-        (self.byte_vec.len() as u64 - 1) * 8 + (self.last_byte_len as u64)
+        (self.byte_vec.len() as u64 - 1) * 8 + (self.last_byte_len as u64 % 8)
     }
 
     /// Returns popcount of whole this BitVector.
