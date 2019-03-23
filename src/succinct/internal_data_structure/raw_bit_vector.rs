@@ -345,7 +345,7 @@ mod length_failure_tests {
     // Nothing to do
 }
 
-//length, popcount, copy_subはunit test書く（特に、さっきlengthでバグってた）
+// popcount, copy_subはunit test書く
 #[cfg(test)]
 mod access_success_tests {
     // well-tested in from_length_success_tests & from_str_success_tests
@@ -361,6 +361,43 @@ mod access_failure_tests {
         let rbv = RawBitVector::from_length(2);
         let _ = rbv.access(2);
     }
+}
+
+#[cfg(test)]
+mod popcount_success_tests {
+    use super::{RawBitVector, BitVectorString};
+    
+    macro_rules! parameterized_tests {
+        ($($name:ident: $value:expr,)*) => {
+        $(
+            #[test]
+            fn $name() {
+                let (in_s, expected_popcount) = $value;
+                let rbv = RawBitVector::from_str(&BitVectorString::new(in_s));
+                assert_eq!(rbv.popcount(), expected_popcount);
+            }
+        )*
+        }
+    }
+
+    parameterized_tests! {
+        t1_1: ("0", 0),
+
+        t8_1: ("00000000", 0),
+        t8_2: ("01010101", 4),
+        t8_3: ("10101010", 4),
+        t8_4: ("11111111", 8),
+
+        t9_1: ("000000000", 0),
+        t9_2: ("010101010", 4),
+        t9_3: ("101010101", 5),
+        t9_4: ("111111111", 9),
+    }
+}
+
+#[cfg(test)]
+mod popcount_failure_tests {
+    // Nothing to do
 }
 
 #[cfg(test)]
