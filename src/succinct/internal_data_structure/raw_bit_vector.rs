@@ -99,69 +99,40 @@ impl RawBitVector {
 
         // Memo for implementation: 
         // Assume self.byte_vec == 00000000 11111111 00000000 11111
-        
-        // TODO i+=8 していくようなouter loopにする
-        for x in (i.. i + size).step_by(8) {
+        //
+        // 00000000 11111111 00000000 11111
+        //        ^                     ^
+        //        i=7                   i+size = 7+19 = 26
+        //      (start)                 (end)
+        //
+        // Copy [start, end).
+        //
+        // Use j for iterator:
+        //   j = start, start+8, ..., start+16 (>= end - 8)
+        let start = i;
+        let end = start + size;
 
-        if x % 8 == 0 && size % 8 == 0 {
-            // When i % 8 == 0 && size % 8 == 0
-            // 00000000 11111111 00000000 11111
-            //          ^                ^
-            //          i=8              i+size = 8+16
-            //          |        |       |
-            //             j=1      j=2
-            //
-            // ; last_byte_len = 8
-            let j = x / 8;
-                sub_byte_vec.push(self.byte_vec[j as usize]);
-        } else if x % 8 == 0 && size % 8 != 0 {
-            // When i % 8 == 0 && size % 8 == 0
-            // 00000000 11111111 00000000 11111
-            //          ^                  ^
-            //          i=8                i+size = 8+18
-            //          |        |       |  |
-            //             j=1      j=2   j=3
-            //
-            // ; last_byte_len = size % 8 || 8
-            let j = x / 8;
-            if i + size - x >= 8 {
-                sub_byte_vec.push(self.byte_vec[j as usize]);
+        for j in (start.. end).step_by(8) {
+            if j % 8 == 0 {
+                // Copy 1~8 bits from a single byte in self.byte_vec.
+                let byte = self.byte_vec[j as usize / 8];
+                let right_bits_to_discard = if end - j >= 8 { 0 } else { 8 - (end - j) };
+                let copied_byte = byte >> right_bits_to_discard << right_bits_to_discard;
+                sub_byte_vec.push(copied_byte);
             } else {
-            let last_byte = self.byte_vec[((i + size) / 8) as usize];
-            let bits_to_use_from_last_byte = size % 8;
-            let copied_byte = last_byte >> (8 - bits_to_use_from_last_byte) << (8 - bits_to_use_from_last_byte);
-            sub_byte_vec.push(copied_byte);
-            }
-        } else if x / 8 == (i + size - 1) / 8 {
-            // When i % 8 != 0 && (i + size - 1) % 8 != 0,
-            //      i / 8 == (i + size) / 8 (within same 1 block)
-            // 00000000 11111111 00000000 11111
-            //            ^    ^
-            //            i=10 i+size = 10+6
-            //
-            // ; last_byte_len = size % 8 || 8
-            let j = (i + size - 1) / 8;
-            let byte = self.byte_vec[j as usize];
-
-            let left_bits_to_discard = i % 8;
-            let right_bits_to_discard = 8 - left_bits_to_discard - size;
-            let byte = byte >> right_bits_to_discard << right_bits_to_discard;
-            let copied_byte = byte << left_bits_to_discard;
-            sub_byte_vec.push(copied_byte);
-        } else {
-            // When i % 8 != 0 && (i + size) % 8 != 0
-            //      i / 8 == (i + size - 1) / 8 (uses more than 1 block)
-            // 00000000 11111111 00000000 11111
-            //                 ^           ^
-            //                 i=15        i+size = 15+11
-            //                 ||        | |
-            //                j=1   j=2   j=3
-            //
-            // ; last_byte_len = size % 8 || 8
-            let j = x / 8;
-                let (byte1, byte2) = (self.byte_vec[j as usize], self.byte_vec[(j + 1) as usize]);
-                let bits_to_use_from_byte1 = 8 - i % 8;
-                let copied_byte = (byte1 << (8 - bits_to_use_from_byte1)) | (byte2 >> bits_to_use_from_byte1);
+                // Copy 1~8 bits from 2 byte in self.byte_vec (second byte can be a sentinel).
+                let byte1 = self.byte_vec[j as usize / 8];
+                let byte2 = if (j as usize + 8) / 8 < self.byte_vec.len() {
+                    self.byte_vec[(j as usize + 8) / 8]
+                } else {
+                    0u8
+                };
+                let left_bits_to_discard_from_byte1 = j % 8;
+                let right_bits_to_discard_from_byte2 = 8 - j % 8;
+                let copied_byte = (byte1 << left_bits_to_discard_from_byte1) | (byte2 >> right_bits_to_discard_from_byte2);
+                let right_bits_to_discard_from_copied_byte = 
+                    if end - j >= 8 { 0 } else { 8 - (end - j) };
+                let copied_byte = copied_byte >> right_bits_to_discard_from_copied_byte << right_bits_to_discard_from_copied_byte;
                 sub_byte_vec.push(copied_byte);
             }
         }
