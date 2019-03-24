@@ -105,7 +105,6 @@ impl RawBitVector {
             //          i=8              i+size = 8+16
             //          |        |       |
             //             j=1      j=2
-            //           <-- iterate ---->
             //
             // ; last_byte_len = 8
             for j in (i / 8).. (i + size) / 8 {
@@ -119,7 +118,6 @@ impl RawBitVector {
             //          i=8                i+size = 8+18
             //          |        |       |  |
             //             j=1      j=2   j=3
-            //           <-- iterate ----><->
             //
             // ; last_byte_len = size % 8
             for j in (i / 8).. (i + size) / 8 {
@@ -130,28 +128,40 @@ impl RawBitVector {
             let copied_byte = last_byte >> (8 - bits_to_use_from_last_byte) << (8 - bits_to_use_from_last_byte);
             sub_byte_vec.push(copied_byte);
             size % 8
+        } else if i / 8 == (i + size - 1) / 8 {
+            // When i % 8 != 0 && (i + size - 1) % 8 != 0,
+            //      i / 8 == (i + size) / 8 (within same 1 block)
+            // 00000000 11111111 00000000 11111
+            //            ^    ^
+            //            i=10 i+size = 10+6
+            //
+            // ; last_byte_len = size % 8
+            let j = (i + size - 1) / 8;
+            let byte = self.byte_vec[j as usize];
+
+            let left_bits_to_discard = i % 8;
+            let right_bits_to_discard = 8 - left_bits_to_discard - size;
+            let byte = byte >> right_bits_to_discard << right_bits_to_discard;
+            let copied_byte = byte << left_bits_to_discard;
+
+            sub_byte_vec.push(copied_byte);
+
+            size % 8
         } else {
             // When i % 8 != 0 && (i + size) % 8 != 0
+            //      i / 8 == (i + size - 1) / 8 (uses more than 1 block)
             // 00000000 11111111 00000000 11111
             //                 ^           ^
             //                 i=15        i+size = 15+11
             //                 ||        | |
             //                j=1   j=2   j=3
-            //                 <- iterate -->
             //
             // ; last_byte_len = size % 8
-            for j in (i / 8).. (i + size) / 8 {
-                if (j + 1) * 8 < i + size {
-                    let (byte1, byte2) = (self.byte_vec[j as usize], self.byte_vec[(j + 1) as usize]);
-                    let bits_to_use_from_byte1 = 8 - i % 8;
-                    let copied_byte = (byte1 << (8 - bits_to_use_from_byte1)) | (byte2 >> bits_to_use_from_byte1);
-                    sub_byte_vec.push(copied_byte);
-                } else {
-                    let last_byte = self.byte_vec[j as usize];
-                    let bits_to_use_from_last_byte = 8 - i % 8;
-                    let copied_byte = last_byte << (8 - bits_to_use_from_last_byte);
-                    sub_byte_vec.push(copied_byte);
-                }
+            for j in (i / 8).. (i + size - 1) / 8 {
+                let (byte1, byte2) = (self.byte_vec[j as usize], self.byte_vec[(j + 1) as usize]);
+                let bits_to_use_from_byte1 = 8 - i % 8;
+                let copied_byte = (byte1 << (8 - bits_to_use_from_byte1)) | (byte2 >> bits_to_use_from_byte1);
+                sub_byte_vec.push(copied_byte);
             }
             size % 8
         } as u8;
@@ -577,6 +587,8 @@ mod copy_sub_success_tests {
         t9_2_2: ("010001010", 7, 2, vec![true, false]),
 
         t9_3_1: ("010001010", 8, 1, vec![false]),
+
+        t13_1_1: ("1011001001010", 9, 4, vec![true, false, true, false]),
     }
 }
 
