@@ -52,10 +52,6 @@ impl BitVector {
         let rank_from_block_bits = self.popcount_table.popcount(block_bits as u64);
 
         rank_from_chunk + rank_from_block as u64 + rank_from_block_bits as u64
-
-        // (0..= i).fold(0, |sum, j|
-        //     sum + if self.access(j) { 1 } else { 0 }
-        // )
     }
 
     fn chunk_size(&self) -> u16 {
