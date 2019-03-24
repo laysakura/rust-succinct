@@ -17,9 +17,7 @@ impl super::BitVectorBuilder {
         self
     }
 
-    pub fn 
-    
-    build(&self) -> BitVector {
+    pub fn build(&self) -> BitVector {
         let mut rbv = match &self.seed {
             BitVectorSeed::Length(n) => RawBitVector::from_length(*n),
             BitVectorSeed::Str(bvs) => RawBitVector::from_str(bvs),
