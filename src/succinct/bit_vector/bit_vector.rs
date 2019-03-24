@@ -24,8 +24,7 @@ impl BitVector {
 
         // rank_from_chunks + rank_from_blocks + rank_from_in_block
 
-
-        (i.. self.n).fold(0, |sum, j|
+        (0..= i).fold(0, |sum, j|
             sum + if self.access(j) { 1 } else { 0 }
         )
     }

@@ -49,7 +49,7 @@ fn rank_fuzzing_test() {
     fn rank_from_str(s: &str, i: u64) -> u64 {
         let chs = s.chars().collect::<Vec<char>>();
         let mut rank: u64 = 0;
-        for j in i as usize .. chs.len() {
+        for j in 0..= i as usize {
             if chs[j] == '1' { rank += 1 };
         }
         rank
