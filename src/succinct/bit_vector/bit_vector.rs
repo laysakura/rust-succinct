@@ -11,7 +11,7 @@ impl BitVector {
     ///
     /// # Panics
     /// When _`i` >= length of the `BitVector`_.
-    pub fn rank(&self, i: u64) -> usize {
+    pub fn rank(&self, i: u64) -> u64 {
         // i が何番目のchunk要素かを割り出す -> i_chunks
         // rank_from_chunks = sum of rank [chunk 0, chunk i_chunks - 1]
 
@@ -25,7 +25,7 @@ impl BitVector {
         // rank_from_chunks + rank_from_blocks + rank_from_in_block
 
 
-        (0.. (i + 1)).fold(0, |sum, j|
+        (i.. self.n).fold(0, |sum, j|
             sum + if self.access(j) { 1 } else { 0 }
         )
     }
@@ -92,6 +92,7 @@ mod rank_success_tests {
         rank6_4: ("10010", 3, 2),
         rank6_5: ("10010", 4, 2),
     }
+    // Tested more in tests/ (integration test)
 }
 
 #[cfg(test)]
