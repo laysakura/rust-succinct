@@ -101,7 +101,9 @@ impl RawBitVector {
         // Assume self.byte_vec == 00000000 11111111 00000000 11111
         
         // TODO i+=8 していくようなouter loopにする
-        let last_byte_len = if i % 8 == 0 && size % 8 == 0 {
+        for x in (i.. i + size).step_by(8) {
+
+        if x % 8 == 0 && size % 8 == 0 {
             // When i % 8 == 0 && size % 8 == 0
             // 00000000 11111111 00000000 11111
             //          ^                ^
@@ -110,11 +112,9 @@ impl RawBitVector {
             //             j=1      j=2
             //
             // ; last_byte_len = 8
-            for j in (i / 8).. (i + size) / 8 {
+            let j = x / 8;
                 sub_byte_vec.push(self.byte_vec[j as usize]);
-            }
-            8
-        } else if i % 8 == 0 && size % 8 != 0 {
+        } else if x % 8 == 0 && size % 8 != 0 {
             // When i % 8 == 0 && size % 8 == 0
             // 00000000 11111111 00000000 11111
             //          ^                  ^
@@ -123,15 +123,16 @@ impl RawBitVector {
             //             j=1      j=2   j=3
             //
             // ; last_byte_len = size % 8 || 8
-            for j in (i / 8).. (i + size) / 8 {
+            let j = x / 8;
+            if i + size - x >= 8 {
                 sub_byte_vec.push(self.byte_vec[j as usize]);
-            }
+            } else {
             let last_byte = self.byte_vec[((i + size) / 8) as usize];
             let bits_to_use_from_last_byte = size % 8;
             let copied_byte = last_byte >> (8 - bits_to_use_from_last_byte) << (8 - bits_to_use_from_last_byte);
             sub_byte_vec.push(copied_byte);
-            if size % 8 == 0 { 8 } else { size % 8 }
-        } else if i / 8 == (i + size - 1) / 8 {
+            }
+        } else if x / 8 == (i + size - 1) / 8 {
             // When i % 8 != 0 && (i + size - 1) % 8 != 0,
             //      i / 8 == (i + size) / 8 (within same 1 block)
             // 00000000 11111111 00000000 11111
@@ -147,7 +148,6 @@ impl RawBitVector {
             let byte = byte >> right_bits_to_discard << right_bits_to_discard;
             let copied_byte = byte << left_bits_to_discard;
             sub_byte_vec.push(copied_byte);
-            if size % 8 == 0 { 8 } else { size % 8 }
         } else {
             // When i % 8 != 0 && (i + size) % 8 != 0
             //      i / 8 == (i + size - 1) / 8 (uses more than 1 block)
@@ -158,18 +158,17 @@ impl RawBitVector {
             //                j=1   j=2   j=3
             //
             // ; last_byte_len = size % 8 || 8
-            for j in (i / 8).. (i + size - 1) / 8 {
+            let j = x / 8;
                 let (byte1, byte2) = (self.byte_vec[j as usize], self.byte_vec[(j + 1) as usize]);
                 let bits_to_use_from_byte1 = 8 - i % 8;
                 let copied_byte = (byte1 << (8 - bits_to_use_from_byte1)) | (byte2 >> bits_to_use_from_byte1);
                 sub_byte_vec.push(copied_byte);
             }
-            if size % 8 == 0 { 8 } else { size % 8 }
-        } as u8;
+        }
 
         RawBitVector {
             byte_vec: sub_byte_vec,
-            last_byte_len,
+            last_byte_len: if size % 8 == 0 { 8 } else { (size % 8) as u8 },
         }
     }
 
