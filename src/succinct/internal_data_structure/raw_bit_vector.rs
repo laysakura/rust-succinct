@@ -117,7 +117,7 @@ impl RawBitVector {
                 // Copy 1~8 bits from a single byte in self.byte_vec.
                 let byte = self.byte_vec[j as usize / 8];
                 let right_bits_to_discard = if end - j >= 8 { 0 } else { 8 - (end - j) };
-                let copied_byte = byte >> right_bits_to_discard << right_bits_to_discard;
+                let copied_byte = (byte >> right_bits_to_discard) << right_bits_to_discard;
                 sub_byte_vec.push(copied_byte);
             } else {
                 // Copy 1~8 bits from 2 byte in self.byte_vec (second byte can be a sentinel).

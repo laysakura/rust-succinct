@@ -19,7 +19,7 @@ impl PopcountTable {
     pub fn new(bit_length: u8) -> PopcountTable {
         if bit_length == 0 || 64 < bit_length { panic!("bit_length (= {}) must be in [1, 64]", bit_length) };
 
-        let table = (0..= 1 << bit_length - 1).map(|target: u64| target.count_ones() as u8).collect();
+        let table = (0..= (1 << bit_length) - 1).map(|target: u64| target.count_ones() as u8).collect();
         PopcountTable {
             bit_length,
             table,
@@ -31,7 +31,7 @@ impl PopcountTable {
     /// # Panics
     /// When `target` is out of [0, 2^ `self.bit_length` ).
     pub fn popcount(&self, target: u64) -> u8 {
-        if target > (1 << self.bit_length) { panic!("target = {} must be < 2^{}, while PopcountTable::bit_length = {}", target, self.bit_length, self.bit_length) };
+        if target > ((1 << self.bit_length) - 1) { panic!("target = {} must be < 2^{}, while PopcountTable::bit_length = {}", target, self.bit_length, self.bit_length) };
 
         self.table[target as usize]
     }
@@ -72,7 +72,7 @@ mod popcount_success_tests {
                 let bit_length = $value;
                 let tbl = PopcountTable::new(bit_length);
 
-                let range: RangeInclusive<u64> = 0..= (1 << bit_length - 1);
+                let range: RangeInclusive<u64> = 0..= ((1 << bit_length) - 1);
                 for target in range {
                     assert_eq!(tbl.popcount(target), target.count_ones() as u8);
                 }
