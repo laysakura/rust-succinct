@@ -1,2 +1,2 @@
 pub mod bit_vector;
-mod internal_data_structure;
+pub mod internal_data_structure;

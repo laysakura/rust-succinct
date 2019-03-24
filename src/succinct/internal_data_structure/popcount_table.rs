@@ -31,7 +31,7 @@ impl PopcountTable {
     /// # Panics
     /// When `target` is out of [0, 2^ `self.bit_length` ).
     pub fn popcount(&self, target: u64) -> u8 {
-        if target > (1 << self.bit_length - 1) { panic!("target must be < 2^{}, while PopcountTable::bit_length = {}", self.bit_length, self.bit_length) };
+        if target > (1 << self.bit_length) { panic!("target = {} must be < 2^{}, while PopcountTable::bit_length = {}", target, self.bit_length, self.bit_length) };
 
         self.table[target as usize]
     }

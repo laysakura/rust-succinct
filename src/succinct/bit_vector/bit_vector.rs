@@ -11,26 +11,59 @@ impl BitVector {
     ///
     /// # Panics
     /// When _`i` >= length of the `BitVector`_.
+    /// 
+    /// # Implementation detail
+    /// 
+    /// ```text
+    ///  00001000 01000001 00000100 11000000 00100000 00000101 00100000 00010000 001  Raw data (N=67)
+    ///                                                           ^
+    ///                                                           i = 51
+    /// |                  7                    |                12                |  Chunk (size = (log N)^2 = 36)
+    ///                                         ^
+    ///                                      i_chunk = 1
+    /// |0 |1 |1  |2 |2 |3  |3 |4 |6  |6 |6  |7 |0 |0  |0 |2 |3 |3 |4  |4 |4 |5  |5|  Block (size = log N / 2 = 3)
+    ///                                                         ^
+    ///                                                      i_block = 17
+    /// ```
+    /// 
+    /// 1. Find `i_chunk`. _`i_chunk` = `i` / chunk size_.
+    /// 2. Get _rank from chunk = Chunk[`i_chunk` - 1]_.
+    /// 3. Find `i_block`. _`i_block` = `i` / block size_.
+    /// 4. Get _rank from block = Block[`i_block` - 1]_.
+    /// 5. Get inner-block data. _`block_bits` = [`i` - `i` % (block size), `i`]_. `block_bits` must be of _block size_ length, fulfilled with _0_ in right bits.
+    /// 6. Calculate _rank of `block_bits`_ in _O(1)_ using a table memonizing _block size_ bit's popcount.
     pub fn rank(&self, i: u64) -> u64 {
-        // i が何番目のchunk要素かを割り出す -> i_chunks
-        // rank_from_chunks = sum of rank [chunk 0, chunk i_chunks - 1]
+        let chunk_size = self.chunk_size();
+        let block_size = self.block_size();
 
-        // i が、i_chunks の中でも、何番目のblock要素かを割り出す -> i_blocks
-        // rank_from_blocks = sum of rank [block 0, block i_blocks - 1]
+        let i_chunk = i / chunk_size as u64;
+        let rank_from_chunk = if i_chunk == 0 { 0 } else { self.chunks[i_chunk as usize - 1] };
 
-        // i が、i_blocks の中でも、何番目の要素化を割り出す -> i_in_block
-        // 1...(i_in_blockだけ続く) 0...(block_len - i_in_block だけ続く) と、i_blocksの要素で、 & ビットマスクをかけてあげる -> target
-        // rank_from_in_block = popcount_table.popcount(target)
+        let i_block = i / block_size as u64;
+        let rank_from_block = 
+        if (i_block * block_size as u64) % chunk_size as u64 == 0 { 0 }
+        else { self.blocks[i_block as usize - 1] };
 
-        // rank_from_chunks + rank_from_blocks + rank_from_in_block
+        let block_rbv = self.rbv.copy_sub(i - i % block_size as u64, self.block_size() as u64);
+        let block_as_u32 = block_rbv.as_u32();
+        let bits_to_use_or_0 = (i % block_size as u64) as u8;
+        let bits_to_use = if bits_to_use_or_0 == 0 { block_size } else { bits_to_use_or_0 };
+        let block_bits = block_as_u32 >> (32 - bits_to_use);
+        let rank_from_block_bits = self.popcount_table.popcount(block_bits as u64);
 
-        (0..= i).fold(0, |sum, j|
-            sum + if self.access(j) { 1 } else { 0 }
-        )
+        rank_from_chunk + rank_from_block as u64 + rank_from_block_bits as u64
+
+        // (0..= i).fold(0, |sum, j|
+        //     sum + if self.access(j) { 1 } else { 0 }
+        // )
     }
 
     fn chunk_size(&self) -> u16 {
         super::chunk_size(self.n)
+    }
+
+    fn block_size(&self) -> u8 {
+        super::block_size(self.n)
     }
 }
 

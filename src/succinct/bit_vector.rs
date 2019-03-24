@@ -61,7 +61,7 @@ use super::internal_data_structure::popcount_table::PopcountTable;
 /// ```text
 ///  00001000 01000001 00000100 11000000 00100000 00000101 00100000 00010000 001  Raw data (N=67)
 /// |                  7                    |                12                |  Chunk (size = (log N)^2 = 36)
-/// |0 |1 |1  |2 |2 |3  |3 |4 |6  |6 |6  |7 |0 |0  |0 |2 |3 |3 |3  |4 |4 |4  |4|  Block (size = log N / 2 = 3)
+/// |0 |1 |1  |2 |2 |3  |3 |4 |6  |6 |6  |7 |0 |0  |0 |2 |3 |3 |4  |4 |4 |5  |5|  Block (size = log N / 2 = 3)
 /// ```
 ///
 /// TODO Explain about Chunk, Block, and Table.
