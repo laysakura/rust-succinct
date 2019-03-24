@@ -46,7 +46,7 @@ impl BitVector {
 
         let block_rbv = self.rbv.copy_sub(i - i % block_size as u64, self.block_size() as u64);
         let block_as_u32 = block_rbv.as_u32();
-        let bits_to_use_or_0 = (i % block_size as u64) as u8;
+        let bits_to_use_or_0 = ((i + 1) % block_size as u64) as u8;
         let bits_to_use = if bits_to_use_or_0 == 0 { block_size } else { bits_to_use_or_0 };
         let block_bits = block_as_u32 >> (32 - bits_to_use);
         let rank_from_block_bits = self.popcount_table.popcount(block_bits as u64);
