@@ -143,6 +143,22 @@ impl RawBitVector {
         }
     }
 
+    /// Returns a concatenated number of `self.byte_vec[0, 3]`.
+    /// 
+    /// # Panics
+    /// If _`self.byte_vec.len()` > 4_
+    pub fn as_u32(&self) -> u32 {
+        if self.byte_vec.len() > 4 { panic!("self.byte_vec.len() = {} must be <= 4", self.byte_vec.len()) };
+        let bv = &self.byte_vec;
+
+        let byte0 = if bv.len() > 0 { bv[0] as u32 } else { 0u32 };
+        let byte1 = if bv.len() > 1 { bv[1] as u32 } else { 0u32 };
+        let byte2 = if bv.len() > 2 { bv[2] as u32 } else { 0u32 };
+        let byte3 = if bv.len() > 3 { bv[3] as u32 } else { 0u32 };
+
+        (byte0 << 24) | (byte1 << 16) | (byte2 << 8) | byte3
+    }
+
     fn validate_index(&self, i: u64) {
         if i >= self.length() { panic!("`i` must be smaller than {} (length of RawBitVector)", self.length()) };
     }
@@ -651,5 +667,47 @@ mod copy_sub_fuzzing_tests {
                 }
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod as_u32_success_tests {
+    use super::{RawBitVector, BitVectorString};
+
+    macro_rules! parameterized_tests {
+        ($($name:ident: $value:expr,)*) => {
+        $(
+            #[test]
+            fn $name() {
+                let (s, expected_u32) = $value;
+                let rbv = RawBitVector::from_str(&BitVectorString::new(s));
+                assert_eq!(rbv.as_u32(), expected_u32);
+            }
+        )*
+        }
+    }
+
+    parameterized_tests! {
+        t1_1: ("0", 0b00000000_00000000_00000000_00000000),
+        t1_2: ("1", 0b10000000_00000000_00000000_00000000),
+
+        t8_1: ("10010000", 0b10010000_00000000_00000000_00000000),
+
+        t31_1: ("1001000001000001000010000001101", 0b10010000_01000001_00001000_00011010),
+
+        t32_1: ("10010000010000010000100000011010", 0b10010000_01000001_00001000_00011010),
+    }
+}
+
+#[cfg(test)]
+mod as_u32_failure_tests {
+    use super::{RawBitVector, BitVectorString};
+    
+    #[test]
+    #[should_panic]
+    fn test() {
+        let s = "000000001111111100000000111111110";
+        let rbv = RawBitVector::from_str(&BitVectorString::new(s));
+        let _ = rbv.as_u32();
     }
 }
