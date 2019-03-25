@@ -2,4 +2,5 @@
 //!
 //! Currently, this library provides **succinct bit vector** (**succinct indexable dictionary**).
 
-pub mod succinct;
+pub mod bit_vector;
+mod internal_data_structure;

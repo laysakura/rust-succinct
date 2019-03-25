@@ -1,5 +1,5 @@
 use std::fmt;
-use crate::succinct::bit_vector::BitVectorString;
+use crate::bit_vector::BitVectorString;
 
 #[derive(PartialEq, Eq, Debug)]
 /// Bit vector of arbitrary length (actually the length is limited to _[1, 2^64)_).
@@ -245,7 +245,7 @@ mod from_length_failure_tests {
 
 #[cfg(test)]
 mod from_str_success_tests {
-    use crate::succinct::bit_vector::BitVectorString;
+    use crate::bit_vector::BitVectorString;
     use super::RawBitVector;
 
     struct IndexBitPair(u64, bool);
@@ -436,7 +436,7 @@ mod popcount_failure_tests {
 
 #[cfg(test)]
 mod set_bit_success_tests {
-    use crate::succinct::bit_vector::BitVectorString;
+    use crate::bit_vector::BitVectorString;
     use super::RawBitVector;
 
     struct IndexBitPair(u64, bool);

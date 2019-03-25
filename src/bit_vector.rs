@@ -16,7 +16,7 @@ use super::internal_data_structure::popcount_table::PopcountTable;
 ///
 /// # Examples
 /// ```
-/// use succinct::succinct::bit_vector::{BitVectorBuilder, BitVectorString};
+/// use succinct::bit_vector::{BitVectorBuilder, BitVectorString};
 ///
 /// // `01001` built by `from_length()` and `set_bit()`
 /// let bv = BitVectorBuilder::from_length(5)

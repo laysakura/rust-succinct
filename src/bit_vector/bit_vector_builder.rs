@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use super::{BitVector, BitVectorBuilder, BitVectorSeed, BitVectorString};
-use crate::succinct::internal_data_structure::raw_bit_vector::RawBitVector;
-use crate::succinct::internal_data_structure::popcount_table::PopcountTable;
+use crate::internal_data_structure::raw_bit_vector::RawBitVector;
+use crate::internal_data_structure::popcount_table::PopcountTable;
 
 impl super::BitVectorBuilder {
     pub fn from_length(length: u64) -> BitVectorBuilder {
