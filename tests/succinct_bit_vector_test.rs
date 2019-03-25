@@ -1,6 +1,6 @@
 extern crate succinct;
 
-use succinct::bit_vector::{BitVectorBuilder, BitVectorString};
+use succinct::{BitVectorBuilder, BitVectorString};
 
 #[test]
 fn build_from_length() {
