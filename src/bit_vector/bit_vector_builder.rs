@@ -68,10 +68,11 @@ impl super::BitVectorBuilder {
         // Create blocks
         let block_size: u8 = super::block_size(n);
         let blocks_cnt = n / (block_size as u64) + if n % (block_size as u64) == 0 { 0 } else { 1 };
+        let blocks_in_chunk_cnt = chunk_size / block_size as u16;
         // Each block takes (log 2^64)^2 = 64^2 = 2^16 at max (when every bit in a chunk is 1 for BitVector of length of 2^64)
         let mut blocks: Vec<u16> = Vec::with_capacity(blocks_cnt as usize);
         for i in 0..(chunks_cnt as usize) {
-            for j in 0..((chunk_size / block_size as u16) as usize) {
+            for j in 0..((blocks_in_chunk_cnt as u16) as usize) {
                 let i_rbv = i as u64 * chunk_size as u64 + j as u64 * block_size as u64;
                 if i_rbv >= n {
                     break;
@@ -104,7 +105,7 @@ impl super::BitVectorBuilder {
                         + if j == 0 {
                             0
                         } else {
-                            blocks[i * chunk_size as usize + j - 1]
+                            blocks[i * blocks_in_chunk_cnt as usize + j - 1]
                         },
                 );
             }
