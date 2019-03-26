@@ -10,9 +10,13 @@ os:
 
 cache: cargo
 
+before_script:
+  - rustup component add rustfmt
+
 script:
   - cargo build --release --verbose --all
   - cargo test --release --verbose --all
+  - cargo fmt --all -- --check
 
 branches:
   only:
