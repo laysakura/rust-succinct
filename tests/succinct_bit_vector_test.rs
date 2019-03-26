@@ -49,25 +49,39 @@ fn rank_fuzzing_test() {
     fn rank_from_str(s: &str, i: u64) -> u64 {
         let chs = s.chars().collect::<Vec<char>>();
         let mut rank: u64 = 0;
-        for j in 0..= i as usize {
-            if chs[j] == '1' { rank += 1 };
+        for j in 0..=i as usize {
+            if chs[j] == '1' {
+                rank += 1
+            };
         }
         rank
     }
-    
-    for _ in 0.. samples {
+
+    for _ in 0..samples {
         let s = &format!("{:b}", rand::random::<u16>());
         let bvs = BitVectorString::new(s);
         let bv = BitVectorBuilder::from_str(bvs).build();
 
-        for i in 0.. s.len() {
-            assert_eq!(bv.access(i as u64), access_from_str(s, i as u64),
+        for i in 0..s.len() {
+            assert_eq!(
+                bv.access(i as u64),
+                access_from_str(s, i as u64),
                 "bit vec = {}, i={}, BitVector::access()={}, access_from_str={}",
-                s, i, bv.access(i as u64), access_from_str(s, i as u64));
+                s,
+                i,
+                bv.access(i as u64),
+                access_from_str(s, i as u64)
+            );
 
-            assert_eq!(bv.rank(i as u64), rank_from_str(s, i as u64),
+            assert_eq!(
+                bv.rank(i as u64),
+                rank_from_str(s, i as u64),
                 "bit vec = {}, i={}, BitVector::rank()={}, rank_from_str={}",
-                s, i, bv.rank(i as u64), rank_from_str(s, i as u64));
+                s,
+                i,
+                bv.rank(i as u64),
+                rank_from_str(s, i as u64)
+            );
 
             // TODO test for select();
         }

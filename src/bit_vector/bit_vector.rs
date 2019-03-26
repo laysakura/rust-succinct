@@ -5,15 +5,17 @@ impl BitVector {
     ///
     /// # Panics
     /// When _`i` >= length of the `BitVector`_.
-    pub fn access(&self, i: u64) -> bool { self.rbv.access(i) }
+    pub fn access(&self, i: u64) -> bool {
+        self.rbv.access(i)
+    }
 
     /// Returns the number of _1_ in _[0, `i`]_ elements of the `BitVector`.
     ///
     /// # Panics
     /// When _`i` >= length of the `BitVector`_.
-    /// 
+    ///
     /// # Implementation detail
-    /// 
+    ///
     /// ```text
     ///  00001000 01000001 00000100 11000000 00100000 00000101 00100000 00010000 001  Raw data (N=67)
     ///                                                           ^
@@ -25,7 +27,7 @@ impl BitVector {
     ///                                                         ^
     ///                                                      i_block = 17
     /// ```
-    /// 
+    ///
     /// 1. Find `i_chunk`. _`i_chunk` = `i` / chunk size_.
     /// 2. Get _rank from chunk = Chunk[`i_chunk` - 1]_.
     /// 3. Find `i_block`. _`i_block` = `i` / block size_.
@@ -37,17 +39,29 @@ impl BitVector {
         let block_size = self.block_size();
 
         let i_chunk = i / chunk_size as u64;
-        let rank_from_chunk = if i_chunk == 0 { 0 } else { self.chunks[i_chunk as usize - 1] };
+        let rank_from_chunk = if i_chunk == 0 {
+            0
+        } else {
+            self.chunks[i_chunk as usize - 1]
+        };
 
         let i_block = i / block_size as u64;
-        let rank_from_block = 
-        if (i_block * block_size as u64) % chunk_size as u64 == 0 { 0 }
-        else { self.blocks[i_block as usize - 1] };
+        let rank_from_block = if (i_block * block_size as u64) % chunk_size as u64 == 0 {
+            0
+        } else {
+            self.blocks[i_block as usize - 1]
+        };
 
-        let block_rbv = self.rbv.copy_sub(i - i % block_size as u64, self.block_size() as u64);
+        let block_rbv = self
+            .rbv
+            .copy_sub(i - i % block_size as u64, self.block_size() as u64);
         let block_as_u32 = block_rbv.as_u32();
         let bits_to_use_or_0 = ((i + 1) % block_size as u64) as u8;
-        let bits_to_use = if bits_to_use_or_0 == 0 { block_size } else { bits_to_use_or_0 };
+        let bits_to_use = if bits_to_use_or_0 == 0 {
+            block_size
+        } else {
+            bits_to_use_or_0
+        };
         let block_bits = block_as_u32 >> (32 - bits_to_use);
         let rank_from_block_bits = self.popcount_table.popcount(block_bits as u64);
 

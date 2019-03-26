@@ -2,9 +2,9 @@ mod bit_vector;
 mod bit_vector_builder;
 mod bit_vector_string;
 
-use std::collections::HashSet;
-use super::internal_data_structure::raw_bit_vector::RawBitVector;
 use super::internal_data_structure::popcount_table::PopcountTable;
+use super::internal_data_structure::raw_bit_vector::RawBitVector;
+use std::collections::HashSet;
 
 /// Succinct bit vector.
 ///
@@ -92,7 +92,9 @@ pub struct BitVectorBuilder {
     bits_set: HashSet<u64>,
 }
 
-pub struct BitVectorString { pub s: String }
+pub struct BitVectorString {
+    pub s: String,
+}
 
 enum BitVectorSeed {
     Length(u64),
@@ -102,12 +104,20 @@ enum BitVectorSeed {
 fn chunk_size(n: u64) -> u16 {
     let lg2 = log2(n) as u16;
     let sz = lg2 * lg2;
-    if sz == 0 { 1 } else { sz }
+    if sz == 0 {
+        1
+    } else {
+        sz
+    }
 }
 
 fn block_size(n: u64) -> u8 {
     let sz = log2(n) / 2;
-    if sz == 0 { 1 } else { sz }
+    if sz == 0 {
+        1
+    } else {
+        sz
+    }
 }
 
 fn log2(n: u64) -> u8 {

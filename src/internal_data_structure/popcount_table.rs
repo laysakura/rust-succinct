@@ -17,13 +17,14 @@ impl PopcountTable {
     /// # Panics
     /// When `bit_length` is out of [1, 64].
     pub fn new(bit_length: u8) -> PopcountTable {
-        if bit_length == 0 || 64 < bit_length { panic!("bit_length (= {}) must be in [1, 64]", bit_length) };
+        if bit_length == 0 || 64 < bit_length {
+            panic!("bit_length (= {}) must be in [1, 64]", bit_length)
+        };
 
-        let table = (0..= (1 << bit_length) - 1).map(|target: u64| target.count_ones() as u8).collect();
-        PopcountTable {
-            bit_length,
-            table,
-        }
+        let table = (0..=(1 << bit_length) - 1)
+            .map(|target: u64| target.count_ones() as u8)
+            .collect();
+        PopcountTable { bit_length, table }
     }
 
     /// Returns the same value as `target.count_ones()` in `O(1)`.
@@ -31,7 +32,12 @@ impl PopcountTable {
     /// # Panics
     /// When `target` is out of [0, 2^ `self.bit_length` ).
     pub fn popcount(&self, target: u64) -> u8 {
-        if target > ((1 << self.bit_length) - 1) { panic!("target = {} must be < 2^{}, while PopcountTable::bit_length = {}", target, self.bit_length, self.bit_length) };
+        if target > ((1 << self.bit_length) - 1) {
+            panic!(
+                "target = {} must be < 2^{}, while PopcountTable::bit_length = {}",
+                target, self.bit_length, self.bit_length
+            )
+        };
 
         self.table[target as usize]
     }
@@ -61,8 +67,8 @@ mod new_failure_tests {
 
 #[cfg(test)]
 mod popcount_success_tests {
-    use std::ops::RangeInclusive;
     use super::PopcountTable;
+    use std::ops::RangeInclusive;
 
     macro_rules! parameterized_tests {
         ($($name:ident: $value:expr,)*) => {
