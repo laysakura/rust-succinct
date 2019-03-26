@@ -78,24 +78,11 @@ impl super::BitVectorBuilder {
                     break;
                 }
 
-                let this_block_size: u8 =
-                    if i as u64 == chunks_cnt - 1 && j as u64 == blocks_cnt - 1 {
-                        // When `chunk_size == 6` and `block_size == 3`:
-                        //
-                        //  000 111 000 11   : rbv in blocks
-                        // |       |      |  : chunks
-                        //
-                        // Here, when `i == 1` & `j == 1` (targeting on last '11' block),
-                        // block_size == 2
-                        let block_size_or_0 = (n % block_size as u64) as u8;
-                        if block_size_or_0 == 0 {
-                            block_size
-                        } else {
-                            block_size_or_0
-                        }
-                    } else {
-                        block_size
-                    };
+                let this_block_size: u8 = if n - i_rbv >= block_size as u64 {
+                    block_size
+                } else {
+                    (n - i_rbv) as u8
+                };
 
                 let block_rbv = rbv.copy_sub(i_rbv, this_block_size as u64);
 
