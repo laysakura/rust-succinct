@@ -39,7 +39,7 @@ fn build_from_str_and_set_bit() {
 }
 
 #[test]
-fn rank_fuzzing_test() {
+fn fuzzing_test() {
     let samples = 100000;
 
     fn access_from_str(s: &str, i: u64) -> bool {
@@ -59,6 +59,8 @@ fn rank_fuzzing_test() {
 
     for _ in 0..samples {
         let s = &format!("{:b}", rand::random::<u128>());
+        eprintln!("bit vec = \"{}\"", s);
+
         let bvs = BitVectorString::new(s);
         let bv = BitVectorBuilder::from_str(bvs).build();
 
@@ -66,7 +68,7 @@ fn rank_fuzzing_test() {
             assert_eq!(
                 bv.access(i as u64),
                 access_from_str(s, i as u64),
-                "bit vec = {}, i={}, BitVector::access()={}, access_from_str={}",
+                "bit vec = \"{}\", i={}, BitVector::access()={}, access_from_str={}",
                 s,
                 i,
                 bv.access(i as u64),
@@ -76,7 +78,7 @@ fn rank_fuzzing_test() {
             assert_eq!(
                 bv.rank(i as u64),
                 rank_from_str(s, i as u64),
-                "bit vec = {}, i={}, BitVector::rank()={}, rank_from_str={}",
+                "bit vec = \"{}\", i={}, BitVector::rank()={}, rank_from_str={}",
                 s,
                 i,
                 bv.rank(i as u64),
