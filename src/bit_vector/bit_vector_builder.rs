@@ -173,6 +173,18 @@ mod builder_from_length_success_tests {
                      IndexBitPair(7, false),
                      IndexBitPair(8, false),
                 )),
+        t2_pow_16: (1 << 16, vec!(
+                     IndexBitPair(0, false),
+                     IndexBitPair((1 << 16) - 1, false),
+                )),
+        t2_pow_16_p1: ((1 << 16) + 1, vec!(
+                     IndexBitPair(0, false),
+                     IndexBitPair(1 << 16, false),
+                )),
+        t2_pow_16_m1: ((1 << 16) - 1, vec!(
+                     IndexBitPair(0, false),
+                     IndexBitPair((1 << 16) - 2, false),
+                )),
     }
 }
 
