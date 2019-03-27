@@ -58,7 +58,7 @@ fn rank_fuzzing_test() {
     }
 
     for _ in 0..samples {
-        let s = &format!("{:b}", rand::random::<u16>());
+        let s = &format!("{:b}", rand::random::<u128>());
         let bvs = BitVectorString::new(s);
         let bv = BitVectorBuilder::from_str(bvs).build();
 
