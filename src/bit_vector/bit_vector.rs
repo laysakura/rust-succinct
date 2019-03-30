@@ -46,11 +46,12 @@ impl BitVector {
         };
 
         let i_block = i / block_size as u64;
-        let rank_from_block = if (i_block * block_size as u64) % chunk_size as u64 == 0 {
-            0
-        } else {
-            self.blocks[i_block as usize - 1]
-        };
+        let rank_from_block =
+            if i_block == 0 || self.blocks[i_block as usize - 1] > self.blocks[i_block as usize] {
+                0
+            } else {
+                self.blocks[i_block as usize - 1]
+            };
 
         let block_rbv = self
             .rbv
@@ -63,9 +64,9 @@ impl BitVector {
             bits_to_use_or_0
         };
         let block_bits = block_as_u32 >> (32 - bits_to_use);
-        let rank_from_block_bits = self.popcount_table.popcount(block_bits as u64);
+        let rank_from_table = self.popcount_table.popcount(block_bits as u64);
 
-        rank_from_chunk + rank_from_block as u64 + rank_from_block_bits as u64
+        rank_from_chunk + rank_from_block as u64 + rank_from_table as u64
     }
 
     fn chunk_size(&self) -> u16 {
