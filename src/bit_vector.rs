@@ -93,8 +93,9 @@ pub struct BitVectorBuilder {
     bits_set: HashSet<u64>,
 }
 
+/// Provides validated string representation of `succinct::BitVector`.
 pub struct BitVectorString {
-    pub s: String,
+    s: String,
 }
 
 enum BitVectorSeed {

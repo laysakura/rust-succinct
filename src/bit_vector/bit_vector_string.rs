@@ -1,8 +1,8 @@
 use super::BitVectorString;
 
 impl super::BitVectorString {
+    /// Constructor.
     pub fn new(s: &str) -> BitVectorString {
-        // TODO split into procedure like `assert_valid_str`
         // should not be empty
         if s.is_empty() {
             panic!("`str` must not be empty.")
@@ -18,6 +18,11 @@ impl super::BitVectorString {
         }
 
         BitVectorString { s: String::from(s) }
+    }
+
+    /// Getter.
+    pub fn get_str(&self) -> &str {
+        &self.s
     }
 }
 
