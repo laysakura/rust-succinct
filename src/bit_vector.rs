@@ -1,6 +1,7 @@
 mod bit_vector;
 mod bit_vector_builder;
 mod bit_vector_string;
+mod chunks;
 
 use super::internal_data_structure::popcount_table::PopcountTable;
 use super::internal_data_structure::raw_bit_vector::RawBitVector;
@@ -75,8 +76,8 @@ pub struct BitVector {
 
     /// Total _popcount_ of _[0, (last bit of the chunk)]_.
     ///
-    /// Each chunk takes _2^64_ at max (when every 64 bit is '1' for BitVector of length of _2^64_).
-    chunks: Vec<u64>,
+    /// Each chunk takes _2^64_ at max (when every bit is '1' for BitVector of length of _2^64_).
+    chunks: Chunks,
 
     /// Total _popcount_ of _[(first bit of the chunk where the block belongs to), (last bit of the chunk where the block belongs to)]_.
     ///
@@ -103,14 +104,13 @@ enum BitVectorSeed {
     Str(BitVectorString),
 }
 
-fn chunk_size(n: u64) -> u16 {
-    let lg2 = log2(n) as u16;
-    let sz = lg2 * lg2;
-    if sz == 0 {
-        1
-    } else {
-        sz
-    }
+/// Total _popcount_ of _[0, (last bit of the chunk)]_.
+///
+/// Each chunk takes _2^64_ at max (when every bit is '1' for BitVector of length of _2^64_).
+struct Chunks {
+    chunks: Vec<u64>,
+    chunk_size: u16,
+    chunks_cnt: u64,
 }
 
 fn block_size(n: u64) -> u8 {

@@ -35,14 +35,14 @@ impl BitVector {
     /// 5. Get inner-block data. _`block_bits` = [`i` - `i` % (block size), `i`]_. `block_bits` must be of _block size_ length, fulfilled with _0_ in right bits.
     /// 6. Calculate _rank of `block_bits`_ in _O(1)_ using a table memonizing _block size_ bit's popcount.
     pub fn rank(&self, i: u64) -> u64 {
-        let chunk_size = self.chunk_size();
+        let chunk_size = self.chunks.chunk_size();
         let block_size = self.block_size();
 
         let i_chunk = i / chunk_size as u64;
         let rank_from_chunk = if i_chunk == 0 {
             0
         } else {
-            self.chunks[i_chunk as usize - 1]
+            self.chunks.access(i_chunk as u16 - 1)
         };
 
         let i_block = i / block_size as u64;
@@ -67,10 +67,6 @@ impl BitVector {
         let rank_from_table = self.table.popcount(block_bits as u64);
 
         rank_from_chunk + rank_from_block as u64 + rank_from_table as u64
-    }
-
-    fn chunk_size(&self) -> u16 {
-        super::chunk_size(self.n)
     }
 
     fn block_size(&self) -> u8 {
