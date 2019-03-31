@@ -98,10 +98,10 @@ impl RawBitVector {
     ///
     /// # Panics
     /// When:
-    ///
     /// - _`i` + `size` >= `self.length()`_
     /// - _`size` == 0_
     pub fn copy_sub(&self, i: u64, size: u64) -> RawBitVector {
+        self.validate_index(i);
         if i + size > self.length() {
             panic!(
                 "i + size must be <= self.length(); i = {}, size = {}, self.length() = {}",
@@ -182,6 +182,8 @@ impl RawBitVector {
         (byte0 << 24) | (byte1 << 16) | (byte2 << 8) | byte3
     }
 
+    /// # Panics
+    /// When _`i` >= `self.length()`_.
     fn validate_index(&self, i: u64) {
         if i >= self.length() {
             panic!(
