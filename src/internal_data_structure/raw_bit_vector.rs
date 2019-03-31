@@ -33,8 +33,8 @@ impl RawBitVector {
 
     /// Makes a bit vector from `BitVectorString` representation.
     pub fn from_str(bit_vector_str: &BitVectorString) -> RawBitVector {
-        let mut rbv = RawBitVector::from_length(bit_vector_str.get_str().len() as u64);
-        for (i, c) in bit_vector_str.get_str().chars().enumerate() {
+        let mut rbv = RawBitVector::from_length(bit_vector_str.str().len() as u64);
+        for (i, c) in bit_vector_str.str().chars().enumerate() {
             if c == '1' {
                 rbv.set_bit(i as u64);
             };
