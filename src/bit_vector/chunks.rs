@@ -18,7 +18,7 @@ impl super::Chunks {
                 // |       |      |  : chunks
                 //
                 // Here, when `i == 1` (targeting on last '00011' chunk),
-                // chunk_size == 5
+                // `this_chunk_size == 5`
                 let chunk_size_or_0 = (n % chunk_size as u64) as u16;
                 if chunk_size_or_0 == 0 {
                     chunk_size
