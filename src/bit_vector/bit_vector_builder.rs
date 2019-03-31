@@ -99,14 +99,14 @@ impl super::BitVectorBuilder {
         }
 
         // Create popcount table
-        let popcount_table = PopcountTable::new(block_size);
+        let table = PopcountTable::new(block_size);
 
         BitVector {
             n,
             rbv,
             chunks,
             blocks,
-            popcount_table,
+            table,
         }
     }
 }

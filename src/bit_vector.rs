@@ -84,7 +84,7 @@ pub struct BitVector {
     blocks: Vec<u16>,
 
     /// Table to calculate inner-block rank() in O(1).
-    popcount_table: PopcountTable,
+    table: PopcountTable,
 }
 
 pub struct BitVectorBuilder {

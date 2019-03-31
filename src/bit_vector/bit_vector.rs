@@ -64,7 +64,7 @@ impl BitVector {
             bits_to_use_or_0
         };
         let block_bits = block_as_u32 >> (32 - bits_to_use);
-        let rank_from_table = self.popcount_table.popcount(block_bits as u64);
+        let rank_from_table = self.table.popcount(block_bits as u64);
 
         rank_from_chunk + rank_from_block as u64 + rank_from_table as u64
     }
