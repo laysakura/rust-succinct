@@ -131,23 +131,28 @@ impl RawBitVector {
         let start = i;
         let end = start + size;
 
-        for j in (start..end).step_by(8) {
-            if j % 8 == 0 {
+        if start % 8 == 0 {
+            for j in (start..end).step_by(8) {
                 // Copy 1~8 bits from a single byte in self.byte_vec.
                 let byte = self.byte_vec[j as usize / 8];
                 let right_bits_to_discard = if end - j >= 8 { 0 } else { 8 - (end - j) };
                 let copied_byte = (byte >> right_bits_to_discard) << right_bits_to_discard;
                 sub_byte_vec.push(copied_byte);
-            } else {
+            }
+        } else {
+            let left_bits_to_discard_from_byte1 = start % 8;
+            let right_bits_to_discard_from_byte2 = 8 - left_bits_to_discard_from_byte1;
+
+            for j in (start..end).step_by(8) {
                 // Copy 1~8 bits from 2 byte in self.byte_vec (second byte can be a sentinel).
-                let byte1 = self.byte_vec[j as usize / 8];
-                let byte2 = if (j as usize + 8) / 8 < self.byte_vec.len() {
-                    self.byte_vec[(j as usize + 8) / 8]
+                let i_byte1 = j as usize / 8;
+                let byte1 = self.byte_vec[i_byte1];
+                let byte2 = if i_byte1 + 1 < self.byte_vec.len() {
+                    self.byte_vec[i_byte1 + 1]
                 } else {
                     0u8
                 };
-                let left_bits_to_discard_from_byte1 = j % 8;
-                let right_bits_to_discard_from_byte2 = 8 - j % 8;
+
                 let copied_byte = (byte1 << left_bits_to_discard_from_byte1)
                     | (byte2 >> right_bits_to_discard_from_byte2);
                 let right_bits_to_discard_from_copied_byte =
