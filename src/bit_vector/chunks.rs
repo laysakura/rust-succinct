@@ -56,8 +56,8 @@ impl super::Chunks {
     ///
     /// # Panics
     /// When _`i` >= `self.chunks_cnt()`_.
-    pub fn access(&self, i: u16) -> u64 {
-        if i > self.chunk_size {
+    pub fn access(&self, i: u64) -> u64 {
+        if i > self.chunks_cnt {
             panic!(
                 "i = {} must be smaller then {} (self.chunks_cnt())",
                 i, self.chunks_cnt,
