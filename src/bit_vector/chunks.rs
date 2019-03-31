@@ -76,3 +76,69 @@ impl super::Chunks {
         }
     }
 }
+
+#[cfg(test)]
+mod new_success_tests {
+    use super::super::BitVectorString;
+    use super::Chunks;
+    use crate::internal_data_structure::raw_bit_vector::RawBitVector;
+
+    struct Input<'a> {
+        in_s: &'a str,
+        expected_chunk_size: u16,
+        expected_chunks: &'a Vec<u64>,
+    }
+
+    macro_rules! parameterized_tests {
+        ($($name:ident: $value:expr,)*) => {
+        $(
+            #[test]
+            fn $name() {
+                let input: Input = $value;
+                let rbv = RawBitVector::from_str(&BitVectorString::new(input.in_s));
+                let chunks = Chunks::new(&rbv);
+
+                assert_eq!(chunks.chunk_size(), input.expected_chunk_size);
+                assert_eq!(chunks.chunks_cnt(), input.expected_chunks.len() as u64);
+                for (i, expected_chunk) in input.expected_chunks.iter().enumerate() {
+                    let chunk = chunks.access(i as u16);
+                    assert_eq!(chunk, *expected_chunk);
+                }
+            }
+        )*
+        }
+    }
+
+    parameterized_tests! {
+        t1: Input {
+            in_s: "0", // N = 1, (log_2(N))^2 = 1
+            expected_chunk_size: 1,
+            expected_chunks: &vec!(0)
+        },
+        t2: Input {
+            in_s: "1", // N = 1, (log_2(N))^2 = 1
+            expected_chunk_size: 1,
+            expected_chunks: &vec!(1)
+        },
+        t3: Input {
+            in_s: "0111", // N = 2^2, (log_2(N))^2 = 4
+            expected_chunk_size: 4,
+            expected_chunks: &vec!(3)
+        },
+        t4: Input {
+            in_s: "0111_1101", // N = 2^3, (log_2(N))^2 = 9
+            expected_chunk_size: 9,
+            expected_chunks: &vec!(6)
+        },
+        t5: Input {
+            in_s: "0111_1101_1", // N = 2^3 + 1, (log_2(N))^2 = 9
+            expected_chunk_size: 9,
+            expected_chunks: &vec!(7)
+        },
+        t6: Input {
+            in_s: "0111_1101_11", // N = 2^3 + 2, (log_2(N))^2 = 9
+            expected_chunk_size: 9,
+            expected_chunks: &vec!(7, 8)
+        },
+    }
+}
