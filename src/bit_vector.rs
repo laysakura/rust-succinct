@@ -87,6 +87,7 @@ pub struct BitVector {
     table: PopcountTable,
 }
 
+/// Builder of `succinct::BitVector`.
 pub struct BitVectorBuilder {
     seed: BitVectorSeed,
     bits_set: HashSet<u64>,
