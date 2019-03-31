@@ -36,7 +36,7 @@ use std::collections::HashSet;
 /// // TODO select() example
 ///
 /// // `10010` built by `from_str()`
-/// let bv = BitVectorBuilder::from_str(BitVectorString::new("10010")).build();
+/// let bv = BitVectorBuilder::from_str(BitVectorString::new("1001_0")).build();  // Tips: BitVectorString::new() ignores '_'.
 ///
 /// assert_eq!(bv.access(0), true);   // [1]0010
 /// assert_eq!(bv.access(1), false);  // 1[0]010

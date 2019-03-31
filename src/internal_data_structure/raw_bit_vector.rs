@@ -365,7 +365,7 @@ mod from_str_success_tests {
                                 IndexBitPair(7, true),
                            )),
 
-        t9_1: ("000000000", vec!(
+        t9_1: ("00000000_0", vec!(
                                  IndexBitPair(0, false),
                                  IndexBitPair(1, false),
                                  IndexBitPair(2, false),
@@ -376,7 +376,7 @@ mod from_str_success_tests {
                                  IndexBitPair(7, false),
                                  IndexBitPair(8, false),
                             )),
-        t9_2: ("111111111", vec!(
+        t9_2: ("11111111_1", vec!(
                                  IndexBitPair(0, true),
                                  IndexBitPair(1, true),
                                  IndexBitPair(2, true),
@@ -387,7 +387,7 @@ mod from_str_success_tests {
                                  IndexBitPair(7, true),
                                  IndexBitPair(8, true),
                             )),
-        t9_3: ("101010101", vec!(
+        t9_3: ("10101010_1", vec!(
                                  IndexBitPair(0, true),
                                  IndexBitPair(1, false),
                                  IndexBitPair(2, true),
@@ -466,10 +466,10 @@ mod popcount_success_tests {
         t8_3: ("10101010", 4),
         t8_4: ("11111111", 8),
 
-        t9_1: ("000000000", 0),
-        t9_2: ("010101010", 4),
-        t9_3: ("101010101", 5),
-        t9_4: ("111111111", 9),
+        t9_1: ("00000000_0", 0),
+        t9_2: ("01010101_0", 4),
+        t9_3: ("10101010_1", 5),
+        t9_4: ("11111111_1", 9),
     }
 }
 
@@ -544,7 +544,7 @@ mod set_bit_success_tests {
                     IndexBitPair(7, false),
                    )),
 
-        t9_1: ("000000000", vec!(),
+        t9_1: ("00000000_0", vec!(),
                vec!(
                     IndexBitPair(0, false),
                     IndexBitPair(1, false),
@@ -556,7 +556,7 @@ mod set_bit_success_tests {
                     IndexBitPair(7, false),
                     IndexBitPair(8, false),
                    )),
-        t9_2: ("000000000", vec!(0, 2, 4, 6, 8),
+        t9_2: ("00000000_0", vec!(0, 2, 4, 6, 8),
                vec!(
                     IndexBitPair(0, true),
                     IndexBitPair(1, false),
@@ -619,22 +619,22 @@ mod copy_sub_success_tests {
 
         t8_2_1: ("01000101", 7, 1, vec![true]),
 
-        t9_1_1: ("010001010", 0, 1, vec![false]),
-        t9_1_2: ("010001010", 0, 2, vec![false, true]),
-        t9_1_3: ("010001010", 0, 3, vec![false, true, false]),
-        t9_1_4: ("010001010", 0, 4, vec![false, true, false, false]),
-        t9_1_5: ("010001010", 0, 5, vec![false, true, false, false, false]),
-        t9_1_6: ("010001010", 0, 6, vec![false, true, false, false, false, true]),
-        t9_1_7: ("010001010", 0, 7, vec![false, true, false, false, false, true, false]),
-        t9_1_8: ("010001010", 0, 8, vec![false, true, false, false, false, true, false, true]),
-        t9_1_9: ("010001010", 0, 9, vec![false, true, false, false, false, true, false, true, false]),
+        t9_1_1: ("01000101_0", 0, 1, vec![false]),
+        t9_1_2: ("01000101_0", 0, 2, vec![false, true]),
+        t9_1_3: ("01000101_0", 0, 3, vec![false, true, false]),
+        t9_1_4: ("01000101_0", 0, 4, vec![false, true, false, false]),
+        t9_1_5: ("01000101_0", 0, 5, vec![false, true, false, false, false]),
+        t9_1_6: ("01000101_0", 0, 6, vec![false, true, false, false, false, true]),
+        t9_1_7: ("01000101_0", 0, 7, vec![false, true, false, false, false, true, false]),
+        t9_1_8: ("01000101_0", 0, 8, vec![false, true, false, false, false, true, false, true]),
+        t9_1_9: ("01000101_0", 0, 9, vec![false, true, false, false, false, true, false, true, false]),
 
-        t9_2_1: ("010001010", 7, 1, vec![true]),
-        t9_2_2: ("010001010", 7, 2, vec![true, false]),
+        t9_2_1: ("01000101_0", 7, 1, vec![true]),
+        t9_2_2: ("01000101_0", 7, 2, vec![true, false]),
 
-        t9_3_1: ("010001010", 8, 1, vec![false]),
+        t9_3_1: ("01000101_0", 8, 1, vec![false]),
 
-        t13_1_1: ("1011001001010", 9, 4, vec![true, false, true, false]),
+        t13_1_1: ("10110010_01010", 9, 4, vec![true, false, true, false]),
     }
 }
 
@@ -667,14 +667,14 @@ mod copy_sub_failure_tests {
         t8_2_1: ("01000101", 7, 0),
         t8_2_2: ("01000101", 7, 2),
 
-        t9_1_1: ("010001010", 0, 0),
-        t9_1_2: ("010001010", 0, 10),
+        t9_1_1: ("01000101_0", 0, 0),
+        t9_1_2: ("01000101_0", 0, 10),
 
-        t9_2_1: ("010001010", 7, 0),
-        t9_2_2: ("010001010", 7, 3),
+        t9_2_1: ("01000101_0", 7, 0),
+        t9_2_2: ("01000101_0", 7, 3),
 
-        t9_3_1: ("010001010", 8, 0),
-        t9_3_2: ("010001010", 8, 2),
+        t9_3_1: ("01000101_0", 8, 0),
+        t9_3_2: ("01000101_0", 8, 2),
     }
 }
 
@@ -737,9 +737,9 @@ mod as_u32_success_tests {
 
         t8_1: ("10010000", 0b10010000_00000000_00000000_00000000),
 
-        t31_1: ("1001000001000001000010000001101", 0b10010000_01000001_00001000_00011010),
+        t31_1: ("10010000_01000001_00001000_0001101", 0b10010000_01000001_00001000_00011010),
 
-        t32_1: ("10010000010000010000100000011010", 0b10010000_01000001_00001000_00011010),
+        t32_1: ("10010000_01000001_00001000_00011010", 0b10010000_01000001_00001000_00011010),
     }
 }
 
@@ -750,7 +750,7 @@ mod as_u32_failure_tests {
     #[test]
     #[should_panic]
     fn test() {
-        let s = "000000001111111100000000111111110";
+        let s = "00000000_11111111_00000000_11111111_0";
         let rbv = RawBitVector::from_str(&BitVectorString::new(s));
         let _ = rbv.as_u32();
     }
