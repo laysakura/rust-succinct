@@ -60,7 +60,7 @@ impl super::BitVectorBuilder {
         let chunks = Chunks::new(&rbv);
 
         // Create blocks
-        let blocks = Blocks::new(&rbv, &chunks);
+        let blocks = Blocks::new(&rbv);
         let block_size = blocks.block_size();
 
         // Create popcount table

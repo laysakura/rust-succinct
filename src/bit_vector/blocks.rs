@@ -3,18 +3,20 @@ use crate::internal_data_structure::raw_bit_vector::RawBitVector;
 
 impl super::Blocks {
     /// Constructor.
-    pub fn new(rbv: &RawBitVector, chunks: &Chunks) -> Blocks {
+    pub fn new(rbv: &RawBitVector) -> Blocks {
         let n = rbv.length();
         let block_size = Blocks::calc_block_size(n);
-        let blocks_cnt: u64 =
-            n / (block_size as u64) + if n % (block_size as u64) == 0 { 0 } else { 1 };
+        let blocks_cnt: u64 = Blocks::calc_blocks_cnt(n);
 
-        let blocks_in_chunk_cnt = chunks.chunk_size() / block_size as u16;
+        let chunk_size = Chunks::calc_chunk_size(n);
+        let chunks_cnt = Chunks::calc_chunks_cnt(n);
+
+        let blocks_in_chunk_cnt = chunk_size / block_size as u16;
         // Each block takes (log 2^64)^2 = 64^2 = 2^16 at max (when every bit in a chunk is 1 for BitVector of length of 2^64)
         let mut blocks: Vec<u16> = Vec::with_capacity(blocks_cnt as usize);
-        for i in 0..(chunks.chunks_cnt() as usize) {
+        for i in 0..(chunks_cnt as usize) {
             for j in 0..((blocks_in_chunk_cnt as u16) as usize) {
-                let i_rbv = i as u64 * chunks.chunk_size() as u64 + j as u64 * block_size as u64;
+                let i_rbv = i as u64 * chunk_size as u64 + j as u64 * block_size as u64;
                 if i_rbv >= n {
                     break;
                 }
@@ -65,6 +67,7 @@ impl super::Blocks {
         self.blocks[i as usize]
     }
 
+    /// Returns size of 1 block: _(log N) / 2_
     fn calc_block_size(n: u64) -> u8 {
         let lg2 = (n as f64).log2() as u8;
         let sz = lg2 / 2;
@@ -73,5 +76,11 @@ impl super::Blocks {
         } else {
             sz
         }
+    }
+
+    /// Returns count of blocks: _N / (log N) / 2_
+    fn calc_blocks_cnt(n: u64) -> u64 {
+        let block_size = Blocks::calc_block_size(n);
+        n / (block_size as u64) + if n % (block_size as u64) == 0 { 0 } else { 1 }
     }
 }
