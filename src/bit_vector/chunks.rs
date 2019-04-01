@@ -66,7 +66,8 @@ impl super::Chunks {
     }
 
     /// Returns count of chunks: _N / (log N)^2_.
-    fn chunks_cnt(&self) -> u64 {
+    #[allow(dead_code)]
+    pub fn chunks_cnt(&self) -> u64 {
         self.chunks_cnt
     }
 
