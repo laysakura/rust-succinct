@@ -36,26 +36,26 @@ impl BitVector {
     /// 6. Calculate _rank of `block_bits`_ in _O(1)_ using a table memonizing _block size_ bit's popcount.
     pub fn rank(&self, i: u64) -> u64 {
         let chunk_size = self.chunks.chunk_size();
-        let block_size = self.block_size();
+        let block_size = self.blocks.block_size();
 
         let i_chunk = i / chunk_size as u64;
         let rank_from_chunk = if i_chunk == 0 {
             0
         } else {
-            self.chunks.access(i_chunk as u16 - 1)
+            self.chunks.access(i_chunk - 1)
         };
 
         let i_block = i / block_size as u64;
         let rank_from_block =
-            if i_block == 0 || self.blocks[i_block as usize - 1] > self.blocks[i_block as usize] {
+            if i_block == 0 || self.blocks.access(i_block - 1) > self.blocks.access(i_block) {
                 0
             } else {
-                self.blocks[i_block as usize - 1]
+                self.blocks.access(i_block - 1)
             };
 
         let block_rbv = self
             .rbv
-            .copy_sub(i - i % block_size as u64, self.block_size() as u64);
+            .copy_sub(i - i % block_size as u64, self.blocks.block_size() as u64);
         let block_as_u32 = block_rbv.as_u32();
         let bits_to_use_or_0 = ((i + 1) % block_size as u64) as u8;
         let bits_to_use = if bits_to_use_or_0 == 0 {
@@ -67,10 +67,6 @@ impl BitVector {
         let rank_from_table = self.table.popcount(block_bits as u64);
 
         rank_from_chunk + rank_from_block as u64 + rank_from_table as u64
-    }
-
-    fn block_size(&self) -> u8 {
-        super::block_size(self.n)
     }
 }
 

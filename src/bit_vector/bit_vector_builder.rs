@@ -1,4 +1,4 @@
-use super::{BitVector, BitVectorBuilder, BitVectorSeed, BitVectorString, Chunks};
+use super::{BitVector, BitVectorBuilder, BitVectorSeed, BitVectorString, Blocks, Chunks};
 use crate::internal_data_structure::popcount_table::PopcountTable;
 use crate::internal_data_structure::raw_bit_vector::RawBitVector;
 use std::collections::HashSet;
@@ -57,50 +57,16 @@ impl super::BitVectorBuilder {
             rbv.set_bit(*bit)
         }
 
-        let n = rbv.length();
-
         let chunks = Chunks::new(&rbv);
-        let chunk_size = chunks.chunk_size();
-        let chunks_cnt = chunks.chunks_cnt();
 
         // Create blocks
-        let block_size: u8 = super::block_size(n);
-        let blocks_cnt = n / (block_size as u64) + if n % (block_size as u64) == 0 { 0 } else { 1 };
-        let blocks_in_chunk_cnt = chunk_size / block_size as u16;
-        // Each block takes (log 2^64)^2 = 64^2 = 2^16 at max (when every bit in a chunk is 1 for BitVector of length of 2^64)
-        let mut blocks: Vec<u16> = Vec::with_capacity(blocks_cnt as usize);
-        for i in 0..(chunks_cnt as usize) {
-            for j in 0..((blocks_in_chunk_cnt as u16) as usize) {
-                let i_rbv = i as u64 * chunk_size as u64 + j as u64 * block_size as u64;
-                if i_rbv >= n {
-                    break;
-                }
-
-                let this_block_size: u8 = if n - i_rbv >= block_size as u64 {
-                    block_size
-                } else {
-                    (n - i_rbv) as u8
-                };
-
-                let block_rbv = rbv.copy_sub(i_rbv, this_block_size as u64);
-
-                let popcount_in_block = block_rbv.popcount() as u16;
-                blocks.push(
-                    popcount_in_block
-                        + if j == 0 {
-                            0
-                        } else {
-                            blocks[i * blocks_in_chunk_cnt as usize + j - 1]
-                        },
-                );
-            }
-        }
+        let blocks = Blocks::new(&rbv, &chunks);
+        let block_size = blocks.block_size();
 
         // Create popcount table
         let table = PopcountTable::new(block_size);
 
         BitVector {
-            n,
             rbv,
             chunks,
             blocks,

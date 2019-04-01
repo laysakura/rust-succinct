@@ -1,6 +1,7 @@
 mod bit_vector;
 mod bit_vector_builder;
 mod bit_vector_string;
+mod blocks;
 mod chunks;
 
 use super::internal_data_structure::popcount_table::PopcountTable;
@@ -68,9 +69,6 @@ use std::collections::HashSet;
 /// TODO Explain about Chunk, Block, and Table.
 ///
 pub struct BitVector {
-    /// Length.
-    n: u64,
-
     /// Raw data.
     rbv: RawBitVector,
 
@@ -82,7 +80,7 @@ pub struct BitVector {
     /// Total _popcount_ of _[(first bit of the chunk where the block belongs to), (last bit of the chunk where the block belongs to)]_.
     ///
     /// Each block takes (log 2^64)^2 = 64^2 = 2^16 at max (when every bit in a chunk is 1 for BitVector of length of 2^64)
-    blocks: Vec<u16>,
+    blocks: Blocks,
 
     /// Table to calculate inner-block rank() in O(1).
     table: PopcountTable,
@@ -113,15 +111,11 @@ struct Chunks {
     chunks_cnt: u64,
 }
 
-fn block_size(n: u64) -> u8 {
-    let sz = log2(n) / 2;
-    if sz == 0 {
-        1
-    } else {
-        sz
-    }
-}
-
-fn log2(n: u64) -> u8 {
-    (n as f64).log2() as u8
+/// Total _popcount_ of _[(first bit of the chunk which the block belongs to), (last bit of the block)]_.
+///
+/// Each block takes (log 2^64)^2 = 64^2 = 2^16 at max (when every bit in a chunk is 1 for BitVector of length of 2^64)
+struct Blocks {
+    blocks: Vec<u16>,
+    block_size: u8,
+    blocks_cnt: u64,
 }

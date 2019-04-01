@@ -101,7 +101,7 @@ mod new_success_tests {
                 assert_eq!(chunks.chunk_size(), input.expected_chunk_size);
                 assert_eq!(chunks.chunks_cnt(), input.expected_chunks.len() as u64);
                 for (i, expected_chunk) in input.expected_chunks.iter().enumerate() {
-                    let chunk = chunks.access(i as u16);
+                    let chunk = chunks.access(i as u64);
                     assert_eq!(chunk, *expected_chunk);
                 }
             }
