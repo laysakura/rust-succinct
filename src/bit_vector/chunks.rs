@@ -6,9 +6,8 @@ impl super::Chunks {
     pub fn new(rbv: &RawBitVector) -> Chunks {
         let n = rbv.length();
         let chunk_size: u16 = Chunks::calc_chunk_size(n);
-        let chunks_cnt: u64 =
-            n / (chunk_size as u64) + if n % (chunk_size as u64) == 0 { 0 } else { 1 }; // At max: N / (log N)^2 = 2^64 / 64^2 = 2^(64-12)
-                                                                                        // Each chunk takes 2^64 at max (when every 64 bit is 1 for BitVector of length of 2^64)
+        let chunks_cnt: u64 = Chunks::calc_chunks_cnt(n);
+
         let mut chunks: Vec<u64> = Vec::with_capacity(chunks_cnt as usize);
         for i in 0..(chunks_cnt as usize) {
             let this_chunk_size: u16 = if i as u64 == chunks_cnt - 1 {
@@ -42,12 +41,31 @@ impl super::Chunks {
         }
     }
 
-    /// Returns size of 1 chunk.
+    /// Returns size of 1 chunk: _(log N)^2_.
+    pub fn calc_chunk_size(n: u64) -> u16 {
+        let lg2 = (n as f64).log2() as u16;
+        let sz = lg2 * lg2;
+        if sz == 0 {
+            1
+        } else {
+            sz
+        }
+    }
+
+    /// Returns count of chunks: _N / (log N)^2_.
+    ///
+    /// At max: N / (log N)^2 = 2^64 / 64^2 = 2^(64-12)
+    pub fn calc_chunks_cnt(n: u64) -> u64 {
+        let chunk_size = Chunks::calc_chunk_size(n);
+        n / (chunk_size as u64) + if n % (chunk_size as u64) == 0 { 0 } else { 1 }
+    }
+
+    /// Returns size of 1 chunk: _(log N)^2_.
     pub fn chunk_size(&self) -> u16 {
         self.chunk_size
     }
 
-    /// Returns count of chunks.
+    /// Returns count of chunks: _N / (log N)^2_.
     pub fn chunks_cnt(&self) -> u64 {
         self.chunks_cnt
     }
@@ -64,16 +82,6 @@ impl super::Chunks {
             );
         }
         self.chunks[i as usize]
-    }
-
-    fn calc_chunk_size(n: u64) -> u16 {
-        let lg2 = (n as f64).log2() as u16;
-        let sz = lg2 * lg2;
-        if sz == 0 {
-            1
-        } else {
-            sz
-        }
     }
 }
 
