@@ -60,12 +60,12 @@ impl super::Blocks {
     /// # Panics
     /// When _`i` >= `self.blocks_cnt()`_.
     pub fn access(&self, i: u64) -> u16 {
-        if i > self.blocks_cnt {
-            panic!(
-                "i = {} must be smaller then {} (self.blocks_cnt())",
-                i, self.blocks_cnt,
-            );
-        }
+        assert!(
+            i <= self.blocks_cnt,
+            "i = {} must be smaller then {} (self.blocks_cnt())",
+            i,
+            self.blocks_cnt,
+        );
         self.blocks[i as usize]
     }
 

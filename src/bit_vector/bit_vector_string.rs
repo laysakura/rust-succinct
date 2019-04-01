@@ -33,9 +33,7 @@ impl super::BitVectorString {
             })
             .collect::<String>();
 
-        if parsed.is_empty() {
-            panic!("`str` must contain any '0' or '1'.")
-        }
+        assert!(!parsed.is_empty(), "`str` must contain any '0' or '1'.");
 
         BitVectorString {
             s: String::from(parsed),

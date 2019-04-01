@@ -9,9 +9,7 @@ impl super::BitVectorBuilder {
     /// # Panics
     /// When _`length` == 0_.
     pub fn from_length(length: u64) -> BitVectorBuilder {
-        if length == 0 {
-            panic!("length must be > 0.")
-        };
+        assert_ne!(length, 0, "length must be > 0.");
 
         BitVectorBuilder {
             seed: BitVectorSeed::Length(length),
@@ -36,12 +34,11 @@ impl super::BitVectorBuilder {
             BitVectorSeed::Length(n) => *n,
             BitVectorSeed::Str(bvs) => bvs.s.len() as u64,
         };
-        if i >= length {
-            panic!(
-                "`i` must be smaller than {} (length of bit vector to build)",
-                length
-            )
-        };
+        assert!(
+            i < length,
+            "`i` must be smaller than {} (length of bit vector to build)",
+            length
+        );
 
         self.bits_set.insert(i);
         self

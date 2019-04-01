@@ -14,9 +14,7 @@ impl RawBitVector {
     /// # Panics
     /// When _`length` == 0_.
     pub fn from_length(length: u64) -> RawBitVector {
-        if length == 0 {
-            panic!("length must be > 0.")
-        };
+        assert!(length > 0, "length must be > 0.");
 
         let last_byte_len_or_0 = (length % 8) as u8;
         let last_byte_len = if last_byte_len_or_0 == 0 {
@@ -102,17 +100,14 @@ impl RawBitVector {
     /// - _`size` == 0_
     pub fn copy_sub(&self, i: u64, size: u64) -> RawBitVector {
         self.validate_index(i);
-        if i + size > self.length() {
-            panic!(
-                "i + size must be <= self.length(); i = {}, size = {}, self.length() = {}",
-                i,
-                size,
-                self.length()
-            )
-        };
-        if size == 0 {
-            panic!("length must be > 0")
-        };
+        assert!(
+            i + size <= self.length(),
+            "i + size must be <= self.length(); i = {}, size = {}, self.length() = {}",
+            i,
+            size,
+            self.length()
+        );
+        assert!(size > 0, "length must be > 0");
 
         let mut sub_byte_vec: Vec<u8> = Vec::with_capacity(size as usize / 8 + 1);
 
@@ -174,9 +169,11 @@ impl RawBitVector {
     /// # Panics
     /// If _`self.byte_vec.len()` > 4_
     pub fn as_u32(&self) -> u32 {
-        if self.byte_vec.len() > 4 {
-            panic!("self.byte_vec.len() = {} must be <= 4", self.byte_vec.len())
-        };
+        assert!(
+            self.byte_vec.len() <= 4,
+            "self.byte_vec.len() = {} must be <= 4",
+            self.byte_vec.len()
+        );
         let bv = &self.byte_vec;
 
         let byte0 = if bv.len() > 0 { bv[0] as u32 } else { 0u32 };
@@ -190,12 +187,11 @@ impl RawBitVector {
     /// # Panics
     /// When _`i` >= `self.length()`_.
     fn validate_index(&self, i: u64) {
-        if i >= self.length() {
-            panic!(
-                "`i` must be smaller than {} (length of RawBitVector)",
-                self.length()
-            )
-        };
+        assert!(
+            i < self.length(),
+            "`i` must be smaller than {} (length of RawBitVector)",
+            self.length()
+        );
     }
 }
 
