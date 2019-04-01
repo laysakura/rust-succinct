@@ -11,6 +11,8 @@ impl super::Blocks {
         let chunk_size = Chunks::calc_chunk_size(n);
         let chunks_cnt = Chunks::calc_chunks_cnt(n);
 
+        assert_eq!(chunk_size % block_size as u16, 0);
+
         let blocks_in_chunk_cnt = chunk_size / block_size as u16;
         // Each block takes (log 2^64)^2 = 64^2 = 2^16 at max (when every bit in a chunk is 1 for BitVector of length of 2^64)
         let mut blocks: Vec<u16> = Vec::with_capacity(blocks_cnt as usize);
