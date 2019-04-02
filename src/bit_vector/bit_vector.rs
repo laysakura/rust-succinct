@@ -76,7 +76,9 @@ impl BitVector {
         let block_right = chunk_right.blocks.access(i_block);
         let pos_block_start = i_chunk * chunk_size as u64 + i_block * block_size as u64;
         assert!(i - pos_block_start < block_right.length() as u64);
-        let block_right_rbv = self.rbv.copy_sub(pos_block_start, block_size as u64);
+        let block_right_rbv = self
+            .rbv
+            .copy_sub(pos_block_start, block_right.length() as u64);
         let block_right_as_u32 = block_right_rbv.as_u32();
         let bits_to_use = i - pos_block_start + 1;
         let block_bits = block_right_as_u32 >> (32 - bits_to_use);
@@ -156,6 +158,10 @@ mod rank_success_tests {
         bugfix_100_111_101_011_011_100_101_001_111_001_001_101_100_011_000_111_1___01_000_101_100_101_101_001_011_110_010_001_101_010_010_010_111_111_111_001_111_001_100_010_001_010_101_11: (
             "100_111_101_011_011_100_101_001_111_001_001_101_100_011_000_111_1___01_000_101_100_101_101_001_011_110_010_001_101_010_010_010_111_111_111_001_111_001_100_010_001_010_101_11",
             48, 28,
+        ),
+        bugfix_11100100_10110100_10000000_10111111_01110101_01100110_00101111_11101001_01100100_00001000_11010100_10100000_00010001_10100101_01100100_0010010: (
+            "11100100_10110100_10000000_10111111_01110101_01100110_00101111_11101001_01100100_00001000_11010100_10100000_00010001_10100101_01100100_0010010",
+            126, 56,
         ),
     }
     // Tested more in tests/ (integration test)
