@@ -7,7 +7,12 @@ impl super::Blocks {
         let n = rbv.length();
         let chunk_size = Chunks::calc_chunk_size(n);
         let block_size = Blocks::calc_block_size(n);
-        let blocks_cnt = this_chunk_size / block_size as u16;
+        let blocks_cnt = this_chunk_size / block_size as u16
+            + if this_chunk_size % block_size as u16 == 0 {
+                0
+            } else {
+                1
+            };
 
         let mut blocks: Vec<Block> = Vec::with_capacity(blocks_cnt as usize);
         for i_block in 0..(blocks_cnt as usize) {

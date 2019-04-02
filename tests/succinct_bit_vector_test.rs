@@ -59,12 +59,13 @@ fn fuzzing_test() {
 
     for _ in 0..samples {
         let s = &format!("{:b}", rand::random::<u128>());
-        eprintln!("bit vec = \"{}\"", s);
+        eprintln!("build(): bit vec = \"{}\"", s);
 
         let bvs = BitVectorString::new(s);
         let bv = BitVectorBuilder::from_str(bvs).build();
 
         for i in 0..s.len() {
+            eprintln!("access(): bit vec = \"{}\", i = {}, ", s, i);
             assert_eq!(
                 bv.access(i as u64),
                 access_from_str(s, i as u64),
@@ -75,6 +76,7 @@ fn fuzzing_test() {
                 access_from_str(s, i as u64)
             );
 
+            eprintln!("rank(): bit vec = \"{}\", i = {}, ", s, i);
             assert_eq!(
                 bv.rank(i as u64),
                 rank_from_str(s, i as u64),
