@@ -1,7 +1,9 @@
 mod bit_vector;
 mod bit_vector_builder;
 mod bit_vector_string;
+mod block;
 mod blocks;
+mod chunk;
 mod chunks;
 
 use super::internal_data_structure::popcount_table::PopcountTable;
@@ -75,12 +77,8 @@ pub struct BitVector {
     /// Total _popcount_ of _[0, (last bit of the chunk)]_.
     ///
     /// Each chunk takes _2^64_ at max (when every bit is '1' for BitVector of length of _2^64_).
+    /// A `chunk` has `blocks`.
     chunks: Chunks,
-
-    /// Total _popcount_ of _[(first bit of the chunk where the block belongs to), (last bit of the chunk where the block belongs to)]_.
-    ///
-    /// Each block takes (log 2^64)^2 = 64^2 = 2^16 at max (when every bit in a chunk is 1 for BitVector of length of 2^64)
-    blocks: Blocks,
 
     /// Table to calculate inner-block rank() in O(1).
     table: PopcountTable,
@@ -102,20 +100,33 @@ enum BitVectorSeed {
     Str(BitVectorString),
 }
 
-/// Total _popcount_ of _[0, (last bit of the chunk)]_.
-///
-/// Each chunk takes _2^64_ at max (when every bit is '1' for BitVector of length of _2^64_).
+/// Collection of `Chunk`.
 struct Chunks {
-    chunks: Vec<u64>,
-    chunk_size: u16,
+    chunks: Vec<Chunk>,
     chunks_cnt: u64,
 }
 
-/// Total _popcount_ of _[(first bit of the chunk which the block belongs to), (last bit of the block)]_.
+/// Total _popcount_ of _[0, (last bit of the chunk)]_ of a bit vector.
+///
+/// Each chunk takes _2^64_ at max (when every bit is '1' for BitVector of length of _2^64_).
+struct Chunk {
+    value: u64, // popcount
+    blocks: Blocks,
+
+    #[allow(dead_code)]
+    length: u16,
+}
+
+/// Collection of `Block` in a `Chunk`.
+struct Blocks {
+    blocks: Vec<Block>,
+    blocks_cnt: u16,
+}
+
+/// Total _popcount_ of _[(first bit of the chunk which the block belongs to), (last bit of the block)]_ of a bit vector.
 ///
 /// Each block takes (log 2^64)^2 = 64^2 = 2^16 at max (when every bit in a chunk is 1 for BitVector of length of 2^64)
-struct Blocks {
-    blocks: Vec<u16>,
-    block_size: u8,
-    blocks_cnt: u64,
+struct Block {
+    value: u16, // popcount
+    length: u8,
 }

@@ -1,4 +1,4 @@
-use super::Chunks;
+use super::{Chunk, Chunks};
 use crate::internal_data_structure::raw_bit_vector::RawBitVector;
 
 impl super::Chunks {
@@ -8,15 +8,15 @@ impl super::Chunks {
         let chunk_size: u16 = Chunks::calc_chunk_size(n);
         let chunks_cnt: u64 = Chunks::calc_chunks_cnt(n);
 
-        let mut chunks: Vec<u64> = Vec::with_capacity(chunks_cnt as usize);
-        for i in 0..(chunks_cnt as usize) {
-            let this_chunk_size: u16 = if i as u64 == chunks_cnt - 1 {
+        let mut chunks: Vec<Chunk> = Vec::with_capacity(chunks_cnt as usize);
+        for i_chunk in 0..(chunks_cnt as usize) {
+            let this_chunk_size: u16 = if i_chunk as u64 == chunks_cnt - 1 {
                 // When `chunk_size == 6`:
                 //
                 //  000 111 000 11   : rbv
                 // |       |      |  : chunks
                 //
-                // Here, when `i == 1` (targeting on last '00011' chunk),
+                // Here, when `i_chunk == 1` (targeting on last '00011' chunk),
                 // `this_chunk_size == 5`
                 let chunk_size_or_0 = (n % chunk_size as u64) as u16;
                 if chunk_size_or_0 == 0 {
@@ -28,17 +28,24 @@ impl super::Chunks {
                 chunk_size
             };
 
-            let chunk_rbv = rbv.copy_sub(i as u64 * chunk_size as u64, this_chunk_size as u64);
+            let chunk_rbv =
+                rbv.copy_sub(i_chunk as u64 * chunk_size as u64, this_chunk_size as u64);
 
-            let popcount_in_chunk = chunk_rbv.popcount();
-            chunks.push(popcount_in_chunk + if i == 0 { 0 } else { chunks[i - 1] });
+            let popcnt_in_chunk = chunk_rbv.popcount();
+            let chunk = Chunk::new(
+                popcnt_in_chunk
+                    + if i_chunk == 0 {
+                        0
+                    } else {
+                        chunks[i_chunk - 1].value
+                    },
+                this_chunk_size,
+                rbv,
+                i_chunk as u64,
+            );
+            chunks.push(chunk);
         }
-
-        Chunks {
-            chunks,
-            chunk_size,
-            chunks_cnt,
-        }
+        Chunks { chunks, chunks_cnt }
     }
 
     /// Returns size of 1 chunk: _(log N)^2_.
@@ -60,29 +67,18 @@ impl super::Chunks {
         n / (chunk_size as u64) + if n % (chunk_size as u64) == 0 { 0 } else { 1 }
     }
 
-    /// Returns size of 1 chunk: _(log N)^2_.
-    pub fn chunk_size(&self) -> u16 {
-        self.chunk_size
-    }
-
-    /// Returns count of chunks: _N / (log N)^2_.
-    #[allow(dead_code)]
-    pub fn chunks_cnt(&self) -> u64 {
-        self.chunks_cnt
-    }
-
-    /// Returns a content (total rank to go) of i-th chunk.
+    /// Returns i-th chunk.
     ///
     /// # Panics
     /// When _`i` >= `self.chunks_cnt()`_.
-    pub fn access(&self, i: u64) -> u64 {
+    pub fn access(&self, i: u64) -> &Chunk {
         assert!(
             i <= self.chunks_cnt,
             "i = {} must be smaller then {} (self.chunks_cnt())",
             i,
             self.chunks_cnt
         );
-        self.chunks[i as usize]
+        &self.chunks[i as usize]
     }
 }
 
@@ -105,13 +101,14 @@ mod new_success_tests {
             fn $name() {
                 let input: Input = $value;
                 let rbv = RawBitVector::from_str(&BitVectorString::new(input.in_s));
+                let n = rbv.length();
                 let chunks = Chunks::new(&rbv);
 
-                assert_eq!(chunks.chunk_size(), input.expected_chunk_size);
-                assert_eq!(chunks.chunks_cnt(), input.expected_chunks.len() as u64);
+                assert_eq!(Chunks::calc_chunk_size(n), input.expected_chunk_size);
+                assert_eq!(Chunks::calc_chunks_cnt(n), input.expected_chunks.len() as u64);
                 for (i, expected_chunk) in input.expected_chunks.iter().enumerate() {
                     let chunk = chunks.access(i as u64);
-                    assert_eq!(chunk, *expected_chunk);
+                    assert_eq!(chunk.value(), *expected_chunk);
                 }
             }
         )*

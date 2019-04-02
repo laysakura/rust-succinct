@@ -55,20 +55,8 @@ impl super::BitVectorBuilder {
         }
 
         let chunks = Chunks::new(&rbv);
-
-        // Create blocks
-        let blocks = Blocks::new(&rbv);
-        let block_size = blocks.block_size();
-
-        // Create popcount table
-        let table = PopcountTable::new(block_size);
-
-        BitVector {
-            rbv,
-            chunks,
-            blocks,
-            table,
-        }
+        let table = PopcountTable::new(Blocks::calc_block_size(rbv.length()));
+        BitVector { rbv, chunks, table }
     }
 }
 

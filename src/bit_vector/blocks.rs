@@ -1,76 +1,59 @@
-use super::{Blocks, Chunks};
+use super::{Block, Blocks, Chunks};
 use crate::internal_data_structure::raw_bit_vector::RawBitVector;
 
 impl super::Blocks {
     /// Constructor.
-    pub fn new(rbv: &RawBitVector) -> Blocks {
+    pub fn new(rbv: &RawBitVector, i_chunk: u64, this_chunk_size: u16) -> Blocks {
         let n = rbv.length();
-        let block_size = Blocks::calc_block_size(n);
-        let blocks_cnt: u64 = Blocks::calc_blocks_cnt(n);
-
         let chunk_size = Chunks::calc_chunk_size(n);
-        let chunks_cnt = Chunks::calc_chunks_cnt(n);
+        let block_size = Blocks::calc_block_size(n);
+        let blocks_cnt = this_chunk_size / block_size as u16;
 
-        assert_eq!(chunk_size % block_size as u16, 0);
+        let mut blocks: Vec<Block> = Vec::with_capacity(blocks_cnt as usize);
+        for i_block in 0..(blocks_cnt as usize) {
+            let i_rbv = i_chunk * chunk_size as u64 + i_block as u64 * block_size as u64;
+            assert!(i_rbv < n);
 
-        let blocks_in_chunk_cnt = chunk_size / block_size as u16;
-        // Each block takes (log 2^64)^2 = 64^2 = 2^16 at max (when every bit in a chunk is 1 for BitVector of length of 2^64)
-        let mut blocks: Vec<u16> = Vec::with_capacity(blocks_cnt as usize);
-        for i in 0..(chunks_cnt as usize) {
-            for j in 0..((blocks_in_chunk_cnt as u16) as usize) {
-                let i_rbv = i as u64 * chunk_size as u64 + j as u64 * block_size as u64;
-                if i_rbv >= n {
-                    break;
-                }
+            let this_block_size: u8 = if n - i_rbv >= block_size as u64 {
+                block_size
+            } else {
+                (n - i_rbv) as u8
+            };
 
-                let this_block_size: u8 = if n - i_rbv >= block_size as u64 {
-                    block_size
-                } else {
-                    (n - i_rbv) as u8
-                };
-
-                let block_rbv = rbv.copy_sub(i_rbv, this_block_size as u64);
-
-                let popcount_in_block = block_rbv.popcount() as u16;
-                blocks.push(
-                    popcount_in_block
-                        + if j == 0 {
-                            0
-                        } else {
-                            blocks[i * blocks_in_chunk_cnt as usize + j - 1]
-                        },
-                );
-            }
+            let block_rbv = rbv.copy_sub(i_rbv, this_block_size as u64);
+            let popcount_in_block = block_rbv.popcount() as u16;
+            let block = Block::new(
+                popcount_in_block
+                    + if i_block == 0 {
+                        0
+                    } else {
+                        let block_left = &blocks[i_block - 1];
+                        block_left.value()
+                    },
+                this_block_size,
+            );
+            blocks.push(block);
         }
 
-        Blocks {
-            blocks,
-            block_size,
-            blocks_cnt,
-        }
+        Blocks { blocks, blocks_cnt }
     }
 
-    /// Returns size of 1 block.
-    pub fn block_size(&self) -> u8 {
-        self.block_size
-    }
-
-    /// Returns a content (total rank to go) of i-th block.
+    /// Returns i-th block.
     ///
     /// # Panics
     /// When _`i` >= `self.blocks_cnt()`_.
-    pub fn access(&self, i: u64) -> u16 {
+    pub fn access(&self, i: u64) -> &Block {
         assert!(
-            i <= self.blocks_cnt,
+            i <= self.blocks_cnt as u64,
             "i = {} must be smaller then {} (self.blocks_cnt())",
             i,
             self.blocks_cnt,
         );
-        self.blocks[i as usize]
+        &self.blocks[i as usize]
     }
 
     /// Returns size of 1 block: _(log N) / 2_
-    fn calc_block_size(n: u64) -> u8 {
+    pub fn calc_block_size(n: u64) -> u8 {
         let lg2 = (n as f64).log2() as u8;
         let sz = lg2 / 2;
         if sz == 0 {
@@ -78,11 +61,5 @@ impl super::Blocks {
         } else {
             sz
         }
-    }
-
-    /// Returns count of blocks: _N / (log N) / 2_
-    fn calc_blocks_cnt(n: u64) -> u64 {
-        let block_size = Blocks::calc_block_size(n);
-        n / (block_size as u64) + if n % (block_size as u64) == 0 { 0 } else { 1 }
     }
 }
