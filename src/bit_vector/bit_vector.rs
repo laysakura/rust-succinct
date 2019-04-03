@@ -37,7 +37,7 @@ impl BitVector {
     /// 5. Find `i_block`. _`i_block` = (`i` - `i_chunk` * `chunk_size`) / block size_.
     /// 6. Get _`block_left` = `chunk_right.blocks`[ `i_block` - 1]`_ only if _`i_block` > 0_.
     /// 7. Get _rank from block_left_ if `block_left` exists.
-    /// 8. Get inner-block data. _`block_bits` = [(`i` - i_chunk * chunk_size) % block_size, `i`]_. `block_bits` must be of _block size_ length, fulfilled with _0_ in right bits.
+    /// 8. Get inner-block data _`block_bits`. `block_bits` must be of _block size_ length, fulfilled with _0_ in right bits.
     /// 9. Calculate _rank of `block_bits`_ in _O(1)_ using a table memonizing _block size_ bit's popcount.
     pub fn rank(&self, i: u64) -> u64 {
         let n = self.rbv.length();
