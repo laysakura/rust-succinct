@@ -2,7 +2,7 @@
 extern crate criterion;
 
 use criterion::{BatchSize, Criterion};
-use succinct::{BitVectorBuilder, BitVectorString};
+use succinct::{BitVector, BitVectorBuilder, BitVectorString};
 
 const NS: [u64; 5] = [1 << 16, 1 << 17, 1 << 18, 1 << 19, 1 << 20];
 
@@ -31,9 +31,24 @@ fn builder_from_str_benchmark(c: &mut Criterion) {
     );
 }
 
+fn rank_benchmark(c: &mut Criterion) {
+    c.bench_function_over_inputs(
+        "BitVector::rank(N)",
+        move |b, &&n| {
+            b.iter_batched(
+                || BitVectorBuilder::from_length(n).build(),
+                |bv| (bv).rank(n - 1),
+                BatchSize::SmallInput,
+            )
+        },
+        &NS,
+    );
+}
+
 criterion_group!(
     benches,
     builder_from_length_benchmark,
     builder_from_str_benchmark,
+    rank_benchmark,
 );
 criterion_main!(benches);
