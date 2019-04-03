@@ -40,7 +40,7 @@ fn build_from_str_and_set_bit() {
 
 #[test]
 fn fuzzing_test() {
-    let samples = 100000;
+    let samples = 10000;
 
     fn access_from_str(s: &str, i: u64) -> bool {
         s.chars().collect::<Vec<char>>()[i as usize] == '1'
@@ -65,7 +65,7 @@ fn fuzzing_test() {
         let bv = BitVectorBuilder::from_str(bvs).build();
 
         for i in 0..s.len() {
-            // SLOW: eprintln!("access(): bit vec = \"{}\", i = {}, ", s, i);
+            eprintln!("access(): bit vec = \"{}\", i = {}, ", s, i);
             assert_eq!(
                 bv.access(i as u64),
                 access_from_str(s, i as u64),
@@ -76,7 +76,7 @@ fn fuzzing_test() {
                 access_from_str(s, i as u64)
             );
 
-            // SLOW: eprintln!("rank(): bit vec = \"{}\", i = {}, ", s, i);
+            eprintln!("rank(): bit vec = \"{}\", i = {}, ", s, i);
             assert_eq!(
                 bv.rank(i as u64),
                 rank_from_str(s, i as u64),
