@@ -1,12 +1,29 @@
 language: rust
 rust:
-- stable
+ - 1.33.0  # pinned stable Rust release
+ - stable
+ - beta
+ - nightly
 os:
-- osx
+  - linux
+  - osx
+
 cache: cargo
-before_script: 
+
+before_script:
+  - rustup component add rustfmt
+
 script:
+  - cargo build --release --verbose --all
+  - cargo test --release --verbose --all
+  - cargo fmt --all -- --check
   - cargo doc
+
+branches:
+  only:
+    - master
+
+# GitHub Pages
 deploy:
   provider: pages
   skip_cleanup: true
