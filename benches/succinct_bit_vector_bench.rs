@@ -14,9 +14,18 @@ fn c() -> Criterion {
         .with_plots()
 }
 
+fn git_hash() -> String {
+    use std::process::Command;
+    let output = Command::new("git")
+        .args(&["rev-parse", "--short", "HEAD"])
+        .output()
+        .unwrap();
+    String::from(String::from_utf8(output.stdout).unwrap().trim())
+}
+
 fn builder_from_length_benchmark(_: &mut Criterion) {
     c().bench_function_over_inputs(
-        "BitVectorBuilder::from_length(N).build()",
+        &format!("[{}] BitVectorBuilder::from_length(N).build()", git_hash()),
         |b, &&n| b.iter(|| BitVectorBuilder::from_length(n).build()),
         &NS,
     );
@@ -24,7 +33,10 @@ fn builder_from_length_benchmark(_: &mut Criterion) {
 
 fn builder_from_str_benchmark(_: &mut Criterion) {
     c().bench_function_over_inputs(
-        "BitVectorBuilder::from_str(\"00...(repeated N-times)\").build()",
+        &format!(
+            "[{}] BitVectorBuilder::from_str(\"00...(repeated N-times)\").build()",
+            git_hash()
+        ),
         |b, &&n| {
             b.iter_batched(
                 || {
@@ -43,14 +55,14 @@ fn rank_benchmark(_: &mut Criterion) {
     let times = 1_000_000;
 
     c().bench_function_over_inputs(
-        &format!("BitVector::rank(N) {} times", times),
+        &format!("[{}] BitVector::rank(N) {} times", git_hash(), times),
         move |b, &&n| {
             b.iter_batched(
                 || BitVectorBuilder::from_length(n).build(),
                 |bv| {
                     // iter_batched() does not properly time `routine` time when `setup` time is far longer than `routine` time.
                     // rank() takes too short compared to build(). So loop many times.
-                    for _ in (0..times) {
+                    for _ in 0..times {
                         assert_eq!(bv.rank(n - 1), 0);
                     }
                 },
