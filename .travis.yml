@@ -3,14 +3,11 @@ rust:
 - stable
 os:
 - osx
-
 cache: cargo
-
-before_script:
-
+before_script: 
 script:
-- cargo doc
-
+  - echo $GITHUB_TOKEN |cut -c 1-2
+  - cargo doc
 deploy:
   provider: pages
   skip_cleanup: true
@@ -19,7 +16,6 @@ deploy:
   local_dir: target/doc/succinct
   on:
     branch: feature/html-publish
-
 env:
   global:
-    secure: GYJ6E1DRXh5n8hclgElu/kQ3mavblgCdstrCEtt0WVC55pIOOlbgK8CUoLyD6YZ7azJonu9P9DhnvTSzxVwauX7J35kSoxyAmsvyHwVn4+mq06xZZJRMIj46lhX1ze0RvGEXCw7sG4UKtX2z/sUk/couf0J+L7mlDzRQdcGX3kEY3ci0Qm2cquX9M/ymDUGz1KOTcC8pDS91BKv4IXwy0pGGU/QE2zJt9czeWmAOMJcPTRa004iIqqHjyC6VOsnMGc4ss/LcmNAY0x5NCGUom17O5ovyGeqVm8JYK3tp+NU65Kut8k34MLaONdZxnp+bKRj5r6wHig+bxklraVR0BOK80IGI9gHB0brvHD6isYSjm+z7fvuV/XfSmkqsbZpqelgeuc2mHrG7NmYbtznxUfFoS/6Kb7rSA9av9W2/AXnHcT3ODbxn9NLPqEGM//Al+uy/job4cXYQRmJX4Cg7ROs+ch/9pGJDsNZ5E2h4eAc5HGGoLxDPE7Ip6neV3GslO6j9Lv1/hNQFN88HO//v6g02VxcRK043TPXIRl3q9CR88ucr3+MtzYyXlckefRmW7YKFElQ/3yYtwGrafdPkGQQy2Yuax8gcoNq41pkzHwC9ip/R1GEvof5MmqxgsBerbtOZkTA19/oRwboAYXH23fuA7DEAIRBG3ayA29t0SFo=
+    secure: vFqzBJOlkIXxHgRgdkcNykjEPeVeC4F7S6t+mkrHaYTZPtIA/RSh4O1P6Z8jTCXIuWyHpa21EKy/5tvzOfj2aQImu03yBT6MYa1AcRV8GmnTjKC8fANzXlxk+KeYnEc3FCZJK0ZZFCSvmGTQ5MKeldfWaprRhw9UeFDoECXxNmxG3GTmFAMTAjU+bAAW5Opo3niq6dMAhIyvXvHsycb4ZpLySPAuzNdHhQxrwUkocqt+25nJ8puy45Zmrpb3IxqqP+2/MBDoEcB6XidSXx+JHbqas/CXSP/gpAEPgUujewAJUvL1m/f0fXCKmcmDeIbD5ep0ZGpdz14hNlaOIy3ZBDY7ZkjG3D3u7Go9+alsDvwelo+3EkRD/0k6Y1yR+6/jIOIUv+dlYP1taVjw78e+fwJXNDU47kGRZVsnmPxcChiy2XTVPlRre2ODrYcCHzWCrHwk6RjxEpvViSHMTDCAmrq8v07fHOT6QQrLwJ1zuqAgEEWM5ZZi0+yjWYoQDLb4yt0F7WpqULPLJL5WjdBVYOQCedaHuLXfDCR9eJhQzzb3kxInN6ibbiMjRx3pmkthI+9nh2tphqUJU+feVLyc7/ODG8fnR52xlUqyB693sugVdtUxo25MlXdN10eFKHlxEGgIYFTKmXzBSQLdy6beErFCoJuYTFRurAP13EbgpKY=
