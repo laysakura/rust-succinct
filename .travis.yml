@@ -18,6 +18,7 @@ script:
   - cargo test --release --verbose --all
   - cargo fmt --all -- --check
   - cargo doc
+  - cargo bench --all && mv target/criterion target/doc/
 
 branches:
   only:
