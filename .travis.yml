@@ -6,7 +6,6 @@ os:
 cache: cargo
 before_script: 
 script:
-  - echo $GITHUB_TOKEN |cut -c 1-2
   - cargo doc
 deploy:
   provider: pages
@@ -16,6 +15,7 @@ deploy:
   local_dir: target/doc/succinct
   on:
     branch: feature/html-publish
+  verbose: true
 env:
   global:
     secure: vFqzBJOlkIXxHgRgdkcNykjEPeVeC4F7S6t+mkrHaYTZPtIA/RSh4O1P6Z8jTCXIuWyHpa21EKy/5tvzOfj2aQImu03yBT6MYa1AcRV8GmnTjKC8fANzXlxk+KeYnEc3FCZJK0ZZFCSvmGTQ5MKeldfWaprRhw9UeFDoECXxNmxG3GTmFAMTAjU+bAAW5Opo3niq6dMAhIyvXvHsycb4ZpLySPAuzNdHhQxrwUkocqt+25nJ8puy45Zmrpb3IxqqP+2/MBDoEcB6XidSXx+JHbqas/CXSP/gpAEPgUujewAJUvL1m/f0fXCKmcmDeIbD5ep0ZGpdz14hNlaOIy3ZBDY7ZkjG3D3u7Go9+alsDvwelo+3EkRD/0k6Y1yR+6/jIOIUv+dlYP1taVjw78e+fwJXNDU47kGRZVsnmPxcChiy2XTVPlRre2ODrYcCHzWCrHwk6RjxEpvViSHMTDCAmrq8v07fHOT6QQrLwJ1zuqAgEEWM5ZZi0+yjWYoQDLb4yt0F7WpqULPLJL5WjdBVYOQCedaHuLXfDCR9eJhQzzb3kxInN6ibbiMjRx3pmkthI+9nh2tphqUJU+feVLyc7/ODG8fnR52xlUqyB693sugVdtUxo25MlXdN10eFKHlxEGgIYFTKmXzBSQLdy6beErFCoJuYTFRurAP13EbgpKY=
