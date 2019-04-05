@@ -40,12 +40,20 @@ fn builder_from_str_benchmark(_: &mut Criterion) {
 }
 
 fn rank_benchmark(_: &mut Criterion) {
+    let times = 1_000_000;
+
     c().bench_function_over_inputs(
-        "BitVector::rank(N)",
+        &format!("BitVector::rank(N) {} times", times),
         move |b, &&n| {
             b.iter_batched(
                 || BitVectorBuilder::from_length(n).build(),
-                |bv| (bv).rank(n - 1),
+                |bv| {
+                    // iter_batched() does not properly time `routine` time when `setup` time is far longer than `routine` time.
+                    // rank() takes too short compared to build(). So loop many times.
+                    for _ in (0..times) {
+                        assert_eq!(bv.rank(n - 1), 0);
+                    }
+                },
                 BatchSize::SmallInput,
             )
         },
