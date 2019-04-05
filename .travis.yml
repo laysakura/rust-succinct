@@ -11,6 +11,7 @@ os:
 cache: cargo
 
 before_script:
+  - brew install gnuplot
   - rustup component add rustfmt
 
 script:
