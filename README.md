@@ -41,7 +41,9 @@ succinct_rs = "0.1"
 ### [Succinct Bit Vector](https://laysakura.github.io/succinct.rs/succinct_rs/bit_vector/struct.BitVector.html) Usage
 
 ```rust
-use succinct::bit_vector::{BitVectorBuilder, BitVectorString};
+extern crate succinct_rs;
+
+use succinct_rs::bit_vector::{BitVectorBuilder, BitVectorString};
 
 // `01001` built by `from_length()` and `set_bit()`
 let bv = BitVectorBuilder::from_length(5)
