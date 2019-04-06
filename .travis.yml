@@ -16,7 +16,7 @@ addons:
       - gnuplot-nox
   brew:
     packages:
-      - gnuplot-nox
+      - gnuplot
 
 before_script:
   - ./ci/before_script.sh
