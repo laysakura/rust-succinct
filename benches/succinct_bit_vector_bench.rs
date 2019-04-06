@@ -73,10 +73,39 @@ fn rank_benchmark(_: &mut Criterion) {
     );
 }
 
+fn select_benchmark(_: &mut Criterion) {
+    let times = 1_000;
+
+    c().bench_function_over_inputs(
+        &format!("[{}] BitVector::select(N) {} times", git_hash(), times),
+        move |b, &&n| {
+            b.iter_batched(
+                || {
+                    let mut builder = BitVectorBuilder::from_length(n);
+                    for i in 0..n {
+                        builder.set_bit(i);
+                    }
+                    builder.build()
+                },
+                |bv| {
+                    // iter_batched() does not properly time `routine` time when `setup` time is far longer than `routine` time.
+                    // rank() takes too short compared to build(). So loop many times.
+                    for _ in 0..times {
+                        assert_eq!(bv.select(n - 1), Some(n - 2));
+                    }
+                },
+                BatchSize::SmallInput,
+            )
+        },
+        &NS,
+    );
+}
+
 criterion_group!(
     benches,
     builder_from_length_benchmark,
     builder_from_str_benchmark,
     rank_benchmark,
+    select_benchmark,
 );
 criterion_main!(benches);
