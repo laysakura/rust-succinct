@@ -84,7 +84,7 @@ When the length of a `BitVector` is `N`:
 (Actually, `select()`'s time-complexity can be _O(1)_ with complex implementation but Succinct.rs, like many other libraries, uses binary search of `rank()`'s result).
 
 ## Versions
-Succinct.rs uses semantic versioning.
+Succinct.rs uses [semantic versioning](http://semver.org/spec/v2.0.0.html).
 
 Since current major version is _0_, minor version update might involve breaking public API change (although it is carefully avoided).
 
