@@ -8,7 +8,7 @@ Succinct Data Structures library for Rust.
 |
 [Benchmark Results](https://laysakura.github.io/succinct.rs/criterion/report/)
 |
-[Changelog](https://github.com/laysakura/succinct.rs/blob/master/CHANGELOG.md)
+[Changelog](CHANGELOG.md)
 
 [![Build Status](https://travis-ci.org/laysakura/succinct.rs.svg?branch=master)](https://travis-ci.org/laysakura/succinct.rs)
 [![Crates.io](https://img.shields.io/crates/v/succinct_rs.svg)](https://crates.io/crates/succinct_rs)
