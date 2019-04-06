@@ -7,9 +7,12 @@ rust:
 os:
   - linux
   - osx
-
+branches:
+  only:
+    - master
 cache: cargo
 
+# gnuplot for Criterion HTML Report
 addons:
   apt:
     packages:
@@ -20,13 +23,8 @@ addons:
 
 before_script:
   - ./ci/before_script.sh
-
 script:
   - ./ci/script.sh
-
-branches:
-  only:
-    - master
 
 # GitHub Pages
 deploy:
