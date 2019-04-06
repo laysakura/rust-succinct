@@ -209,3 +209,20 @@ mod rank_failure_tests {
         let _ = bv.rank(2);
     }
 }
+
+#[cfg(test)]
+mod select_success_tests {
+    // Tested well in tests/ (integration test)
+}
+
+#[cfg(test)]
+mod select_failure_tests {
+    use super::super::BitVectorBuilder;
+
+    #[test]
+    #[should_panic]
+    fn select_over_max_rank() {
+        let bv = BitVectorBuilder::from_length(2).build();
+        let _ = bv.select(3);
+    }
+}
