@@ -10,15 +10,15 @@ Succinct Data Structures library for Rust.
 |
 [Changelog](https://github.com/laysakura/succinct.rs/blob/master/CHANGELOG.md)
 
-[![Build Status](https://travis-ci.com/laysakura/succinct.rs.svg?branch=master)](https://travis-ci.com/laysakura/succinct.rs)
+[![Build Status](https://travis-ci.org/laysakura/succinct.rs.svg?branch=master)](https://travis-ci.org/laysakura/succinct.rs)
 [![Crates.io](https://img.shields.io/crates/v/succinct_rs.svg)](https://crates.io/crates/succinct_rs)
 [![Minimum rustc version](https://img.shields.io/badge/rustc-1.33+-lightgray.svg)](https://github.com/laysakura/succinct.rs#rust-version-supports)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/laysakura/succinct.rs/blob/master/LICENSE-MIT)
-[![License: Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-blue.svg)](https://github.com/laysakura/succinct.rs/blob/master/LICENSE-APACHE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE-MIT)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-blue.svg)](LICENSE-APACHE)
 
 Succinct.rs is a library to provide succinct data structures with _simple API_ and _high performance_.
 
-Currently, **[Succinct Bit Vector](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html)** is supported.
+Currently, **Succinct Bit Vector** is supported.
 
 ## Table of Contents
 - [Table of Contents](#table-of-contents)
@@ -38,7 +38,7 @@ To use with Succinct.rs, add the following to your `Cargo.toml` file:
 succinct_rs = "0.1"
 ```
 
-### [Succinct Bit Vector](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html) Usage
+### Succinct Bit Vector Usage
 
 ```rust
 use succinct::bit_vector::{BitVectorBuilder, BitVectorString};
@@ -70,13 +70,13 @@ let bv = BitVectorBuilder::from_str(BitVectorString::new("1001_0")).build();  //
 
 - **Arbitrary length support with minimum working memory**: Succinct.rs provides virtually _arbitrary length_ of data structures. There are carefully designed to use as small memory space as possible.
 - **Simple public APIs**: Each data structures almost only have very basic operations for the data structure. `succinct::BitVector`, for example, has only `access()`, `rank()`, and `select()`.
-- **Latest benchmark results are always accessible**: Succinct.rs is continuously benchmarked in Travis CI using [Criterion.rs](https://crates.io/crates/criterion). Graphical benchmark results are published [here](https://laysakura.github.io/succinct.rs/criterion/report/).
+- **Latest benchmark results are always accessible**: Succinct.rs is continuously benchmarked in Travis CI using [Criterion.rs](https://crates.io/crates/criterion#quickstart). Graphical benchmark results are published [here](https://laysakura.github.io/succinct.rs/criterion/report/).
 
-### [Succinct Bit Vector](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html) Complexity
+### Succinct Bit Vector Complexity
 
 When the length of a `BitVector` is `N`:
 
-|                  | [build()](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVectorBuilder.html#method.build) | [access()](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html#method.access) | [rank()](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html#method.rank) | [select()](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html#method.select) |
+|                  | `build()` <br>(Implemented in `BitVectorBuilder::build()`) | `access()` | `rank()` | `select()` |
 |------------------|--------------------------------------------------------|------------|----------|------------|
 | Time-complexity  | _O(N)_                                                 | _O(1)_     | _O(1)_   | _O(log N)_ |
 | Space-complexity | _N + o(N)_                                             | _0_        | _O(log N)_   | _O(log N)_     |
@@ -84,7 +84,7 @@ When the length of a `BitVector` is `N`:
 (Actually, `select()`'s time-complexity can be _O(1)_ with complex implementation but Succinct.rs, like many other libraries, uses binary search of `rank()`'s result).
 
 ## Versions
-Succinct.rs uses [semantic versioning](http://semver.org/spec/v2.0.0.html).
+Succinct.rs uses semantic versioning.
 
 Since current major version is _0_, minor version update might involve breaking public API change (although it is carefully avoided).
 
@@ -97,13 +97,13 @@ Succinct.rs is continuously tested with these Rust versions in Travis CI:
 - Beta version
 - Nightly build
 
-So it expectedly works with Rust 1.33.0 and any newer versions.
+So it is expectedly work with Rust 1.33.0 and any newer versions.
 
 Older versions may also work, but are not tested or guaranteed.
 
 ## Roadmap
 
-Succinct.rs has plan to provide these succinct data structures.
+Succinct.rs has plant to provide these succinct data structures.
 
 1. Succinct Bit Vector **(done)**
 2. [LOUDS](https://dl.acm.org/citation.cfm?id=1398646)
