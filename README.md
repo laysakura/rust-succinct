@@ -97,13 +97,13 @@ Succinct.rs is continuously tested with these Rust versions in Travis CI:
 - Beta version
 - Nightly build
 
-So it is expectedly work with Rust 1.33.0 and any newer versions.
+So it expectedly works with Rust 1.33.0 and any newer versions.
 
 Older versions may also work, but are not tested or guaranteed.
 
 ## Roadmap
 
-Succinct.rs has plant to provide these succinct data structures.
+Succinct.rs has plan to provide these succinct data structures.
 
 1. Succinct Bit Vector **(done)**
 2. [LOUDS](https://dl.acm.org/citation.cfm?id=1398646)
