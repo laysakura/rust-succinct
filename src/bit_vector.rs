@@ -20,26 +20,29 @@ use std::collections::HashSet;
 ///
 /// # Examples
 /// ```
-/// use succinct::bit_vector::{BitVectorBuilder, BitVectorString};
-///
+/// extern crate succinct_rs;
+/// 
+/// use succinct_rs::bit_vector::{BitVectorBuilder, BitVectorString};
+/// 
 /// // `01001` built by `from_length()` and `set_bit()`
 /// let bv = BitVectorBuilder::from_length(5)
 ///     .set_bit(1)
 ///     .set_bit(4)
 ///     .build();
-///
-/// assert_eq!(bv.access(0), false);  // [0]1001
-/// assert_eq!(bv.access(1), true);   // 0[1]001
-/// assert_eq!(bv.access(4), true);   // 0100[1]
-///
-/// assert_eq!(bv.rank(0), 0);  // [0]1001
-/// assert_eq!(bv.rank(3), 1);  // [0100]1
-/// assert_eq!(bv.rank(4), 2);  // [01001]
-///
-/// assert_eq!(bv.select(1), Some(1)); // 0[1]001
-/// assert_eq!(bv.select(2), Some(4)); // 0100[1]
-/// assert_eq!(bv.select(3), None);    // 3rd '1' does not exist in bit vector
-///
+/// 
+/// assert_eq!(bv.access(0), false);  // [0]1001; 0th bit is '0' (false)
+/// assert_eq!(bv.access(1), true);   // 0[1]001; 1st bit is '1' (true)
+/// assert_eq!(bv.access(4), true);   // 0100[1]; 4th bit is '1' (true)
+/// 
+/// assert_eq!(bv.rank(0), 0);  // [0]1001; Range [0, 0] has no '1'
+/// assert_eq!(bv.rank(3), 1);  // [0100]1; Range [0, 3] has 1 '1'
+/// assert_eq!(bv.rank(4), 2);  // [01001]; Range [0, 4] has 2 '1's
+/// 
+/// assert_eq!(bv.select(0), Some(0)); // []01001; Minimum `i` where range [0, i] has 0 '1's is `i=0`
+/// assert_eq!(bv.select(1), Some(1)); // 0[1]001; Minimum `i` where range [0, i] has 1 '1's is `i=1`
+/// assert_eq!(bv.select(2), Some(4)); // 0100[1]; Minimum `i` where range [0, i] has 2 '1's is `i=4`
+/// assert_eq!(bv.select(3), None);    // There is no `i` where range [0, i] has 3 '1's
+/// 
 /// // `10010` built by `from_str()`
 /// let bv = BitVectorBuilder::from_str(BitVectorString::new("1001_0")).build();  // Tips: BitVectorString::new() ignores '_'.
 /// ```

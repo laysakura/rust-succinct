@@ -3,7 +3,7 @@ extern crate criterion;
 
 use criterion::{BatchSize, Criterion};
 use std::time::Duration;
-use succinct::{BitVectorBuilder, BitVectorString};
+use succinct_rs::{BitVectorBuilder, BitVectorString};
 
 const NS: [u64; 5] = [1 << 16, 1 << 17, 1 << 18, 1 << 19, 1 << 20];
 

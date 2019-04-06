@@ -9,7 +9,7 @@ impl super::BitVectorString {
     ///
     /// # Examples
     /// ```
-    /// use succinct::bit_vector::BitVectorString;
+    /// use succinct_rs::bit_vector::BitVectorString;
     ///
     /// let bvs = BitVectorString::new("01");
     /// assert_eq!(bvs.str(), "01");
