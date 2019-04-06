@@ -36,20 +36,12 @@ use std::collections::HashSet;
 /// assert_eq!(bv.rank(3), 1);  // [0100]1
 /// assert_eq!(bv.rank(4), 2);  // [01001]
 ///
-/// // TODO select() example
+/// assert_eq!(bv.select(1), Some(1)); // 0[1]001
+/// assert_eq!(bv.select(2), Some(4)); // 0100[1]
+/// assert_eq!(bv.select(3), None);    // 3rd '1' does not exist in bit vector
 ///
 /// // `10010` built by `from_str()`
 /// let bv = BitVectorBuilder::from_str(BitVectorString::new("1001_0")).build();  // Tips: BitVectorString::new() ignores '_'.
-///
-/// assert_eq!(bv.access(0), true);   // [1]0010
-/// assert_eq!(bv.access(1), false);  // 1[0]010
-/// assert_eq!(bv.access(4), false);  // 1001[0]
-///
-/// assert_eq!(bv.rank(0), 1);  // [1]0010
-/// assert_eq!(bv.rank(3), 2);  // [1001]0
-/// assert_eq!(bv.rank(4), 2);  // [10010]
-///
-/// // TODO select() example
 /// ```
 ///
 /// # Complexity
