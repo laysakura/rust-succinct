@@ -57,6 +57,23 @@ fn fuzzing_test() {
         rank
     }
 
+    fn select_from_str(s: &str, num: u64) -> Option<u64> {
+        if num == 0 {
+            return None;
+        };
+
+        let mut cnt: u64 = 0;
+        for (i, ch) in s.chars().enumerate() {
+            if ch == '1' {
+                cnt += 1;
+            }
+            if cnt == num {
+                return Some(i as u64);
+            }
+        }
+        None
+    }
+
     for _ in 0..samples {
         let s = &format!("{:b}", rand::random::<u128>());
         eprintln!("build(): bit vec = \"{}\"", s);
@@ -87,7 +104,16 @@ fn fuzzing_test() {
                 rank_from_str(s, i as u64)
             );
 
-            // TODO test for select();
+            eprintln!("select(): bit vec = \"{}\", num = {}, ", s, i);
+            assert_eq!(
+                bv.select(i as u64),
+                select_from_str(s, i as u64),
+                "bit vec = \"{}\", i={}, BitVector::select()={}, select_from_str={}",
+                s,
+                i,
+                bv.select(i as u64),
+                select_from_str(s, i as u64)
+            );
         }
     }
 }
