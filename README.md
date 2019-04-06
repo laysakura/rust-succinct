@@ -76,7 +76,7 @@ let bv = BitVectorBuilder::from_str(BitVectorString::new("1001_0")).build();  //
 
 When the length of a `BitVector` is `N`:
 
-|                  | `[build()](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVectorBuilder.html#method.build)`) | `[access()](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html#method.access)` | `[rank()](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html#method.rank)` | `[select()](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html#method.select)` |
+|                  | [build()](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVectorBuilder.html#method.build) | [access()](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html#method.access) | [rank()](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html#method.rank) | [select()](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html#method.select) |
 |------------------|--------------------------------------------------------|------------|----------|------------|
 | Time-complexity  | _O(N)_                                                 | _O(1)_     | _O(1)_   | _O(log N)_ |
 | Space-complexity | _N + o(N)_                                             | _0_        | _O(log N)_   | _O(log N)_     |
