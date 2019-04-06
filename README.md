@@ -70,7 +70,7 @@ let bv = BitVectorBuilder::from_str(BitVectorString::new("1001_0")).build();  //
 
 - **Arbitrary length support with minimum working memory**: Succinct.rs provides virtually _arbitrary length_ of data structures. There are carefully designed to use as small memory space as possible.
 - **Simple public APIs**: Each data structures almost only have very basic operations for the data structure. `succinct::BitVector`, for example, has only `access()`, `rank()`, and `select()`.
-- **Latest benchmark results are always accessible**: Succinct.rs is continuously benchmarked in Travis CI using [Criterion.rs](https://crates.io/crates/criterion#quickstart). Graphical benchmark results are published [here](https://laysakura.github.io/succinct.rs/criterion/report/).
+- **Latest benchmark results are always accessible**: Succinct.rs is continuously benchmarked in Travis CI using [Criterion.rs](https://crates.io/crates/criterion). Graphical benchmark results are published [here](https://laysakura.github.io/succinct.rs/criterion/report/).
 
 ### [Succinct Bit Vector](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html) Complexity
 
