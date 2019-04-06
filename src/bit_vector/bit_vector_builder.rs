@@ -4,7 +4,7 @@ use crate::internal_data_structure::raw_bit_vector::RawBitVector;
 use std::collections::HashSet;
 
 impl super::BitVectorBuilder {
-    /// Prepares a bit vector of `length`, willed with 0.
+    /// Prepares a bit vector of `length`, fulfilled with 0.
     ///
     /// # Panics
     /// When _`length` == 0_.
@@ -17,7 +17,7 @@ impl super::BitVectorBuilder {
         }
     }
 
-    /// Prepares a bit vector from `BitVectorString` representation.
+    /// Prepares a bit vector from [BitVectorString](struct.BitVectorString.html) representation.
     pub fn from_str(bit_vector_str: BitVectorString) -> BitVectorBuilder {
         BitVectorBuilder {
             seed: BitVectorSeed::Str(bit_vector_str),
@@ -28,7 +28,7 @@ impl super::BitVectorBuilder {
     /// Set 1 to i-th bit.
     ///
     /// # Panics
-    /// When _`i` >= Length of bit vector to build_.
+    /// When _`i` >= <u>Length of bit vector to build</u>_.
     pub fn set_bit(&mut self, i: u64) -> &mut BitVectorBuilder {
         let length = match &self.seed {
             BitVectorSeed::Length(n) => *n,
@@ -44,7 +44,7 @@ impl super::BitVectorBuilder {
         self
     }
 
-    /// Build `succinct::BitVector` in _O(N)_ time (where _N_ is the length of the bit vector to build).
+    /// Build [BitVector](struct.BitVector.html) in _O(N)_ time (where _N_ is the length of the bit vector to build).
     pub fn build(&self) -> BitVector {
         let mut rbv = match &self.seed {
             BitVectorSeed::Length(n) => RawBitVector::from_length(*n),

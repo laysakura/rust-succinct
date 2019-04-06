@@ -133,23 +133,23 @@ pub struct BitVector {
     /// Raw data.
     rbv: RawBitVector,
 
-    /// Total _popcount_ of _[0, (last bit of the chunk)]_.
+    /// Total popcount of _[0, <u>last bit of the chunk</u>]_.
     ///
-    /// Each chunk takes _2^64_ at max (when every bit is '1' for BitVector of length of _2^64_).
-    /// A `chunk` has `blocks`.
+    /// Each chunk takes _2^64_ at max (when every bit is '1' for bit vector of length of _2^64_).
+    /// A chunk has blocks.
     chunks: Chunks,
 
-    /// Table to calculate inner-block rank() in O(1).
+    /// Table to calculate inner-block `rank()` in _O(1)_.
     table: PopcountTable,
 }
 
-/// Builder of `succinct::BitVector`.
+/// Builder of [BitVector](struct.BitVector.html).
 pub struct BitVectorBuilder {
     seed: BitVectorSeed,
     bits_set: HashSet<u64>,
 }
 
-/// Provides validated string representation of `succinct::BitVector`.
+/// Provides validated string representation of [BitVector](struct.BitVector.html).
 pub struct BitVectorString {
     s: String,
 }
@@ -159,13 +159,13 @@ enum BitVectorSeed {
     Str(BitVectorString),
 }
 
-/// Collection of `Chunk`.
+/// Collection of Chunk.
 struct Chunks {
     chunks: Vec<Chunk>,
     chunks_cnt: u64,
 }
 
-/// Total _popcount_ of _[0, (last bit of the chunk)]_ of a bit vector.
+/// Total popcount of _[0, <u>last bit of the chunk</u>]_ of a bit vector.
 ///
 /// Each chunk takes _2^64_ at max (when every bit is '1' for BitVector of length of _2^64_).
 struct Chunk {
@@ -176,13 +176,13 @@ struct Chunk {
     length: u16,
 }
 
-/// Collection of `Block` in a `Chunk`.
+/// Collection of Block in a Chunk.
 struct Blocks {
     blocks: Vec<Block>,
     blocks_cnt: u16,
 }
 
-/// Total _popcount_ of _[(first bit of the chunk which the block belongs to), (last bit of the block)]_ of a bit vector.
+/// Total popcount of _[_first bit of the chunk which the block belongs to_, _last bit of the block_]_ of a bit vector.
 ///
 /// Each block takes (log 2^64)^2 = 64^2 = 2^16 at max (when every bit in a chunk is 1 for BitVector of length of 2^64)
 struct Block {
