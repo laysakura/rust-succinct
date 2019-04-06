@@ -8,4 +8,5 @@ cargo build --release --verbose --all
 cargo test --release --verbose --all
 cargo fmt --all -- --check
 cargo doc
+find target/doc/
 cargo bench --all && mv -f target/criterion target/doc/

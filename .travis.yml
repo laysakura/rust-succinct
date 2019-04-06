@@ -14,11 +14,7 @@ before_script:
   - ./ci/before_script.sh
 
 script:
-  - cargo build --release --verbose --all
-  - cargo test --release --verbose --all
-  - cargo fmt --all -- --check
-  - cargo doc
-  - cargo bench --all && mv -f target/criterion target/doc/
+  - ./ci/script.sh
 
 branches:
   only:
