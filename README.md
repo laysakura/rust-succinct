@@ -2,7 +2,7 @@
 
 Succinct Data Structures library for Rust.
 
-[Master API Docs](https://laysakura.github.io/succinct.rs/succinct/)
+[Master API Docs](https://laysakura.github.io/succinct.rs/succinct_rs/)
 |
 [Released API Docs](https://docs.rs/crate/succinct_rs)
 |
@@ -18,7 +18,7 @@ Succinct Data Structures library for Rust.
 
 Succinct.rs is a library to provide succinct data structures with _simple API_ and _high performance_.
 
-Currently, **[Succinct Bit Vector](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html)** is supported.
+Currently, **[Succinct Bit Vector](https://laysakura.github.io/succinct.rs/succinct_rs/bit_vector/struct.BitVector.html)** is supported.
 
 ## Table of Contents
 - [Table of Contents](#table-of-contents)
@@ -38,7 +38,7 @@ To use with Succinct.rs, add the following to your `Cargo.toml` file:
 succinct_rs = "0.1"
 ```
 
-### [Succinct Bit Vector](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html) Usage
+### [Succinct Bit Vector](https://laysakura.github.io/succinct.rs/succinct_rs/bit_vector/struct.BitVector.html) Usage
 
 ```rust
 use succinct::bit_vector::{BitVectorBuilder, BitVectorString};
@@ -72,11 +72,11 @@ let bv = BitVectorBuilder::from_str(BitVectorString::new("1001_0")).build();  //
 - **Simple public APIs**: Each data structures almost only have very basic operations for the data structure. `succinct::BitVector`, for example, has only `access()`, `rank()`, and `select()`.
 - **Latest benchmark results are always accessible**: Succinct.rs is continuously benchmarked in Travis CI using [Criterion.rs](https://crates.io/crates/criterion). Graphical benchmark results are published [here](https://laysakura.github.io/succinct.rs/criterion/report/).
 
-### [Succinct Bit Vector](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html) Complexity
+### [Succinct Bit Vector](https://laysakura.github.io/succinct.rs/succinct_rs/bit_vector/struct.BitVector.html) Complexity
 
 When the length of a `BitVector` is `N`:
 
-|                  | [build()](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVectorBuilder.html#method.build) | [access()](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html#method.access) | [rank()](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html#method.rank) | [select()](https://laysakura.github.io/succinct.rs/succinct/bit_vector/struct.BitVector.html#method.select) |
+|                  | [build()](https://laysakura.github.io/succinct.rs/succinct_rs/bit_vector/struct.BitVectorBuilder.html#method.build) | [access()](https://laysakura.github.io/succinct.rs/succinct_rs/bit_vector/struct.BitVector.html#method.access) | [rank()](https://laysakura.github.io/succinct.rs/succinct_rs/bit_vector/struct.BitVector.html#method.rank) | [select()](https://laysakura.github.io/succinct.rs/succinct_rs/bit_vector/struct.BitVector.html#method.select) |
 |------------------|--------------------------------------------------------|------------|----------|------------|
 | Time-complexity  | _O(N)_                                                 | _O(1)_     | _O(1)_   | _O(log N)_ |
 | Space-complexity | _N + o(N)_                                             | _0_        | _O(log N)_   | _O(log N)_     |
