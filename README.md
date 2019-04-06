@@ -10,7 +10,7 @@ Succinct Data Structures library for Rust.
 |
 [Changelog](https://github.com/laysakura/succinct.rs/blob/master/CHANGELOG.md)
 
-[![Build Status](https://travis-ci.org/laysakura/succinct.rs.svg?branch=master)](https://travis-ci.org/laysakura/succinct.rs)
+[![Build Status](https://travis-ci.com/laysakura/succinct.rs.svg?branch=master)](https://travis-ci.com/laysakura/succinct.rs)
 [![Crates.io](https://img.shields.io/crates/v/succinct_rs.svg)](https://crates.io/crates/succinct_rs)
 [![Minimum rustc version](https://img.shields.io/badge/rustc-1.33+-lightgray.svg)](https://github.com/laysakura/succinct.rs#rust-version-supports)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/laysakura/succinct.rs/blob/master/LICENSE-MIT)
