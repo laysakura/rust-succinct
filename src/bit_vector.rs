@@ -14,8 +14,7 @@ use std::collections::HashSet;
 ///
 /// This class can handle bit sequence of virtually **arbitrary length.**
 ///
-/// In fact, _N_ (`BitVector`'s length) is designed to be limited to: _N <= 2^64_.<br>
-/// So you can make a bit vector like `01...` (sequence of _2^64_ '0' or '1'), and then calculate `rank()` and `select()` for that vector.<br>
+/// In fact, _N_ (bit vector's length) is designed to be limited to: _N <= 2^64_.<br>
 /// It should be enough for almost all usecases since a binary data of length of _2^64_ consumes _2^24 = 16,777,216_ TB (terabyte), which is hard to handle by state-of-the-art computer architecture.
 ///
 /// # Examples
@@ -38,10 +37,10 @@ use std::collections::HashSet;
 /// assert_eq!(bv.rank(3), 1);  // [0100]1; Range [0, 3] has 1 '1'
 /// assert_eq!(bv.rank(4), 2);  // [01001]; Range [0, 4] has 2 '1's
 ///
-/// assert_eq!(bv.select(0), Some(0)); // []01001; Minimum `i` where range [0, i] has 0 '1's is `i=0`
-/// assert_eq!(bv.select(1), Some(1)); // 0[1]001; Minimum `i` where range [0, i] has 1 '1's is `i=1`
-/// assert_eq!(bv.select(2), Some(4)); // 0100[1]; Minimum `i` where range [0, i] has 2 '1's is `i=4`
-/// assert_eq!(bv.select(3), None);    // There is no `i` where range [0, i] has 3 '1's
+/// assert_eq!(bv.select(0), Some(0)); // []01001; Minimum i where range [0, i] has 0 '1's is i=0
+/// assert_eq!(bv.select(1), Some(1)); // 0[1]001; Minimum i where range [0, i] has 1 '1's is i=1
+/// assert_eq!(bv.select(2), Some(4)); // 0100[1]; Minimum i where range [0, i] has 2 '1's is i=4
+/// assert_eq!(bv.select(3), None);    // There is no i where range [0, i] has 3 '1's
 ///
 /// // `10010` built by `from_str()`
 /// let bv = BitVectorBuilder::from_str(BitVectorString::new("1001_0")).build();  // Tips: BitVectorString::new() ignores '_'.
@@ -51,14 +50,14 @@ use std::collections::HashSet;
 /// See [README](https://github.com/laysakura/succinct.rs/blob/master/README.md#succinct-bit-vector-complexity).
 ///
 /// # Implementation detail
-/// [access()](https://laysakura.github.io/succinct.rs/succinct_rs/bit_vector/struct.BitVector.html#method.access)'s implementation is trivial.
+/// [access()](#method.access)'s implementation is trivial.
 ///
-/// [select()](https://laysakura.github.io/succinct.rs/succinct_rs/bit_vector/struct.BitVector.html#method.select) just uses binary search of `rank()` results.
+/// [select()](#method.select) just uses binary search of `rank()` results.
 ///
-/// [rank()](https://laysakura.github.io/succinct.rs/succinct_rs/bit_vector/struct.BitVector.html#method.rank)'s implementation is standard but non-trivial.
+/// [rank()](#method.rank)'s implementation is standard but non-trivial.
 /// So here explains implementation of _rank()_.
 ///
-/// ## [rank()](https://laysakura.github.io/succinct.rs/succinct_rs/bit_vector/struct.BitVector.html#method.rank)'s implementation
+/// ## [rank()](#method.rank)'s implementation
 /// Say you have the following bit vector.
 ///
 /// ```text
@@ -70,8 +69,8 @@ use std::collections::HashSet;
 /// Naively, you can count the number of '1' from left to right.
 /// You will find _rank(48) == 10_ but it took _O(N)_ time-complexity.
 ///
-/// To reduce time-complexity to _O(1)_, you can use _memonization_ technique.
-/// Of course, you can memonize results of _rank(i)_ for every _i [0, N-1]_.
+/// To reduce time-complexity to _O(1)_, you can use _memonization_ technique.<br>
+/// Of course, you can memonize results of _rank(i)_ for every _i ([0, N-1])_.
 ///
 /// ```text
 /// Bit vector;   0  0  0  0  1  0  0  0  0  1  0  0  0  0  0  1  0  0  0  0  0  1  0  0  1  1  0  0  0  0  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  1  0  1  [1]  0  1  0  0  0  0  0  0  0  0  1  0  0  0  0  0  0  1 ; (N=67)
@@ -88,30 +87,29 @@ use std::collections::HashSet;
 /// Block;     |0 |1 |1  |2 |2 |3  |3 |4 |6  |6 |6  |7 |0 |0  |0 |2 |4    |4 |4  |5 |5 |5  |6| ; (size = (log N) / 2 = 3)
 /// ```
 ///
-/// - A **Chunk** has size of _(log N)^2_. Its value is _rank(`index of the last bit of the chunk`)_.
-/// - A **Block** has size of _(log N) / 2_. A chunk has many blocks. Block's value is the number of '1's in _[`index of the first bit of the chunk the block belongs to`, `index of the last bit of the block`]_ (note that the value is reset to 0 at the first bit of a chunk).
+/// - A **Chunk** has size of _(log N)^2_. Its value is _rank(<u>index of the last bit of the chunk</u>)_.
+/// - A **Block** has size of _(log N) / 2_. A chunk has many blocks. Block's value is the number of '1's in _[<u>index of the first bit of the chunk the block belongs to</u>, <u>index of the last bit of the block</u>]_ (note that the value is reset to 0 at the first bit of a chunk).
 ///
-/// Now you want to answer _rank(48)_. 48-th bit is in the 2nd chunk, and in the 5th block in the chunk.
+/// Now you want to answer _rank(48)_. 48-th bit is in the 2nd chunk, and in the 5th block in the chunk.<br>
 /// So the _rank(48)_ is at least:
 ///
-///   _7 (value of 1st chunk) + 2 (value of 4th block in the 2nd chunk)_
+///   _<u>7 (value of 1st chunk)</u> + <u>2 (value of 4th block in the 2nd chunk)</u>_
 ///
-/// Then, focus on 3 bits in 5th block in the 2nd chunk; `[1]01`.
+/// Then, focus on 3 bits in 5th block in the 2nd chunk; `[1]01`.<br>
 /// As you can see, only 1 '1' is included up to 48-th bit (`101` has 2 '1's but 2nd '1' is 50-th bit, irrelevant to _rank(48)_).
 ///
 /// Therefore, the _rank(48)_ is calculated as:
 ///
-///   _7 (value of 1st chunk) + 2 (value of 4th block in the 2nd chunk) + 1 ('1's in 5th block up to 48-th bit)
+///   _<u>7 (value of 1st chunk)</u> + <u>2 (value of 4th block in the 2nd chunk)</u> + <u>1 ('1's in 5th block up to 48-th bit)</u>_
 ///
-/// OK. That's all... Wait!
-///
+/// OK. That's all... Wait!<br>
 /// _rank()_ must be in _O(1)_ time-complexity.
 ///
-/// - _7 (value of 1st chunk)_: _O(1)_ if you store chunk value in array structure.
-/// - _2 (value of 4th block in the 2nd chunk)_: Same as above.
-/// - _1 ('1's in 5th block up to 48-th bit)_: **_O(length of block) = O(log N)_** !
+/// - _<u>7 (value of 1st chunk)</u>_: _O(1)_ if you store chunk value in array structure.
+/// - _<u>2 (value of 4th block in the 2nd chunk)</u>_: Same as above.
+/// - _<u>1 ('1's in 5th block up to 48-th bit)</u>_: **_O(<u>length of block</u>) = O(log N)_** !
 ///
-/// Counting '1's in a block must also be _O(1)_, while using _o(N)_ space.
+/// Counting '1's in a block must also be _O(1)_, while using _o(N)_ space.<br>
 /// We use **Table** for this purpose.
 ///
 /// | Block content | Number of '1's in block |
@@ -125,7 +123,7 @@ use std::collections::HashSet;
 /// | `110`         | 2                       |
 /// | `111`         | 3                       |
 ///
-/// This table is constructed in `build()`. So we can find the number of '1's in block in _O(1)_ time.
+/// This table is constructed in `build()`. So we can find the number of '1's in block in _O(1)_ time.<br>
 /// Note that this table has _O(log N) = o(N)_ length.
 ///
 /// In summary:
