@@ -8,13 +8,13 @@ Succinct Data Structures library for Rust.
 |
 [Benchmark Results](https://laysakura.github.io/succinct.rs/criterion/report/)
 |
-[Changelog](CHANGELOG.md)
+[Changelog](https://github.com/laysakura/succinct.rs/blob/master/CHANGELOG.md)
 
 [![Build Status](https://travis-ci.org/laysakura/succinct.rs.svg?branch=master)](https://travis-ci.org/laysakura/succinct.rs)
 [![Crates.io](https://img.shields.io/crates/v/succinct_rs.svg)](https://crates.io/crates/succinct_rs)
 [![Minimum rustc version](https://img.shields.io/badge/rustc-1.33+-lightgray.svg)](https://github.com/laysakura/succinct.rs#rust-version-supports)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE-MIT)
-[![License: Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-blue.svg)](LICENSE-APACHE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/laysakura/succinct.rs/blob/master/LICENSE-MIT)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-blue.svg)](https://github.com/laysakura/succinct.rs/blob/master/LICENSE-APACHE)
 
 Succinct.rs is a library to provide succinct data structures with _simple API_ and _high performance_.
 
