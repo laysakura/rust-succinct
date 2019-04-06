@@ -10,6 +10,13 @@ os:
 
 cache: cargo
 
+addons:
+  apt:
+    packages:
+      - gnuplot-nox
+    sources:
+      - ubuntu-toolchain-r-test
+
 before_script:
   - ./ci/before_script.sh
 
