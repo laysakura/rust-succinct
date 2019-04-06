@@ -6,7 +6,7 @@ SCRIPT_DIR=$(cd $(dirname $0); pwd)
 
 rustup component add rustfmt
 
-if [ `git_branch` = 'master' ]; then
+if [ `git_branch` = 'feature/criterion-html-publish-w-gnuplot' ]; then
     is_osx && brew install gnuplot
     is_linux && sudo apt-get install -y gnuplot
 fi
