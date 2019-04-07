@@ -43,7 +43,7 @@ succinct_rs = "0.1"
 ```rust
 extern crate succinct_rs;
 
-use succinct_rs::bit_vector::{BitVectorBuilder, BitVectorString};
+use succinct_rs::bit_vector::{BitVectorBuilder, BitString};
 
 // `01001` built by `from_length()` and `set_bit()`
 let bv = BitVectorBuilder::from_length(5)
@@ -65,7 +65,7 @@ assert_eq!(bv.select(2), Some(4)); // 0100[1]; Minimum `i` where range [0, i] ha
 assert_eq!(bv.select(3), None);    // There is no `i` where range [0, i] has 3 '1's
 
 // `10010` built by `from_str()`
-let bv = BitVectorBuilder::from_str(BitVectorString::new("1001_0")).build();  // Tips: BitVectorString::new() ignores '_'.
+let bv = BitVectorBuilder::from_str(BitString::new("1001_0")).build();  // Tips: BitString::new() ignores '_'.
 ```
 
 ## Features
