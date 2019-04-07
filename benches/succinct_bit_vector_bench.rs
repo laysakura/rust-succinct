@@ -3,7 +3,7 @@ extern crate criterion;
 
 use criterion::{BatchSize, Criterion};
 use std::time::Duration;
-use succinct_rs::{BitVectorBuilder, BitVectorString};
+use succinct_rs::{BitString, BitVectorBuilder};
 
 const NS: [u64; 5] = [1 << 16, 1 << 17, 1 << 18, 1 << 19, 1 << 20];
 
@@ -41,9 +41,9 @@ fn builder_from_str_benchmark(_: &mut Criterion) {
             b.iter_batched(
                 || {
                     let s = String::from_utf8(vec!['0' as u8; n as usize]).unwrap();
-                    BitVectorString::new(&s)
+                    BitString::new(&s)
                 },
-                |bvs| BitVectorBuilder::from_str(bvs).build(),
+                |bs| BitVectorBuilder::from_str(bs).build(),
                 BatchSize::SmallInput,
             )
         },

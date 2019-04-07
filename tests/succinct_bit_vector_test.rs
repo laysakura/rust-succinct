@@ -1,4 +1,4 @@
-use succinct_rs::{BitVectorBuilder, BitVectorString};
+use succinct_rs::{BitString, BitVectorBuilder};
 
 #[test]
 fn build_from_length() {
@@ -20,14 +20,14 @@ fn build_from_length_and_set_bit() {
 
 #[test]
 fn build_from_str() {
-    let bv = BitVectorBuilder::from_str(BitVectorString::new("01")).build();
+    let bv = BitVectorBuilder::from_str(BitString::new("01")).build();
     assert_eq!(bv.access(0), false);
     assert_eq!(bv.access(1), true);
 }
 
 #[test]
 fn build_from_str_and_set_bit() {
-    let bv = BitVectorBuilder::from_str(BitVectorString::new("00"))
+    let bv = BitVectorBuilder::from_str(BitString::new("00"))
         .set_bit(0)
         .set_bit(1)
         .set_bit(0)
@@ -76,8 +76,8 @@ fn fuzzing_test() {
         let s = &format!("{:b}", rand::random::<u128>());
         eprintln!("build(): bit vec = \"{}\"", s);
 
-        let bvs = BitVectorString::new(s);
-        let bv = BitVectorBuilder::from_str(bvs).build();
+        let bs = BitString::new(s);
+        let bv = BitVectorBuilder::from_str(bs).build();
 
         for i in 0..s.len() {
             eprintln!("access(): bit vec = \"{}\", i = {}, ", s, i);

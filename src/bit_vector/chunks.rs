@@ -84,7 +84,7 @@ impl super::Chunks {
 
 #[cfg(test)]
 mod new_success_tests {
-    use super::super::BitVectorString;
+    use super::super::BitString;
     use super::Chunks;
     use crate::internal_data_structure::raw_bit_vector::RawBitVector;
 
@@ -100,7 +100,7 @@ mod new_success_tests {
             #[test]
             fn $name() {
                 let input: Input = $value;
-                let rbv = RawBitVector::from_str(&BitVectorString::new(input.in_s));
+                let rbv = RawBitVector::from_str(&BitString::new(input.in_s));
                 let n = rbv.length();
                 let chunks = Chunks::new(&rbv);
 

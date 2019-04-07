@@ -140,7 +140,7 @@ mod access_failure_tests {
 #[cfg(test)]
 #[allow(non_snake_case)]
 mod rank_success_tests {
-    use super::super::{BitVectorBuilder, BitVectorString};
+    use super::super::{BitVectorBuilder, BitString};
 
     macro_rules! parameterized_tests {
         ($($name:ident: $value:expr,)*) => {
@@ -149,7 +149,7 @@ mod rank_success_tests {
             fn $name() {
                 let (in_bv_str, in_i, expected_rank) = $value;
                 assert_eq!(
-                    BitVectorBuilder::from_str(BitVectorString::new(in_bv_str))
+                    BitVectorBuilder::from_str(BitString::new(in_bv_str))
                         .build().rank(in_i),
                     expected_rank);
             }

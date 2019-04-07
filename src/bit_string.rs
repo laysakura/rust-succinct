@@ -1,28 +1,31 @@
-use super::BitVectorString;
+/// Provides validated string representation of bit sequence.
+///
+/// '0' is interpreted as _0_.
+/// '1' is interpreted as _1_.
+/// '_' is just ignored.
+///
+/// # Examples
+/// ```
+/// use succinct_rs::BitString;
+///
+/// let bs = BitString::new("01");
+/// assert_eq!(bs.str(), "01");
+///
+/// let bs = BitString::new("0111_0101");
+/// assert_eq!(bs.str(), "01110101");
+/// ```
+///
+/// # Panics
+/// When:
+/// - `s` contains any character other than '0', '1', and '_'.
+/// - `s` does not contain any '0' or '1'
+pub struct BitString {
+    s: String,
+}
 
-impl super::BitVectorString {
+impl BitString {
     /// Constructor.
-    ///
-    /// '0' is interpreted as _0_.
-    /// '1' is interpreted as _1_.
-    /// '_' is just ignored.
-    ///
-    /// # Examples
-    /// ```
-    /// use succinct_rs::bit_vector::BitVectorString;
-    ///
-    /// let bvs = BitVectorString::new("01");
-    /// assert_eq!(bvs.str(), "01");
-    ///
-    /// let bvs = BitVectorString::new("0111_0101");
-    /// assert_eq!(bvs.str(), "01110101");
-    /// ```
-    ///
-    /// # Panics
-    /// When:
-    /// - `s` contains any character other than '0', '1', and '_'.
-    /// - `s` does not contain any '0' or '1'
-    pub fn new(s: &str) -> BitVectorString {
+    pub fn new(s: &str) -> BitString {
         let parsed = s
             .chars()
             .filter(|c| match c {
@@ -35,7 +38,7 @@ impl super::BitVectorString {
 
         assert!(!parsed.is_empty(), "`str` must contain any '0' or '1'.");
 
-        BitVectorString {
+        BitString {
             s: String::from(parsed),
         }
     }
@@ -48,7 +51,7 @@ impl super::BitVectorString {
 
 #[cfg(test)]
 mod new_success_tests {
-    use super::super::BitVectorString;
+    use super::super::BitString;
 
     macro_rules! parameterized_from_valid_str_tests {
         ($($name:ident: $value:expr,)*) => {
@@ -56,7 +59,7 @@ mod new_success_tests {
             #[test]
             fn $name() {
                 let (in_s, expected_str) = $value;
-                let bvs = BitVectorString::new(in_s);
+                let bvs = BitString::new(in_s);
                 assert_eq!(bvs.str(), expected_str);
             }
         )*
@@ -77,7 +80,7 @@ mod new_success_tests {
 
 #[cfg(test)]
 mod new_failure_tests {
-    use super::super::BitVectorString;
+    use super::super::BitString;
 
     macro_rules! parameterized_from_invalid_str_tests {
         ($($name:ident: $value:expr,)*) => {
@@ -86,7 +89,7 @@ mod new_failure_tests {
             #[should_panic]
             fn $name() {
                 let in_s = $value;
-                let _ = BitVectorString::new(in_s);
+                let _ = BitString::new(in_s);
             }
         )*
         }

@@ -1,4 +1,4 @@
-use crate::bit_vector::BitVectorString;
+use crate::BitString;
 use std::fmt;
 
 #[derive(PartialEq, Eq, Debug)]
@@ -29,8 +29,8 @@ impl RawBitVector {
         }
     }
 
-    /// Makes a bit vector from `BitVectorString` representation.
-    pub fn from_str(bit_vector_str: &BitVectorString) -> RawBitVector {
+    /// Makes a bit vector from `BitString` representation.
+    pub fn from_str(bit_vector_str: &BitString) -> RawBitVector {
         let mut rbv = RawBitVector::from_length(bit_vector_str.str().len() as u64);
         for (i, c) in bit_vector_str.str().chars().enumerate() {
             if c == '1' {
@@ -286,7 +286,7 @@ mod from_length_failure_tests {
 #[cfg(test)]
 mod from_str_success_tests {
     use super::RawBitVector;
-    use crate::bit_vector::BitVectorString;
+    use crate::BitString;
 
     struct IndexBitPair(u64, bool);
 
@@ -296,7 +296,7 @@ mod from_str_success_tests {
             #[test]
             fn $name() {
                 let (in_s, index_bit_pairs) = $value;
-                let rbv = RawBitVector::from_str(&BitVectorString::new(in_s));
+                let rbv = RawBitVector::from_str(&BitString::new(in_s));
                 for IndexBitPair(i, bit) in index_bit_pairs {
                     assert_eq!(rbv.access(i), bit);
                 }
@@ -399,7 +399,7 @@ mod from_str_success_tests {
 
 #[cfg(test)]
 mod from_str_failure_tests {
-    // well-tested in BitVectorString
+    // well-tested in BitString
 }
 
 #[cfg(test)]
@@ -439,7 +439,7 @@ mod access_failure_tests {
 
 #[cfg(test)]
 mod popcount_success_tests {
-    use super::{BitVectorString, RawBitVector};
+    use super::{BitString, RawBitVector};
 
     macro_rules! parameterized_tests {
         ($($name:ident: $value:expr,)*) => {
@@ -447,7 +447,7 @@ mod popcount_success_tests {
             #[test]
             fn $name() {
                 let (in_s, expected_popcount) = $value;
-                let rbv = RawBitVector::from_str(&BitVectorString::new(in_s));
+                let rbv = RawBitVector::from_str(&BitString::new(in_s));
                 assert_eq!(rbv.popcount(), expected_popcount);
             }
         )*
@@ -477,7 +477,7 @@ mod popcount_failure_tests {
 #[cfg(test)]
 mod set_bit_success_tests {
     use super::RawBitVector;
-    use crate::bit_vector::BitVectorString;
+    use crate::BitString;
 
     struct IndexBitPair(u64, bool);
 
@@ -487,7 +487,7 @@ mod set_bit_success_tests {
             #[test]
             fn $name() {
                 let (in_s, bits_to_set, index_bit_pairs) = $value;
-                let mut rbv = RawBitVector::from_str(&BitVectorString::new(in_s));
+                let mut rbv = RawBitVector::from_str(&BitString::new(in_s));
 
                 for i in bits_to_set { rbv.set_bit(i) }
 
@@ -581,7 +581,7 @@ mod set_bit_failure_tests {
 
 #[cfg(test)]
 mod copy_sub_success_tests {
-    use super::{BitVectorString, RawBitVector};
+    use super::{BitString, RawBitVector};
 
     macro_rules! parameterized_tests {
         ($($name:ident: $value:expr,)*) => {
@@ -589,7 +589,7 @@ mod copy_sub_success_tests {
             #[test]
             fn $name() {
                 let (s, i, size, expected_bit_vec) = $value;
-                let rbv = RawBitVector::from_str(&BitVectorString::new(s));
+                let rbv = RawBitVector::from_str(&BitString::new(s));
                 let copied_rbv = rbv.copy_sub(i, size);
 
                 assert_eq!(copied_rbv.length(), expected_bit_vec.len() as u64);
@@ -636,7 +636,7 @@ mod copy_sub_success_tests {
 
 #[cfg(test)]
 mod copy_sub_failure_tests {
-    use super::{BitVectorString, RawBitVector};
+    use super::{BitString, RawBitVector};
 
     macro_rules! parameterized_tests {
         ($($name:ident: $value:expr,)*) => {
@@ -645,7 +645,7 @@ mod copy_sub_failure_tests {
             #[should_panic]
             fn $name() {
                 let (s, i, size) = $value;
-                let rbv = RawBitVector::from_str(&BitVectorString::new(s));
+                let rbv = RawBitVector::from_str(&BitString::new(s));
                 let _ = rbv.copy_sub(i, size);
             }
         )*
@@ -676,7 +676,7 @@ mod copy_sub_failure_tests {
 
 #[cfg(test)]
 mod copy_sub_fuzzing_tests {
-    use super::{BitVectorString, RawBitVector};
+    use super::{BitString, RawBitVector};
 
     #[test]
     fn test() {
@@ -689,16 +689,16 @@ mod copy_sub_fuzzing_tests {
 
         for _ in 0..samples {
             let s = &format!("{:b}", rand::random::<u16>());
-            let bvs = BitVectorString::new(s);
-            let rbv = RawBitVector::from_str(&bvs);
+            let bs = BitString::new(s);
+            let rbv = RawBitVector::from_str(&bs);
 
             for i in 0..s.len() {
                 for size in 1..(s.len() - i) {
                     let copied_rbv = rbv.copy_sub(i as u64, size as u64);
 
                     let substr = sub_str(s, i as u64, size as u64);
-                    let substr_bvs = BitVectorString::new(&substr);
-                    let substr_rbv = RawBitVector::from_str(&substr_bvs);
+                    let substr_bs = BitString::new(&substr);
+                    let substr_rbv = RawBitVector::from_str(&substr_bs);
 
                     assert_eq!(copied_rbv, substr_rbv,
                         "\nbit vector = {}, RawBitVector::copy_sub(i={}, size={});\nActual:   {}\nExpected: {}",
@@ -712,7 +712,7 @@ mod copy_sub_fuzzing_tests {
 
 #[cfg(test)]
 mod as_u32_success_tests {
-    use super::{BitVectorString, RawBitVector};
+    use super::{BitString, RawBitVector};
 
     macro_rules! parameterized_tests {
         ($($name:ident: $value:expr,)*) => {
@@ -720,7 +720,7 @@ mod as_u32_success_tests {
             #[test]
             fn $name() {
                 let (s, expected_u32) = $value;
-                let rbv = RawBitVector::from_str(&BitVectorString::new(s));
+                let rbv = RawBitVector::from_str(&BitString::new(s));
                 assert_eq!(rbv.as_u32(), expected_u32);
             }
         )*
@@ -741,13 +741,13 @@ mod as_u32_success_tests {
 
 #[cfg(test)]
 mod as_u32_failure_tests {
-    use super::{BitVectorString, RawBitVector};
+    use super::{BitString, RawBitVector};
 
     #[test]
     #[should_panic]
     fn test() {
         let s = "00000000_11111111_00000000_11111111_0";
-        let rbv = RawBitVector::from_str(&BitVectorString::new(s));
+        let rbv = RawBitVector::from_str(&BitString::new(s));
         let _ = rbv.as_u32();
     }
 }
