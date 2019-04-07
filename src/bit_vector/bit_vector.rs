@@ -140,7 +140,7 @@ mod access_failure_tests {
 #[cfg(test)]
 #[allow(non_snake_case)]
 mod rank_success_tests {
-    use super::super::{BitVectorBuilder, BitString};
+    use super::super::{BitString, BitVectorBuilder};
 
     macro_rules! parameterized_tests {
         ($($name:ident: $value:expr,)*) => {

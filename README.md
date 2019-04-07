@@ -43,7 +43,7 @@ succinct_rs = "0.1"
 ```rust
 extern crate succinct_rs;
 
-use succinct_rs::bit_vector::{BitVectorBuilder, BitString};
+use succinct_rs::bit_vector::{BitString, BitVectorBuilder};
 
 // `01001` built by `from_length()` and `set_bit()`
 let bv = BitVectorBuilder::from_length(5)
