@@ -1,6 +1,6 @@
 [package]
 name = "succinct_rs"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Sho Nakatani <lay.sakura@gmail.com>"]
 description = "Succinct Data Structures library for Rust."
 readme = "README.md"
