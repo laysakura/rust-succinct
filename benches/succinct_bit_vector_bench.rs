@@ -31,10 +31,10 @@ fn builder_from_length_benchmark(_: &mut Criterion) {
     );
 }
 
-fn builder_from_str_benchmark(_: &mut Criterion) {
+fn builder_from_bit_string_benchmark(_: &mut Criterion) {
     c().bench_function_over_inputs(
         &format!(
-            "[{}] BitVectorBuilder::from_str(\"00...(repeated N-times)\").build()",
+            "[{}] BitVectorBuilder::from_bit_string(\"00...(repeated N-times)\").build()",
             git_hash()
         ),
         |b, &&n| {
@@ -43,7 +43,7 @@ fn builder_from_str_benchmark(_: &mut Criterion) {
                     let s = String::from_utf8(vec!['0' as u8; n as usize]).unwrap();
                     BitString::new(&s)
                 },
-                |bs| BitVectorBuilder::from_str(bs).build(),
+                |bs| BitVectorBuilder::from_bit_string(bs).build(),
                 BatchSize::SmallInput,
             )
         },
@@ -104,7 +104,7 @@ fn select_benchmark(_: &mut Criterion) {
 criterion_group!(
     benches,
     builder_from_length_benchmark,
-    builder_from_str_benchmark,
+    builder_from_bit_string_benchmark,
     rank_benchmark,
     select_benchmark,
 );

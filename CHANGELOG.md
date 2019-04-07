@@ -10,9 +10,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - `succinct_rs::BitString`
+- `succinct_rs::BitVectorBuilder::from_bit_string()`
 
 ### Removed
 - `succinct_rs::BitVectorString`
+- `succinct_rs::BitVectorBuilder::from_str()`
 
 ## [v0.1.1]
 

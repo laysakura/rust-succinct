@@ -122,7 +122,7 @@ impl BitVector {
 
 #[cfg(test)]
 mod access_success_tests {
-    // well-tested in bit_vector_builder::{builder_from_length_success_tests, builder_from_str_success_tests}
+    // well-tested in bit_vector_builder::{builder_from_length_success_tests, builder_from_bit_string_success_tests}
 }
 
 #[cfg(test)]
@@ -149,7 +149,7 @@ mod rank_success_tests {
             fn $name() {
                 let (in_bv_str, in_i, expected_rank) = $value;
                 assert_eq!(
-                    BitVectorBuilder::from_str(BitString::new(in_bv_str))
+                    BitVectorBuilder::from_bit_string(BitString::new(in_bv_str))
                         .build().rank(in_i),
                     expected_rank);
             }

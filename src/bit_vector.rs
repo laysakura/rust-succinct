@@ -42,8 +42,8 @@ use std::collections::HashSet;
 /// assert_eq!(bv.select(2), Some(4)); // 0100[1]; Minimum i where range [0, i] has 2 '1's is i=4
 /// assert_eq!(bv.select(3), None);    // There is no i where range [0, i] has 3 '1's
 ///
-/// // `10010` built by `from_str()`
-/// let bv = BitVectorBuilder::from_str(BitString::new("1001_0")).build();  // Tips: BitString::new() ignores '_'.
+/// // `10010` built by `from_bit_string()`
+/// let bv = BitVectorBuilder::from_bit_string(BitString::new("1001_0")).build();  // Tips: BitString::new() ignores '_'.
 /// ```
 ///
 /// # Complexity

@@ -18,7 +18,7 @@ impl super::BitVectorBuilder {
     }
 
     /// Prepares a bit vector from [BitString](struct.BitString.html) representation.
-    pub fn from_str(bs: BitString) -> BitVectorBuilder {
+    pub fn from_bit_string(bs: BitString) -> BitVectorBuilder {
         BitVectorBuilder {
             seed: BitVectorSeed::BitStr(bs),
             bits_set: HashSet::new(),
@@ -48,7 +48,7 @@ impl super::BitVectorBuilder {
     pub fn build(&self) -> BitVector {
         let mut rbv = match &self.seed {
             BitVectorSeed::Length(n) => RawBitVector::from_length(*n),
-            BitVectorSeed::BitStr(bs) => RawBitVector::from_str(bs),
+            BitVectorSeed::BitStr(bs) => RawBitVector::from_bit_string(bs),
         };
         for bit in &self.bits_set {
             rbv.set_bit(*bit)
@@ -137,7 +137,7 @@ mod builder_from_length_failure_tests {
 }
 
 #[cfg(test)]
-mod builder_from_str_success_tests {
+mod builder_from_bit_string_success_tests {
     use super::{BitString, BitVectorBuilder};
 
     struct IndexBitPair(u64, bool);
@@ -148,7 +148,7 @@ mod builder_from_str_success_tests {
             #[test]
             fn $name() {
                 let (in_s, index_bit_pairs) = $value;
-                let bv = BitVectorBuilder::from_str(BitString::new(in_s)).build();
+                let bv = BitVectorBuilder::from_bit_string(BitString::new(in_s)).build();
                 for IndexBitPair(i, bit) in index_bit_pairs {
                     assert_eq!(bv.access(i), bit);
                 }
@@ -250,7 +250,7 @@ mod builder_from_str_success_tests {
 }
 
 #[cfg(test)]
-mod builder_from_str_failure_tests {
+mod builder_from_bit_string_failure_tests {
     // well-tested in BitString
 }
 
@@ -266,7 +266,7 @@ mod set_bit_success_tests {
             #[test]
             fn $name() {
                 let (in_s, bits_to_set, index_bit_pairs) = $value;
-                let mut builder = BitVectorBuilder::from_str(BitString::new(in_s));
+                let mut builder = BitVectorBuilder::from_bit_string(BitString::new(in_s));
 
                 for i in bits_to_set { builder.set_bit(i); }
                 let bv = builder.build();
