@@ -142,7 +142,7 @@ mod bit_vector {
 
         super::c().bench_function_over_inputs(
             &format!(
-                "[{}] BitVector::select(N) {} times",
+                "[{}] BitVector::select0(N) {} times",
                 super::git_hash(),
                 times
             ),
