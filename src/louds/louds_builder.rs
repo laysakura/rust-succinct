@@ -40,7 +40,7 @@ impl super::LoudsBuilder {
             }
             assert!(
                 cnt0 <= cnt1 + 1,
-                "At index {}, the number of '0' ({}) == the number of '1' ({}).",
+                "At index {}, the number of '0' ({}) == (the number of '1' ({})) + 2.",
                 i,
                 cnt0,
                 cnt1,
