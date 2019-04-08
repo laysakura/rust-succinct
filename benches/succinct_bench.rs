@@ -191,6 +191,33 @@ mod louds {
         BitString::new(&s)
     }
 
+    pub fn builder_from_bit_string_benchmark(_: &mut Criterion) {
+        let times = 10;
+
+        super::c().bench_function_over_inputs(
+            &format!(
+                "[{}] LoudsBuilder::from_bit_string(\"...(bin tree of N nodes)\").build() {} times",
+                super::git_hash(),
+                times,
+            ),
+            move |b, &&n| {
+                b.iter_batched(
+                    || {
+                        let bs = generate_binary_tree_lbs(n - 1);
+                        LoudsBuilder::from_bit_string(bs)
+                    },
+                    |builder| {
+                        for _ in 0..times {
+                            builder.build();
+                        }
+                    },
+                    BatchSize::SmallInput,
+                )
+            },
+            &NS,
+        );
+    }
+
     pub fn node_num_to_index_benchmark(_: &mut Criterion) {
         let times = 10_000;
 
@@ -316,6 +343,7 @@ criterion_group!(
     bit_vector::select_benchmark,
     bit_vector::rank0_benchmark,
     bit_vector::select0_benchmark,
+    louds::builder_from_bit_string_benchmark,
     louds::node_num_to_index_benchmark,
     louds::index_to_node_num_benchmark,
     louds::parent_to_children_benchmark,

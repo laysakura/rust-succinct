@@ -3,21 +3,12 @@ use crate::bit_vector::BitVectorBuilder;
 use crate::BitString;
 
 impl super::LoudsBuilder {
-    /// O(log N)
-    pub fn from_bit_string(bs: BitString) -> LoudsBuilder {
-        LoudsBuilder::validate_lbs(&bs);
-        let bv_builder = BitVectorBuilder::from_bit_string(bs);
-        LoudsBuilder { bv_builder }
-    }
-
-    /// O(log N)
-    pub fn build(&self) -> Louds {
-        let bv = self.bv_builder.build();
-        // TODO How should we pass built bit string to validate_lbs() ?
-        Louds { lbs: bv }
-    }
-
-    /// Checks if `bs` satisfy the LBS's Necessary and sufficient condition:
+    /// Prepares for building [Louds](struct.Louds.html) from LBS (LOUDS Bit vector).
+    ///
+    /// It takes _O(log `bs`)_ time for validation.
+    ///
+    /// # Panics
+    /// If `bs` does not represent a LOUDS tree. `bs` must satisfy the following condition as LBS.
     ///
     /// - Starts from "10"
     /// - In the range of _[0, i]_ for any _i (< length of LBS)_;
@@ -26,6 +17,21 @@ impl super::LoudsBuilder {
     ///         - Each node is derived from one '1'.
     /// - In the range of _[0, <u>length of LBS</u>)_;
     ///     - _<u>the number of '0'</u> == <u>the number of '1'</u> + 1_
+    pub fn from_bit_string(bs: BitString) -> LoudsBuilder {
+        LoudsBuilder::validate_lbs(&bs);
+        let bv_builder = BitVectorBuilder::from_bit_string(bs);
+        LoudsBuilder { bv_builder }
+    }
+
+    /// Build [Louds](struct.Louds.html).
+    ///
+    /// It internally calls [BitVectoBuilder::build()](../bit_vector/struct.BitVectorBuilder.html#method.build) and takes _O(log N)_ where _N_ is the length of LBS.
+    pub fn build(&self) -> Louds {
+        let bv = self.bv_builder.build();
+        Louds { lbs: bv }
+    }
+
+    /// Checks if `bs` satisfy the LBS's necessary and sufficient condition:
     fn validate_lbs(bs: &BitString) {
         let s = bs.str();
 

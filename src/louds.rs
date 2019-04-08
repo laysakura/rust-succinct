@@ -82,23 +82,22 @@ use crate::{BitVector, BitVectorBuilder};
 /// assert_eq!(louds.child_to_parent(&index11), LoudsNodeNum::new(4));
 /// ```
 pub struct Louds {
-    /// LBS (LOUDS Bit String)
     lbs: BitVector,
 }
 
-/// Builder
+/// The builder of [Louds](struct.Louds.html).
 pub struct LoudsBuilder {
     bv_builder: BitVectorBuilder,
 }
 
 #[derive(PartialEq, Eq, Debug)]
-/// Node number.
+/// Node number of [Louds](struct.Louds.html) tree.
 pub struct LoudsNodeNum {
     value: u64,
 }
 
 #[derive(PartialEq, Eq, Debug)]
-/// Index.
+/// Index of [Louds](struct.Louds.html) tree.
 pub struct LoudsIndex {
     value: u64,
 }
