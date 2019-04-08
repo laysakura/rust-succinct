@@ -106,7 +106,7 @@ assert_eq!(louds.child_to_parent(&index11), LoudsNodeNum::new(4));
 
 ## Features
 
-- **Arbitrary length support with minimum working memory**: Succinct.rs provides virtually _arbitrary length_ of data structures. There are carefully designed to use as small memory space as possible.
+- **Arbitrary length support with minimum working memory**: Succinct.rs provides virtually _arbitrary size_ of data structures. There are carefully designed to use as small memory space as possible.
 - **Simple public APIs**: Each data structures almost only have very basic operations for the data structure. `succinct::BitVector`, for example, has only `access()`, `rank()`, and `select()`.
 - **Latest benchmark results are always accessible**: Succinct.rs is continuously benchmarked in Travis CI using [Criterion.rs](https://crates.io/crates/criterion). Graphical benchmark results are published [here](https://laysakura.github.io/succinct.rs/criterion/report/).
 
@@ -156,7 +156,7 @@ Succinct.rs has plan to provide these succinct data structures.
 
 1. Succinct Bit Vector **(done)**
 2. [LOUDS](https://dl.acm.org/citation.cfm?id=1398646) **(doing)**
-    - Find out efficient API sets by implementing [Trie](https://en.wikipedia.org/wiki/Trie).
+    - Find out efficient API sets by applying LOUDS to [Trie](https://en.wikipedia.org/wiki/Trie) implementation.
 3. [SuRF](http://www.pdl.cmu.edu/PDL-FTP/Storage/surf_sigmod18.pdf)
 
 ## Contributing
