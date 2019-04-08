@@ -13,7 +13,7 @@ mod louds_feature_test {
             let (mut cnt0, mut cnt1) = (1u64, 1u64);
             while cnt0 < cnt1 + 1 {
                 let r = rng.gen::<f64>();
-                if r < 0.5 {
+                if r < 0.6 {
                     s = format!("{}{}", s, "0");
                     cnt0 += 1;
                 } else {
