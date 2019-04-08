@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [v0.4.0]
 
 ### Added
-- `succinct_rs::{Louds, LoudsBuilder, LoudsIndex, LoudsNodeNum}`
+- Experimentally adds `succinct_rs::{Louds, LoudsBuilder, LoudsIndex, LoudsNodeNum}`. It is highly possible to break APIs for LOUDS family while implementing Trie as a usecase using these structs.
 
 ## [v0.3.0]
 
@@ -37,7 +37,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - `succinct_rs::BitVector` and its builders: `succinct_rs::BitVectorBuilder` and `succinct_rs::BitVectorString`.
 
-[Unreleased]: https://github.com/laysakura/succinct.rs/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/laysakura/succinct.rs/compare/v0.4.0...HEAD
+[v0.3.0]: https://github.com/laysakura/succinct.rs/compare/v0.3.0...v0.4.0
 [v0.3.0]: https://github.com/laysakura/succinct.rs/compare/v0.2.0...v0.3.0
 [v0.2.0]: https://github.com/laysakura/succinct.rs/compare/v0.1.1...v0.2.0
 [v0.1.1]: https://github.com/laysakura/succinct.rs/compare/v0.1.0...v0.1.1
