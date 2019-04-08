@@ -59,6 +59,8 @@ use crate::{BitVector, BitVectorBuilder};
 ///             <15>  <17> <18>
 /// ```
 ///
+/// Then, create this tree structure with `Louds` and call operations to it.
+///
 /// ```
 /// extern crate succinct_rs;
 ///
