@@ -55,6 +55,17 @@ fn fuzzing_test() {
         rank
     }
 
+    fn rank0_from_bit_string(s: &str, i: u64) -> u64 {
+        let chs = s.chars().collect::<Vec<char>>();
+        let mut rank0: u64 = 0;
+        for j in 0..=i as usize {
+            if chs[j] == '0' {
+                rank0 += 1
+            };
+        }
+        rank0
+    }
+
     fn select_from_bit_string(s: &str, num: u64) -> Option<u64> {
         if num == 0 {
             return Some(0);
@@ -63,6 +74,23 @@ fn fuzzing_test() {
         let mut cnt: u64 = 0;
         for (i, ch) in s.chars().enumerate() {
             if ch == '1' {
+                cnt += 1;
+            }
+            if cnt == num {
+                return Some(i as u64);
+            }
+        }
+        None
+    }
+
+    fn select0_from_bit_string(s: &str, num: u64) -> Option<u64> {
+        if num == 0 {
+            return Some(0);
+        }
+
+        let mut cnt: u64 = 0;
+        for (i, ch) in s.chars().enumerate() {
+            if ch == '0' {
                 cnt += 1;
             }
             if cnt == num {
@@ -112,6 +140,29 @@ fn fuzzing_test() {
                 num,
                 bv.select(num),
                 select_from_bit_string(s, num)
+            );
+
+            eprintln!("rank0(): bit vec = \"{}\", i = {}, ", s, i);
+            assert_eq!(
+                bv.rank0(i as u64),
+                rank0_from_bit_string(s, i as u64),
+                "bit vec = \"{}\", i={}, BitVector::rank0()={}, rank0_from_bit_string={}",
+                s,
+                i,
+                bv.rank0(i as u64),
+                rank0_from_bit_string(s, i as u64)
+            );
+
+            let num = i as u64;
+            eprintln!("select0(): bit vec = \"{}\", num = {}, ", s, num);
+            assert_eq!(
+                bv.select0(num),
+                select0_from_bit_string(s, num),
+                "bit vec = \"{}\", num={}, BitVector::select0()={:?}, select0_from_bit_string={:?}",
+                s,
+                num,
+                bv.select0(num),
+                select0_from_bit_string(s, num)
             );
         }
     }
