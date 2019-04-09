@@ -20,7 +20,7 @@ fn git_hash() -> String {
     String::from(String::from_utf8(output.stdout).unwrap().trim())
 }
 
-mod bit_vector {
+mod succinct_bit_vector {
     use criterion::{BatchSize, Criterion};
     use succinct_rs::{BitString, SuccinctBitVectorBuilder};
 
@@ -341,12 +341,12 @@ mod louds {
 
 criterion_group!(
     benches,
-    bit_vector::builder_from_length_benchmark,
-    bit_vector::builder_from_bit_string_benchmark,
-    bit_vector::rank_benchmark,
-    bit_vector::select_benchmark,
-    bit_vector::rank0_benchmark,
-    bit_vector::select0_benchmark,
+    succinct_bit_vector::builder_from_length_benchmark,
+    succinct_bit_vector::builder_from_bit_string_benchmark,
+    succinct_bit_vector::rank_benchmark,
+    succinct_bit_vector::select_benchmark,
+    succinct_bit_vector::rank0_benchmark,
+    succinct_bit_vector::select0_benchmark,
     louds::builder_from_bit_string_benchmark,
     louds::node_num_to_index_benchmark,
     louds::index_to_node_num_benchmark,

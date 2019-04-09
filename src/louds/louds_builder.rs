@@ -1,5 +1,5 @@
 use super::{Louds, LoudsBuilder};
-use crate::bit_vector::SuccinctBitVectorBuilder;
+use crate::succinct_bit_vector::SuccinctBitVectorBuilder;
 use crate::BitString;
 
 impl super::LoudsBuilder {
@@ -25,7 +25,7 @@ impl super::LoudsBuilder {
 
     /// Build [Louds](struct.Louds.html).
     ///
-    /// It internally calls [BitVectoBuilder::build()](../bit_vector/struct.SuccinctBitVectorBuilder.html#method.build) and takes _O(log N)_ where _N_ is the length of LBS.
+    /// It internally calls [SuccinctBitVectorBuilder::build()](../succinct_bit_vector/struct.SuccinctBitVectorBuilder.html#method.build) and takes _O(log N)_ where _N_ is the length of LBS.
     pub fn build(&self) -> Louds {
         let bv = self.bv_builder.build();
         Louds { lbs: bv }

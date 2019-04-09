@@ -158,7 +158,7 @@ impl SuccinctBitVector {
 
 #[cfg(test)]
 mod access_success_tests {
-    // well-tested in bit_vector_builder::{builder_from_length_success_tests, builder_from_bit_string_success_tests}
+    // well-tested in succinct_bit_vector_builder::{builder_from_length_success_tests, builder_from_bit_string_success_tests}
 }
 
 #[cfg(test)]

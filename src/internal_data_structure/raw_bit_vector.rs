@@ -30,9 +30,9 @@ impl RawBitVector {
     }
 
     /// Makes a bit vector from `BitString` representation.
-    pub fn from_bit_string(bit_vector_str: &BitString) -> RawBitVector {
-        let mut rbv = RawBitVector::from_length(bit_vector_str.str().len() as u64);
-        for (i, c) in bit_vector_str.str().chars().enumerate() {
+    pub fn from_bit_string(bit_str: &BitString) -> RawBitVector {
+        let mut rbv = RawBitVector::from_length(bit_str.str().len() as u64);
+        for (i, c) in bit_str.str().chars().enumerate() {
             if c == '1' {
                 rbv.set_bit(i as u64);
             };

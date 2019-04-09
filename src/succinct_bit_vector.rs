@@ -1,9 +1,9 @@
-mod bit_vector;
-mod bit_vector_builder;
 mod block;
 mod blocks;
 mod chunk;
 mod chunks;
+mod succinct_bit_vector;
+mod succinct_bit_vector_builder;
 
 use super::bit_string::BitString;
 use super::internal_data_structure::popcount_table::PopcountTable;

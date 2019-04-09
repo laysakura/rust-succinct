@@ -5,10 +5,10 @@
 //! See [README](https://github.com/laysakura/succinct.rs/blob/master/README.md) for more about usage and features.
 
 pub use bit_string::BitString;
-pub use bit_vector::{SuccinctBitVector, SuccinctBitVectorBuilder};
 pub use louds::{Louds, LoudsBuilder, LoudsIndex, LoudsNodeNum};
+pub use succinct_bit_vector::{SuccinctBitVector, SuccinctBitVectorBuilder};
 
 pub mod bit_string;
-pub mod bit_vector;
 mod internal_data_structure;
 pub mod louds;
+pub mod succinct_bit_vector;
