@@ -1,5 +1,5 @@
 use super::{Louds, LoudsBuilder};
-use crate::bit_vector::BitVectorBuilder;
+use crate::bit_vector::SuccinctBitVectorBuilder;
 use crate::BitString;
 
 impl super::LoudsBuilder {
@@ -19,13 +19,13 @@ impl super::LoudsBuilder {
     ///     - _<u>the number of '0'</u> == <u>the number of '1'</u> + 1_
     pub fn from_bit_string(bs: BitString) -> LoudsBuilder {
         LoudsBuilder::validate_lbs(&bs);
-        let bv_builder = BitVectorBuilder::from_bit_string(bs);
+        let bv_builder = SuccinctBitVectorBuilder::from_bit_string(bs);
         LoudsBuilder { bv_builder }
     }
 
     /// Build [Louds](struct.Louds.html).
     ///
-    /// It internally calls [BitVectoBuilder::build()](../bit_vector/struct.BitVectorBuilder.html#method.build) and takes _O(log N)_ where _N_ is the length of LBS.
+    /// It internally calls [BitVectoBuilder::build()](../bit_vector/struct.SuccinctBitVectorBuilder.html#method.build) and takes _O(log N)_ where _N_ is the length of LBS.
     pub fn build(&self) -> Louds {
         let bv = self.bv_builder.build();
         Louds { lbs: bv }

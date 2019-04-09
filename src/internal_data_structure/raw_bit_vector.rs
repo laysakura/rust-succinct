@@ -85,7 +85,7 @@ impl RawBitVector {
         (self.byte_vec.len() as u64 - 1) * 8 + (self.last_byte_len as u64)
     }
 
-    /// Returns popcount of whole this BitVector.
+    /// Returns popcount of whole this SuccinctBitVector.
     pub fn popcount(&self) -> u64 {
         self.byte_vec
             .iter()

@@ -3,7 +3,7 @@ mod louds_builder;
 mod louds_index;
 mod louds_node_num;
 
-use crate::{BitVector, BitVectorBuilder};
+use crate::{SuccinctBitVector, SuccinctBitVectorBuilder};
 
 /// LOUDS (Level-Order Unary Degree Sequence).
 ///
@@ -82,12 +82,12 @@ use crate::{BitVector, BitVectorBuilder};
 /// assert_eq!(louds.child_to_parent(&index11), LoudsNodeNum::new(4));
 /// ```
 pub struct Louds {
-    lbs: BitVector,
+    lbs: SuccinctBitVector,
 }
 
 /// The builder of [Louds](struct.Louds.html).
 pub struct LoudsBuilder {
-    bv_builder: BitVectorBuilder,
+    bv_builder: SuccinctBitVectorBuilder,
 }
 
 #[derive(PartialEq, Eq, Debug)]

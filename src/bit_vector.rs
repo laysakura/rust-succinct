@@ -21,10 +21,10 @@ use std::collections::HashSet;
 /// ```
 /// extern crate succinct_rs;
 ///
-/// use succinct_rs::{BitVectorBuilder, BitString};
+/// use succinct_rs::{SuccinctBitVectorBuilder, BitString};
 ///
 /// // `01001` built by `from_length()` and `set_bit()`
-/// let bv = BitVectorBuilder::from_length(5)
+/// let bv = SuccinctBitVectorBuilder::from_length(5)
 ///     .set_bit(1)
 ///     .set_bit(4)
 ///     .build();
@@ -46,7 +46,7 @@ use std::collections::HashSet;
 /// // -----------------------------------------------
 ///
 /// // `01001` built by `from_bit_string()`
-/// let bv = BitVectorBuilder::from_bit_string(BitString::new("0100_1")).build();  // Tips: BitString::new() ignores '_'.
+/// let bv = SuccinctBitVectorBuilder::from_bit_string(BitString::new("0100_1")).build();  // Tips: BitString::new() ignores '_'.
 ///
 /// // `rank0()` and `select0()` are also supported
 /// assert_eq!(bv.rank0(0), 1);  // [0]1001; Range [0, 0] has no '0'
@@ -142,7 +142,7 @@ use std::collections::HashSet;
 /// In summary:
 ///
 ///   _rank() = (value of left chunk) + (value of left block) + (value of table keyed by inner block bits)_.
-pub struct BitVector {
+pub struct SuccinctBitVector {
     /// Raw data.
     rbv: RawBitVector,
 
@@ -156,13 +156,13 @@ pub struct BitVector {
     table: PopcountTable,
 }
 
-/// Builder of [BitVector](struct.BitVector.html).
-pub struct BitVectorBuilder {
-    seed: BitVectorSeed,
+/// Builder of [SuccinctBitVector](struct.SuccinctBitVector.html).
+pub struct SuccinctBitVectorBuilder {
+    seed: SuccinctBitVectorSeed,
     bits_set: HashSet<u64>,
 }
 
-enum BitVectorSeed {
+enum SuccinctBitVectorSeed {
     Length(u64),
     BitStr(BitString),
 }
@@ -175,7 +175,7 @@ struct Chunks {
 
 /// Total popcount of _[0, <u>last bit of the chunk</u>]_ of a bit vector.
 ///
-/// Each chunk takes _2^64_ at max (when every bit is '1' for BitVector of length of _2^64_).
+/// Each chunk takes _2^64_ at max (when every bit is '1' for SuccinctBitVector of length of _2^64_).
 struct Chunk {
     value: u64, // popcount
     blocks: Blocks,
@@ -192,7 +192,7 @@ struct Blocks {
 
 /// Total popcount of _[_first bit of the chunk which the block belongs to_, _last bit of the block_]_ of a bit vector.
 ///
-/// Each block takes (log 2^64)^2 = 64^2 = 2^16 at max (when every bit in a chunk is 1 for BitVector of length of 2^64)
+/// Each block takes (log 2^64)^2 = 64^2 = 2^16 at max (when every bit in a chunk is 1 for SuccinctBitVector of length of 2^64)
 struct Block {
     value: u16, // popcount
     length: u8,
