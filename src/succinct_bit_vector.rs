@@ -21,7 +21,7 @@ use std::collections::HashSet;
 /// ```
 /// extern crate succinct_rs;
 ///
-/// use succinct_rs::{SuccinctBitVectorBuilder, BitString};
+/// use succinct_rs::{BitString, SuccinctBitVectorBuilder};
 ///
 /// // Construction -------------------------
 /// // `01001` built by `from_bit_string()`
@@ -35,7 +35,6 @@ use std::collections::HashSet;
 ///     .add_bit(false)
 ///     .add_bit(true)
 ///     .build();
-///
 ///
 /// // Basic operations ---------------------
 /// assert_eq!(bv.access(0), false);  // [0]1001; 0th bit is '0' (false)

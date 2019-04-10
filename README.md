@@ -43,15 +43,22 @@ succinct_rs = "0.5"
 ```rust
 extern crate succinct_rs;
 
-use succinct_rs::{SuccinctBitVectorBuilder, BitString};
+use succinct_rs::{BitString, SuccinctBitVectorBuilder};
 
-// `01001` built by `from_length()` and `set_bit()`
-let bv = SuccinctBitVectorBuilder::from_length(5)
-    .set_bit(1)
-    .set_bit(4)
+// Construction -------------------------
+// `01001` built by `from_bit_string()`
+let bv = SuccinctBitVectorBuilder::from_bit_string(BitString::new("0100_1")).build();  // Tips: BitString::new() ignores '_'.
+
+// `01001` built by `from_length()` and `add_bit()`
+let bv = SuccinctBitVectorBuilder::from_length(0)
+    .add_bit(false)
+    .add_bit(true)
+    .add_bit(false)
+    .add_bit(false)
+    .add_bit(true)
     .build();
 
-// `access()`, `rank()`, and `select()` are supported.
+// Basic operations ---------------------
 assert_eq!(bv.access(0), false);  // [0]1001; 0th bit is '0' (false)
 assert_eq!(bv.access(1), true);   // 0[1]001; 1st bit is '1' (true)
 assert_eq!(bv.access(4), true);   // 0100[1]; 4th bit is '1' (true)
@@ -65,12 +72,7 @@ assert_eq!(bv.select(1), Some(1)); // 0[1]001; Minimum i where range [0, i] has 
 assert_eq!(bv.select(2), Some(4)); // 0100[1]; Minimum i where range [0, i] has 2 '1's is i=4
 assert_eq!(bv.select(3), None);    // There is no i where range [0, i] has 3 '1's
 
-// -----------------------------------------------
-
-// `01001` built by `from_bit_string()`
-let bv = SuccinctBitVectorBuilder::from_bit_string(BitString::new("0100_1")).build();  // Tips: BitString::new() ignores '_'.
-
-// `rank0()` and `select0()` are also supported
+// rank0, select0 -----------------------
 assert_eq!(bv.rank0(0), 1);  // [0]1001; Range [0, 0] has no '0'
 assert_eq!(bv.rank0(3), 3);  // [0100]1; Range [0, 3] has 3 '0's
 assert_eq!(bv.rank0(4), 3);  // [01001]; Range [0, 4] has 3 '0's
