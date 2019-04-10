@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [v0.6.0] - 2019-04-10
+
+### Added
+- `succinct_rs::SuccinctBitVector::add_bit()`
+
 ## [v0.5.0] - 2019-04-10
 Renamed _BitVector_ to _SuccinctBitVector_.
 
@@ -48,7 +53,8 @@ Renamed _BitVector_ to _SuccinctBitVector_.
 ### Added
 - `succinct_rs::BitVector` and its builders: `succinct_rs::BitVectorBuilder` and `succinct_rs::BitVectorString`.
 
-[Unreleased]: https://github.com/laysakura/succinct.rs/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/laysakura/succinct.rs/compare/v0.6.0...HEAD
+[v0.6.0]: https://github.com/laysakura/succinct.rs/compare/v0.5.0...v0.6.0
 [v0.5.0]: https://github.com/laysakura/succinct.rs/compare/v0.4.0...v0.5.0
 [v0.4.0]: https://github.com/laysakura/succinct.rs/compare/v0.3.0...v0.4.0
 [v0.3.0]: https://github.com/laysakura/succinct.rs/compare/v0.2.0...v0.3.0

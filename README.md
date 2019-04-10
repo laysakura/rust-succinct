@@ -35,7 +35,7 @@ To use with Succinct.rs, add the following to your `Cargo.toml` file:
 
 ```toml
 [dependencies]
-succinct_rs = "0.5"
+succinct_rs = "0.6"
 ```
 
 ### [Succinct Bit Vector](https://laysakura.github.io/succinct.rs/succinct_rs/succinct_bit_vector/struct.SuccinctBitVector.html) Usage
