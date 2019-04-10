@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [v0.6.0] - 2019-04-10
 
 ### Added
-- `succinct_rs::SuccinctBitVector::add_bit()`
+- `succinct_rs::SuccinctBitVectorBuilder::add_bit()`
 
 ## [v0.5.0] - 2019-04-10
 Renamed _BitVector_ to _SuccinctBitVector_.
